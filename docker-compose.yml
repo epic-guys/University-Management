@@ -1,0 +1,14 @@
+
+version: '3'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: bd_proj_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - './data/db/:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
