@@ -232,6 +232,6 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 #docker-data
-data
+docker_data
 
 **/node_modules

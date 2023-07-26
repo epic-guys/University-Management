@@ -59,3 +59,10 @@ CREATE TABLE Appelli(
                     ON UPDATE CASCADE
                     ON DELETE CASCADE
 );
+
+-- Tabella di esempio
+DROP TABLE IF EXISTS Utenti;
+CREATE TABLE Utenti(
+    id_utente TEXT NOT NULL PRIMARY KEY,
+    pass_hash TEXT NOT NULL
+);

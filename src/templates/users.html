@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %} Utenti {% endblock %}
+{% block main %}
+    {% for user in users %}
+        <div class="card" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title">{{ user.id_utente }}</h5>
+            <p class="card-text">{{ user.pass_hash }}</p>
+            <a href="#" class="btn btn-danger">Ban</a>
+          </div>
+        </div>
+    {% endfor %}
+{% endblock %}
