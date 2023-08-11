@@ -1,23 +1,27 @@
 import json
+import datetime
 
 from .login import login_manager
 from .db import db
 import sqlalchemy as sqla
 
 
-class Utente(db.Model):
-    __tablename__ = 'utenti'
-    id_utente = sqla.Column(sqla.Text, primary_key=True)
-    pass_hash = sqla.Column(sqla.Text, nullable=False)
+class Persona(db.Model):
+    __tablename__ = 'persone'
+    cod_persona = sqla.Column(sqla.Text, primary_key=True)
+    nome = sqla.Column(sqla.Text)
+    cognome = sqla.Column(sqla.Text)
+    data_nascita = sqla.Column(sqla.Date)
+    sesso = sqla.Column(sqla.Text)
 
-    def __int__(self, id_utente: str, pass_hash: str):
-        self.id_utente = id_utente
-        self.pass_hash = pass_hash
+    def __init__(self, cod_persona: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str):
+        self.cod_persona = cod_persona
+        self.nome = nome
+        self.cognome = cognome
+        self.data_nascita = data_nascita
+        self.sesso = sesso
 
     def to_json(self):
         return json.dumps(self.__dict__)
 
 
-@login_manager.user_loader
-def user_loader(username):
-    return Utente('lmao', 'cock')
