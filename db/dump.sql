@@ -17,16 +17,16 @@ CREATE TABLE Persone (
 
 DROP TABLE IF EXISTS Studenti;
 CREATE TABLE Studenti (
-    cod_persona TEXT NOT NULL PRIMARY KEY ,
-    FOREIGN KEY (cod_persona) REFERENCES Persone (cod_persona)
+    matricola TEXT NOT NULL PRIMARY KEY ,
+    FOREIGN KEY (matricola) REFERENCES Persone (cod_persona)
                       ON UPDATE CASCADE
                       ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS Docenti;
 CREATE TABLE Docenti (
-    cod_persona TEXT NOT NULL PRIMARY KEY,
-    FOREIGN KEY (cod_persona) REFERENCES Persone (cod_persona)
+    cod_docente TEXT NOT NULL PRIMARY KEY,
+    FOREIGN KEY (cod_docente) REFERENCES Persone (cod_persona)
                      ON UPDATE CASCADE
                      ON DELETE CASCADE
 );
@@ -58,14 +58,6 @@ CREATE TABLE Appelli(
                     ON DELETE CASCADE
 );
 
--- Tabella di esempio
-DROP TABLE IF EXISTS Utenti;
-CREATE TABLE Utenti(
-    id_utente TEXT NOT NULL PRIMARY KEY,
-    pass_hash TEXT NOT NULL
-);
-
 
 -- Data
-INSERT INTO Utenti VALUES ('Template Injection?', '{{ 2 + 2 }}');
-INSERT INTO Persone VALUES ('P01','Alvise','Spanò','03-07-67','M');
+--INSERT INTO Persone VALUES ('P01','Alvise','Spanò','03-07-67','M');
