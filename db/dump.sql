@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS esami;
+DROP TABLE IF EXISTS esami CASCADE ;
 CREATE TABLE esami (
     cod_esame TEXT NOT NULL PRIMARY KEY,
     nome_corso TEXT NOT NULL,
@@ -8,10 +8,10 @@ CREATE TABLE esami (
 
 DROP TABLE IF EXISTS ruoli;
 CREATE TABLE ruoli (
-    ruolo CHAR(1) NOT NULL
+    ruolo CHAR(1) NOT NULL PRIMARY KEY
 );
 
-DROP TABLE IF EXISTS persone;
+DROP TABLE IF EXISTS persone CASCADE;
 CREATE TABLE persone (
     ruolo CHAR(1) NOT NULL,
     cod_persona TEXT NOT NULL,
@@ -72,9 +72,13 @@ CREATE TABLE appelli(
 -- Data
 
 INSERT INTO persone VALUES
-                        ('P01','Alvise','Spanò','03-07-67','M'),
-                        ('P02', 'Stefano', 'Calzavara', '01-02-69', 'M');
+                        ('P', 'P01','Alvise','Spanò','03-07-67','M', 'P01@unive.it', 'password'),
+                        ('P','P02', 'Stefano', 'Calzavara', '01-02-69', 'M', 'P02@unive.it', 'password');
 
 INSERT INTO docenti VALUES
                         ('P01'),
                         ('P02');
+
+INSERT INTO ruoli VALUES
+                      ('P'),
+                      ('S');

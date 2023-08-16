@@ -2,8 +2,6 @@ import json
 import datetime
 
 from sqlalchemy import ForeignKey
-
-from .login import login_manager
 from .db import db
 import sqlalchemy as sqla
 
@@ -15,13 +13,19 @@ class Persona(db.Model):
     cognome = sqla.Column(sqla.Text)
     data_nascita = sqla.Column(sqla.Date)
     sesso = sqla.Column(sqla.Text)
+    email = sqla.Column(sqla.Text)
+    password_hash = sqla.Column(sqla.Text)
+    ruolo = sqla.Column(sqla.Text)
 
-    def __init__(self, cod_persona: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str):
+    def __init__(self, cod_persona: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str, email: str, password_hash: str, ruolo: str):
         self.cod_persona = cod_persona
         self.nome = nome
         self.cognome = cognome
         self.data_nascita = data_nascita
         self.sesso = sesso
+        self.email = email
+        self.password_hash = password_hash
+        self.ruolo = ruolo
 
     def to_json(self):
         return json.dumps(self.__dict__)
@@ -31,8 +35,9 @@ class Docente(Persona):
     __tablename__ = 'docenti'
     cod_docente = sqla.Column(sqla.Text, ForeignKey(Persona.cod_persona), primary_key=True)
 
-    def __init__(self, cod_docente: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str):
-        super().__init__(cod_docente, nome, cognome, data_nascita, sesso)
+    def __init__(self, cod_docente: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str, email: str, password_hash: str, ruolo: str):
+        super().__init__(cod_docente, nome, cognome, data_nascita, sesso, email, password_hash, ruolo)
+        self.cod_docente = cod_docente
 
     def to_json(self):
         return json.dumps(self.__dict__)
@@ -42,8 +47,9 @@ class Studente(Persona):
     __tablename__ = 'studenti'
     matricola = sqla.Column(sqla.Text, ForeignKey(Persona.cod_persona), primary_key=True)
 
-    def __init__(self, matricola: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str):
-        super().__init__(matricola, nome, cognome, data_nascita, sesso)
+    def __init__(self, matricola: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str, email: str, password_hash: str, ruolo: str):
+        super().__init__(matricola, nome, cognome, data_nascita, sesso, email, password_hash, ruolo)
+        self.matricola = matricola
 
     def to_json(self):
         return json.dumps(self.__dict__)

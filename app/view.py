@@ -1,15 +1,15 @@
 from .db import db
 from flask import render_template, request, Blueprint, session
-from .models import Persona
+from .models import Docente
 
 view = Blueprint('view', __name__)
 
 
 @view.route('/')
 def index():
-    session['cod_persona'] = 'P01'
-    persona = db.session.execute(db.select(Persona).where(Persona.cod_persona == 'P01')).first()
-    return render_template('dashboard.html', persona=persona)
+    session['cod_docente'] = 'P01'
+    docente = db.session.execute(db.select(Docente).where(Docente.cod_docente == 'P01')).first()
+    return render_template('dashboard.html', persona=docente)
 
 
 @view.route('/users')
