@@ -8,8 +8,12 @@ view = Blueprint('view', __name__)
 @view.route('/')
 def index():
     session['cod_docente'] = 'P01'
-    docente = db.session.execute(db.select(Docente).where(Docente.cod_docente == 'P01')).first()
-    return render_template('dashboard.html', persona=docente)
+    results = db.session.execute(db.select(Docente).where(Docente.cod_docente == 'P01')).first()
+
+    for result in results:
+        docente = result
+
+    return render_template('dashboard.html', docente=docente)
 
 
 @view.route('/users')
