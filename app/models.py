@@ -1,22 +1,36 @@
+import dataclasses
 import json
-import datetime
+from datetime import date
 
-from sqlalchemy import ForeignKey
-
-from .login import login_manager
 from .db import db
-import sqlalchemy as sqla
+from sqlalchemy.orm import mapped_column, Mapped, relationship
+from sqlalchemy import ForeignKey, ForeignKeyConstraint
 
+
+@dataclasses.dataclass
+class Id:
+    ruolo: str
+    codice: str
+
+    def get_id(self):
+        return f'{self.ruolo}{self.codice}'
 
 class Persona(db.Model):
     __tablename__ = 'persone'
-    cod_persona = sqla.Column(sqla.Text, primary_key=True)
-    nome = sqla.Column(sqla.Text)
-    cognome = sqla.Column(sqla.Text)
-    data_nascita = sqla.Column(sqla.Date)
-    sesso = sqla.Column(sqla.Text)
 
-    def __init__(self, cod_persona: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str):
+    ruolo: Mapped[str] = mapped_column(primary_key=True)
+    cod_persona: Mapped[str] = mapped_column(primary_key=True)
+    nome: Mapped[str] = mapped_column()
+    cognome: Mapped[str] = mapped_column()
+    data_nascita: Mapped[date] = mapped_column()
+    sesso: Mapped[str] = mapped_column()
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'persona',
+        'polymorphic_on': 'ruolo'
+    }
+
+    def __init__(self, ruolo:str, cod_persona: str, nome: str, cognome: str, data_nascita: date, sesso: str):
         self.cod_persona = cod_persona
         self.nome = nome
         self.cognome = cognome
@@ -29,10 +43,16 @@ class Persona(db.Model):
 
 class Docente(Persona):
     __tablename__ = 'docenti'
-    cod_docente = sqla.Column(sqla.Text, ForeignKey(Persona.cod_persona), primary_key=True)
+    cod_docente: Mapped[str] = mapped_column(ForeignKey('persone.cod_persona'), primary_key=True)
 
-    def __init__(self, cod_docente: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str):
+    __mapper_args__ = {
+        'polymorphic_identity': 'D'
+    }
+
+    def __init__(self, cod_docente: str, nome: str, cognome: str, data_nascita: date, sesso: str):
         super().__init__(cod_docente, nome, cognome, data_nascita, sesso)
+        self.ruolo = 'D'
+        self.cod_docente = cod_docente
 
     def to_json(self):
         return json.dumps(self.__dict__)
@@ -40,10 +60,26 @@ class Docente(Persona):
 
 class Studente(Persona):
     __tablename__ = 'studenti'
-    matricola = sqla.Column(sqla.Text, ForeignKey(Persona.cod_persona), primary_key=True)
+    matricola: Mapped[str] = mapped_column(ForeignKey('persone.cod_persona'), primary_key=True)
 
-    def __init__(self, matricola: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str):
-        super().__init__(matricola, nome, cognome, data_nascita, sesso)
+    __mapper_args__ = {
+        'polymorphic_identity': 'S'
+    }
+
+    """
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ['ruolo', 'matricola'],
+            ['persone.ruolo', 'persone.cod_persona']
+        )
+    )
+    """
+
+
+    def __init__(self, matricola: str, nome: str, cognome: str, data_nascita: date, sesso: str):
+        super().__init__( matricola, nome, cognome, data_nascita, sesso)
+        self.ruolo = 'S'
+        self.matricola = matricola
 
     def to_json(self):
         return json.dumps(self.__dict__)
@@ -51,10 +87,11 @@ class Studente(Persona):
 
 class Esame(db.Model):
     __tablename__ = 'esami'
-    cod_esame = sqla.Column(sqla.Text, primary_key=True)
-    nome_corso = sqla.Column(sqla.Text)
-    anno = sqla.Column(sqla.Integer)
-    cfu = sqla.Column(sqla.Integer)
+    cod_esame: Mapped[str] = mapped_column(primary_key=True)
+    nome_corso: Mapped[str] = mapped_column()
+    anno: Mapped[int] = mapped_column()
+    cfu: Mapped[int] = mapped_column()
+    prove: Mapped[list['Prova']] = relationship(back_populates='esame')
 
     def __init__(self, cod_esame: str, nome_corso: str, anno: int, cfu: int):
         self.cod_esame = cod_esame
@@ -66,29 +103,33 @@ class Esame(db.Model):
         return json.dumps(self.__dict__)
 
 
-class Prova(Esame):
+class Prova(db.Model):
     __tablename__ = 'prove'
-    cod_prova = sqla.Column(sqla.Text, primary_key=True)
-    scadenza = sqla.Column(sqla.Date)
-    cod_esame = sqla.Column(sqla.Text, ForeignKey(Esame.cod_esame))
+    cod_prova: Mapped[str] = mapped_column(primary_key=True)
+    scadenza: Mapped[date] = mapped_column()
+    cod_esame: Mapped[str] = mapped_column(ForeignKey('esami.cod_esame'))
+    esame: Mapped[Esame] = relationship(back_populates='prove')
+    appelli: Mapped[list['Appello']] = relationship(back_populates='prova')
 
-    def __init__(self, cod_esame: str, nome_corso: str, anno: int, cfu: int, cod_prova: str, scadenza: datetime.date):
-        super().__init__(cod_esame, nome_corso, anno, cfu)
+    def __init__(self, esame: Esame, cod_prova: str, scadenza: date):
         self.cod_prova = cod_prova
+        self.cod_esame = esame.cod_esame
+        self.esame = esame
         self.scadenza = scadenza
 
     def to_json(self):
         return json.dumps(self.__dict__)
 
 
-class Appello(Prova):
-    data = sqla.Column(sqla.Date, primary_key=True)
-    cod_prova = sqla.Column(sqla.Text, ForeignKey(Prova.cod_prova))
+class Appello(db.Model):
+    data: Mapped[date] = mapped_column(primary_key=True)
+    cod_prova: Mapped[str] = mapped_column(ForeignKey('prove.cod_prova'), primary_key=True)
+    prova: Mapped[Prova] = relationship(back_populates='appelli')
 
-    def __init__(self, cod_esame: str, nome_corso: str, anno: int, cfu: int, cod_prova: str, scadenza: datetime.date, data: datetime.date):
-        super().__init__(cod_esame, nome_corso, anno, cfu, cod_prova, scadenza)
+    def __init__(self, prova: Prova, data: date):
+        self.cod_prova = prova.cod_prova
+        self.prova = prova
         self.data = data
 
     def to_json(self):
         return json.dumps(self.__dict__)
-

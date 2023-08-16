@@ -1,15 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Accedi{% endblock %}
 {% block main %}
-    <form action="" method="POST">
-        <div class="form-group">
-            <label for="matricola">Matricola</label>
-            <input type="text" name="matricola" id="matricola" class="form-control">
-        </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" class="form-control">
-        </div>
-        <button class="btn btn-primary" type="submit">Accedi</button>
-    </form>
+    <div class="container">
+
+        <form action="" method="POST">
+            <div class="form-group">
+                <label for="matricola">Matricola</label>
+                <input type="text" name="matricola" id="matricola" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" class="form-control">
+            </div>
+            <button class="btn btn-primary" type="submit">Accedi</button>
+        </form>
+    </div>
+
 {% endblock %}

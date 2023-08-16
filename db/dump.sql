@@ -8,27 +8,26 @@ CREATE TABLE esami (
 
 DROP TABLE IF EXISTS ruoli;
 CREATE TABLE ruoli (
-    ruolo CHAR(1) NOT NULL
+    ruolo CHAR(1) NOT NULL PRIMARY KEY
 );
 
 DROP TABLE IF EXISTS persone;
 CREATE TABLE persone (
     ruolo CHAR(1) NOT NULL,
-    cod_persona TEXT NOT NULL,
+    cod_persona TEXT NOT NULL PRIMARY KEY,
     nome TEXT NOT NULL,
     cognome TEXT NOT NULL,
     data_nascita DATE NOT NULL,
     sesso CHAR(1) CHECK ( sesso IN ('M', 'F') ),
     email TEXT NOT NULL,
     password_hash TEXT NOT NULL,
-    FOREIGN KEY (ruolo) REFERENCES ruoli(ruolo),
-    PRIMARY KEY (ruolo, cod_persona)
+    FOREIGN KEY (ruolo) REFERENCES ruoli(ruolo)
 );
 
 DROP TABLE IF EXISTS studenti;
 CREATE TABLE studenti (
-    matricola TEXT NOT NULL PRIMARY KEY ,
-    FOREIGN KEY (matricola) REFERENCES Persone (cod_persona)
+    matricola TEXT NOT NULL PRIMARY KEY,
+    FOREIGN KEY (matricola) REFERENCES persone (cod_persona)
                       ON UPDATE CASCADE
                       ON DELETE CASCADE
 );
@@ -36,7 +35,7 @@ CREATE TABLE studenti (
 DROP TABLE IF EXISTS docenti;
 CREATE TABLE docenti (
     cod_docente TEXT NOT NULL PRIMARY KEY,
-    FOREIGN KEY (cod_docente) REFERENCES Persone (cod_persona)
+    FOREIGN KEY (cod_docente) REFERENCES persone (cod_persona)
                      ON UPDATE CASCADE
                      ON DELETE CASCADE
 );
@@ -54,27 +53,77 @@ CREATE TABLE prove (
     cod_prova TEXT NOT NULL PRIMARY KEY,
     scadenza DATE DEFAULT NULL,
     cod_esame TEXT NOT NULL,
-    FOREIGN KEY (cod_esame) REFERENCES Esami(cod_esame)
+    FOREIGN KEY (cod_esame) REFERENCES esami (cod_esame)
                    ON UPDATE CASCADE
                    ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS appelli;
 CREATE TABLE appelli(
-    data DATE NOT NULL PRIMARY KEY,
+    data DATE NOT NULL,
     cod_prova TEXT NOT NULL,
-    FOREIGN KEY (cod_prova) REFERENCES Prove(cod_prova)
+    PRIMARY KEY (cod_prova, data),
+    FOREIGN KEY (cod_prova) REFERENCES prove(cod_prova)
                     ON UPDATE CASCADE
                     ON DELETE CASCADE
 );
 
+-- Trigger
+CREATE FUNCTION role_check()
+RETURNS TRIGGER
+AS $$
+DECLARE persona persone;
+BEGIN
+
+
+    IF tg_table_name = 'studenti' THEN
+        SELECT *
+            INTO persona
+            FROM persone
+            WHERE cod_persona = NEW.matricola;
+        IF persona.ruolo <> 'S' THEN
+            RETURN NULL;
+        END IF;
+    ELSIF tg_table_name = 'docenti' THEN
+        SELECT *
+        INTO persona
+        FROM persone
+        WHERE cod_persona = NEW.cod_docente;
+        IF persona.ruolo <> 'D' THEN
+            RETURN NULL;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER role_check_docenti_t
+    BEFORE INSERT OR UPDATE
+    ON docenti
+    FOR EACH ROW
+EXECUTE FUNCTION role_check();
+
+
+CREATE TRIGGER role_check_studenti_t
+    BEFORE INSERT OR UPDATE
+    ON studenti
+    FOR EACH ROW
+EXECUTE FUNCTION role_check();
 
 -- Data
 
+-- Ruoli di docente e studente
+INSERT INTO ruoli VALUES ('D'), ('S');
+
 INSERT INTO persone VALUES
-                        ('P01','Alvise','Spanò','03-07-67','M'),
-                        ('P02', 'Stefano', 'Calzavara', '01-02-69', 'M');
+                        ('D', '01','Alvise','Spanò','03-07-67','M', 'sample1@unive.it', 'lmao'),
+                        ('D', '02', 'Stefano', 'Calzavara', '01-02-69', 'M', 'sample2@unive.it', 'zedong'),
+                        ('S', '03', 'Zio', 'Pera', '01-01-69', 'F', 'aa@bb.cum', 'e');
 
 INSERT INTO docenti VALUES
-                        ('P01'),
-                        ('P02');
+                        ('01'),
+                        ('02');
+
+INSERT INTO studenti VALUES
+                         ('03');

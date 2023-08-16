@@ -17,12 +17,11 @@ def create_app(config: Config = None) -> Flask:
     app.register_blueprint(api, url_prefix='/api')
 
     # Flask login
-   # from .login import login_manager
-    #login_manager.init_app(app)
+    # from .login import login_manager
+    # login_manager.init_app(app)
 
     # DB config
     from .db import db
     db.init_app(app)
-
 
     return app
