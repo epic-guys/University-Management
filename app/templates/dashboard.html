@@ -113,19 +113,19 @@
                     <span>Tables</span></a>
             </li>
 
+            <!-- Nav Item - Calendar -->
+            <li class="nav-item">
+                <a class="nav-link" href="../templates/calendar.html">
+                    <i class="fas fa-fw fa-calendar"></i>
+                    <span>Calendar</span></a>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
             <!-- Sidebar Toggler (Sidebar) -->
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
-            <!-- Sidebar Message -->
-            <div class="sidebar-card d-none d-lg-flex">
-                <img class="sidebar-card-illustration mb-2" src="../static/bootstrap/img/undraw_rocket.svg" alt="...">
-                <p class="text-center mb-2"><strong>SB Admin Pro</strong> is packed with premium features, components, and more!</p>
-                <a class="btn btn-success btn-sm" href="https://startbootstrap.com/theme/sb-admin-pro">Upgrade to Pro!</a>
             </div>
 
         </ul>
@@ -309,7 +309,7 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ persona.nome}} {{ persona.cognome }}</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ docente.nome }} {{ docente.cognome }}</span>
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -465,7 +465,28 @@
                                 <!-- Card Body -->
                                 <div class="card-body">
                                     <div class="chart-area">
-                                        <canvas id="myAreaChart"></canvas>
+
+                                        <!-- Calendar -->
+                                        <div id="calendar" style="height: 100%">
+                                            <header class="header">
+                                                <nav class="navbar">
+                                                    <button class="button is-rounded today">Today</button>
+                                                    <button class="button is-rounded prev">
+                                                        <img alt="prev" src="./images/ic-arrow-line-left.png" srcset="./images/ic-arrow-line-left@2x.png 2x, ./images/ic-arrow-line-left@3x.png 3x">
+                                                    </button>
+                                                    <button class="button is-rounded next">
+                                                        <img alt="prev" src="./images/ic-arrow-line-right.png" srcset="
+                                                            ./images/ic-arrow-line-right@2x.png 2x,
+                                                            ./images/ic-arrow-line-right@3x.png 3x
+                                                        ">
+                                                    </button>
+                                                    <span class="navbar--range"></span>
+                                                </nav>
+                                            </header>
+                                            <main id="app"></main>
+                                        </div>
+
+
                                     </div>
                                 </div>
                             </div>
@@ -674,13 +695,6 @@
             <!-- End of Main Content -->
 
             <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2021</span>
-                    </div>
-                </div>
-            </footer>
             <!-- End of Footer -->
 
         </div>

@@ -27,6 +27,9 @@
         <!-- chart.js -->
         <script src="{{ url_for('static', filename='node_modules/chart.js/dist/chart.js') }}"></script>
 
+        <!-- calendar.js -->
+        <script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
+
         <title> {% block title %}{% endblock %} </title>
     {% endblock %}
 </head>
@@ -72,9 +75,12 @@
         {% endblock %}
     </main>
 
-    <footer>
-        {% block footer %}
-        {% endblock %}
+    <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Boffo Luca&Alvise Favero @2023</span>
+                    </div>
+            </div>
     </footer>
 </body>
 </html>

@@ -1,4 +1,3 @@
-import dataclasses
 import json
 from datetime import date
 
@@ -7,13 +6,6 @@ from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import ForeignKey, ForeignKeyConstraint
 
 
-@dataclasses.dataclass
-class Id:
-    ruolo: str
-    codice: str
-
-    def get_id(self):
-        return f'{self.ruolo}{self.codice}'
 
 class Persona(db.Model):
     __tablename__ = 'persone'
@@ -31,11 +23,15 @@ class Persona(db.Model):
     }
 
     def __init__(self, ruolo:str, cod_persona: str, nome: str, cognome: str, data_nascita: date, sesso: str):
+    def __init__(self, cod_persona: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str, email: str, password_hash: str, ruolo: str):
         self.cod_persona = cod_persona
         self.nome = nome
         self.cognome = cognome
         self.data_nascita = data_nascita
         self.sesso = sesso
+        self.email = email
+        self.password_hash = password_hash
+        self.ruolo = ruolo
 
     def to_json(self):
         return json.dumps(self.__dict__)
@@ -53,6 +49,9 @@ class Docente(Persona):
         super().__init__(cod_docente, nome, cognome, data_nascita, sesso)
         self.ruolo = 'D'
         self.cod_docente = cod_docente
+    def __init__(self, cod_docente: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str, email: str, password_hash: str, ruolo: str):
+        super().__init__(cod_docente, nome, cognome, data_nascita, sesso, email, password_hash, ruolo)
+        self.cod_docente = cod_docente
 
     def to_json(self):
         return json.dumps(self.__dict__)
@@ -66,19 +65,8 @@ class Studente(Persona):
         'polymorphic_identity': 'S'
     }
 
-    """
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ['ruolo', 'matricola'],
-            ['persone.ruolo', 'persone.cod_persona']
-        )
-    )
-    """
-
-
-    def __init__(self, matricola: str, nome: str, cognome: str, data_nascita: date, sesso: str):
-        super().__init__( matricola, nome, cognome, data_nascita, sesso)
-        self.ruolo = 'S'
+    def __init__(self, matricola: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str, email: str, password_hash: str, ruolo: str):
+        super().__init__(matricola, nome, cognome, data_nascita, sesso, email, password_hash, ruolo)
         self.matricola = matricola
 
     def to_json(self):
@@ -133,3 +121,4 @@ class Appello(db.Model):
 
     def to_json(self):
         return json.dumps(self.__dict__)
+

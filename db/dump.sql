@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS esami;
+DROP TABLE IF EXISTS esami CASCADE ;
 CREATE TABLE esami (
     cod_esame TEXT NOT NULL PRIMARY KEY,
     nome_corso TEXT NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE ruoli (
     ruolo CHAR(1) NOT NULL PRIMARY KEY
 );
 
-DROP TABLE IF EXISTS persone;
+DROP TABLE IF EXISTS persone CASCADE;
 CREATE TABLE persone (
     ruolo CHAR(1) NOT NULL,
     cod_persona TEXT NOT NULL PRIMARY KEY,
