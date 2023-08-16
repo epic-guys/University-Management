@@ -10,20 +10,20 @@ from sqlalchemy import ForeignKey, ForeignKeyConstraint
 class Persona(db.Model):
     __tablename__ = 'persone'
 
-    ruolo: Mapped[str] = mapped_column(primary_key=True)
+    ruolo: Mapped[str] = mapped_column()
     cod_persona: Mapped[str] = mapped_column(primary_key=True)
     nome: Mapped[str] = mapped_column()
     cognome: Mapped[str] = mapped_column()
     data_nascita: Mapped[date] = mapped_column()
     sesso: Mapped[str] = mapped_column()
+    password_hash: Mapped[str] = mapped_column()
 
     __mapper_args__ = {
         'polymorphic_identity': 'persona',
         'polymorphic_on': 'ruolo'
     }
 
-    def __init__(self, ruolo:str, cod_persona: str, nome: str, cognome: str, data_nascita: date, sesso: str):
-    def __init__(self, cod_persona: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str, email: str, password_hash: str, ruolo: str):
+    def __init__(self, cod_persona: str, nome: str, cognome: str, data_nascita: date, sesso: str, email: str, password_hash: str, ruolo: str):
         self.cod_persona = cod_persona
         self.nome = nome
         self.cognome = cognome
@@ -45,11 +45,7 @@ class Docente(Persona):
         'polymorphic_identity': 'D'
     }
 
-    def __init__(self, cod_docente: str, nome: str, cognome: str, data_nascita: date, sesso: str):
-        super().__init__(cod_docente, nome, cognome, data_nascita, sesso)
-        self.ruolo = 'D'
-        self.cod_docente = cod_docente
-    def __init__(self, cod_docente: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str, email: str, password_hash: str, ruolo: str):
+    def __init__(self, cod_docente: str, nome: str, cognome: str, data_nascita: date, sesso: str, email: str, password_hash: str, ruolo: str):
         super().__init__(cod_docente, nome, cognome, data_nascita, sesso, email, password_hash, ruolo)
         self.cod_docente = cod_docente
 
@@ -65,7 +61,7 @@ class Studente(Persona):
         'polymorphic_identity': 'S'
     }
 
-    def __init__(self, matricola: str, nome: str, cognome: str, data_nascita: datetime.date, sesso: str, email: str, password_hash: str, ruolo: str):
+    def __init__(self, matricola: str, nome: str, cognome: str, data_nascita: date, sesso: str, email: str, password_hash: str, ruolo: str):
         super().__init__(matricola, nome, cognome, data_nascita, sesso, email, password_hash, ruolo)
         self.matricola = matricola
 
