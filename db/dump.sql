@@ -6,7 +6,7 @@ CREATE TABLE esami (
     cfu INT NOT NULL
 );
 
-DROP TABLE IF EXISTS ruoli;
+DROP TABLE IF EXISTS ruoli CASCADE;
 CREATE TABLE ruoli (
     ruolo CHAR(1) NOT NULL PRIMARY KEY
 );
@@ -48,7 +48,7 @@ CREATE TABLE esami (
     cfu INT NOT NULL
 );
 
-DROP TABLE IF EXISTS prove;
+DROP TABLE IF EXISTS prove CASCADE;
 CREATE TABLE prove (
     cod_prova TEXT NOT NULL PRIMARY KEY,
     scadenza DATE DEFAULT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE prove (
                    ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS appelli;
+DROP TABLE IF EXISTS appelli CASCADE;
 CREATE TABLE appelli(
     data DATE NOT NULL,
     cod_prova TEXT NOT NULL,
@@ -69,6 +69,9 @@ CREATE TABLE appelli(
 );
 
 -- Trigger
+DROP TRIGGER IF EXISTS role_check_docenti_t ON docenti;
+DROP TRIGGER IF EXISTS role_check_studenti_t ON studenti;
+DROP FUNCTION IF EXISTS role_check();
 CREATE FUNCTION role_check()
 RETURNS TRIGGER
 AS $$
@@ -97,6 +100,7 @@ BEGIN
     RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
+
 
 CREATE TRIGGER role_check_docenti_t
     BEFORE INSERT OR UPDATE

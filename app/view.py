@@ -11,11 +11,8 @@ view = Blueprint('view', __name__)
 @flask_login.login_required
 @view.route('/')
 def index():
-    results = db.session.execute(db.select(Docente).where(Docente.cod_docente == '01')).first()
-
-    for result in results:
-        docente = result
-
+    query = select(Docente).where(Docente.cod_docente == '01')
+    docente = db.session.scalar(query)
     return render_template('dashboard.html', docente=docente)
 
 

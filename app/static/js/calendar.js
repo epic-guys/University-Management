@@ -1,5 +1,4 @@
-const Calendar = require('@toast-ui/calendar');
-require('@toast-ui/calendar/dist/toastui-calendar.min.css');
+const Calendar = tui.Calendar;
 
 
 var Calendar = window.tui.Calendar;
