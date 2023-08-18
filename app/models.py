@@ -4,10 +4,10 @@ from datetime import date
 from .db import db
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import ForeignKey, ForeignKeyConstraint
+from flask_login import UserMixin
 
 
-
-class Persona(db.Model):
+class Persona(db.Model, UserMixin):
     __tablename__ = 'persone'
 
     ruolo: Mapped[str] = mapped_column()
@@ -16,6 +16,7 @@ class Persona(db.Model):
     cognome: Mapped[str] = mapped_column()
     data_nascita: Mapped[date] = mapped_column()
     sesso: Mapped[str] = mapped_column()
+    email: Mapped[str] = mapped_column()
     password_hash: Mapped[str] = mapped_column()
 
     __mapper_args__ = {
@@ -23,7 +24,8 @@ class Persona(db.Model):
         'polymorphic_on': 'ruolo'
     }
 
-    def __init__(self, cod_persona: str, nome: str, cognome: str, data_nascita: date, sesso: str, email: str, password_hash: str, ruolo: str):
+    def __init__(self, cod_persona: str, nome: str, cognome: str, data_nascita: date, sesso: str, email: str,
+                 password_hash: str, ruolo: str):
         self.cod_persona = cod_persona
         self.nome = nome
         self.cognome = cognome
@@ -32,6 +34,10 @@ class Persona(db.Model):
         self.email = email
         self.password_hash = password_hash
         self.ruolo = ruolo
+
+    def get_id(self):
+        """Necessario per Flask_Login"""
+        return self.cod_persona
 
     def to_json(self):
         return json.dumps(self.__dict__)
@@ -45,7 +51,8 @@ class Docente(Persona):
         'polymorphic_identity': 'D'
     }
 
-    def __init__(self, cod_docente: str, nome: str, cognome: str, data_nascita: date, sesso: str, email: str, password_hash: str, ruolo: str):
+    def __init__(self, cod_docente: str, nome: str, cognome: str, data_nascita: date, sesso: str, email: str,
+                 password_hash: str, ruolo: str):
         super().__init__(cod_docente, nome, cognome, data_nascita, sesso, email, password_hash, ruolo)
         self.cod_docente = cod_docente
 
@@ -61,7 +68,8 @@ class Studente(Persona):
         'polymorphic_identity': 'S'
     }
 
-    def __init__(self, matricola: str, nome: str, cognome: str, data_nascita: date, sesso: str, email: str, password_hash: str, ruolo: str):
+    def __init__(self, matricola: str, nome: str, cognome: str, data_nascita: date, sesso: str, email: str,
+                 password_hash: str, ruolo: str):
         super().__init__(matricola, nome, cognome, data_nascita, sesso, email, password_hash, ruolo)
         self.matricola = matricola
 
@@ -117,4 +125,3 @@ class Appello(db.Model):
 
     def to_json(self):
         return json.dumps(self.__dict__)
-

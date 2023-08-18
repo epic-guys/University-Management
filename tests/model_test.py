@@ -11,7 +11,7 @@ engine = create_engine(os.environ['DB_URI'], echo=False)
 
 def test_utenti():
     with Session(engine) as session:
-        query_persone = select(Persona)
         print()
+        query_persone = select(Persona)
         print(session.execute(query_persone).fetchall())
-
+        print(session.scalars(query_persone).fetchall())
