@@ -1,6 +1,7 @@
-from flask import Blueprint
-from .models import Persona
+from flask import Blueprint, request
+from .models import Persona, Esame
 from .db import db
+from sqlalchemy import select
 
 api = Blueprint('api', __name__)
 
@@ -16,3 +17,8 @@ users = [
 ]
 
 
+@api.route('/esame', method='POST')
+def insert_esame():
+    esame = Esame.from_json(request.json['esame'])
+
+    pass

@@ -1,13 +1,26 @@
+import inspect
 import json
 from datetime import date
-
 from .db import db
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import ForeignKey, ForeignKeyConstraint
+from sqlalchemy import ForeignKey, inspect
 from flask_login import UserMixin
 
 
-class Persona(db.Model, UserMixin):
+class JSONSerializable:
+    def to_json(self):
+        return json.dumps(self.__dict__)
+
+    @classmethod
+    def from_json(cls, obj: str | dict):
+        raise NotImplementedError()
+
+
+class Model(db.Model, JSONSerializable):
+    __abstract__ = True
+
+
+class Persona(Model, UserMixin):
     __tablename__ = 'persone'
 
     ruolo: Mapped[str] = mapped_column()
@@ -38,9 +51,6 @@ class Persona(db.Model, UserMixin):
     def get_id(self):
         """Necessario per Flask_Login"""
         return self.cod_persona
-
-    def to_json(self):
-        return json.dumps(self.__dict__)
 
 
 class Docente(Persona):
@@ -73,11 +83,8 @@ class Studente(Persona):
         super().__init__(matricola, nome, cognome, data_nascita, sesso, email, password_hash, ruolo)
         self.matricola = matricola
 
-    def to_json(self):
-        return json.dumps(self.__dict__)
 
-
-class Esame(db.Model):
+class Esame(Model):
     __tablename__ = 'esami'
     cod_esame: Mapped[str] = mapped_column(primary_key=True)
     nome_corso: Mapped[str] = mapped_column()
@@ -91,11 +98,15 @@ class Esame(db.Model):
         self.anno = anno
         self.cfu = cfu
 
-    def to_json(self):
-        return json.dumps(self.__dict__)
+    @classmethod
+    def from_json(cls, obj: str | dict):
+        inspector = inspect(db.engine)
+        columns = inspector.get_columns(Esame)
+        # TODO STO ANCORA FACENDO CHIEDO SCUSA, QUESTO LANCERÀ UN'ECCEZIONE
+        super().from_json(cls), obj
 
 
-class Prova(db.Model):
+class Prova(Model):
     __tablename__ = 'prove'
     cod_prova: Mapped[str] = mapped_column(primary_key=True)
     scadenza: Mapped[date] = mapped_column()
@@ -109,11 +120,8 @@ class Prova(db.Model):
         self.esame = esame
         self.scadenza = scadenza
 
-    def to_json(self):
-        return json.dumps(self.__dict__)
 
-
-class Appello(db.Model):
+class Appello(Model):
     data: Mapped[date] = mapped_column(primary_key=True)
     cod_prova: Mapped[str] = mapped_column(ForeignKey('prove.cod_prova'), primary_key=True)
     prova: Mapped[Prova] = relationship(back_populates='appelli')
@@ -122,6 +130,3 @@ class Appello(db.Model):
         self.cod_prova = prova.cod_prova
         self.prova = prova
         self.data = data
-
-    def to_json(self):
-        return json.dumps(self.__dict__)
