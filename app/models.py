@@ -1,23 +1,22 @@
-import inspect
 import json
 from datetime import date
 from .db import db
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import ForeignKey, inspect
+from sqlalchemy import ForeignKey
 from flask_login import UserMixin
 
 
-class JSONSerializable:
+class Model(db.Model):
+    __abstract__ = True
+
     def to_json(self):
-        return json.dumps(self.__dict__)
+        return {col.key: getattr(self, col.key) for col in self.__table__.columns}
 
     @classmethod
     def from_json(cls, obj: str | dict):
-        raise NotImplementedError()
-
-
-class Model(db.Model, JSONSerializable):
-    __abstract__ = True
+        if isinstance(obj, str):
+            obj = json.loads(obj)
+        return cls(**obj)
 
 
 class Persona(Model, UserMixin):
@@ -97,13 +96,6 @@ class Esame(Model):
         self.nome_corso = nome_corso
         self.anno = anno
         self.cfu = cfu
-
-    @classmethod
-    def from_json(cls, obj: str | dict):
-        inspector = inspect(db.engine)
-        columns = inspector.get_columns(Esame)
-        # TODO STO ANCORA FACENDO CHIEDO SCUSA, QUESTO LANCERÀ UN'ECCEZIONE
-        super().from_json(cls), obj
 
 
 class Prova(Model):
