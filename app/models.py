@@ -72,6 +72,8 @@ class Docente(Persona):
 class Studente(Persona):
     __tablename__ = 'studenti'
     matricola: Mapped[str] = mapped_column(ForeignKey('persone.cod_persona'), primary_key=True)
+    cod_corso_laurea: Mapped[str] = mapped_column(ForeignKey('corsi_laurea.cod_corso_laurea'))
+    corso_laurea: Mapped['CorsoLaurea'] = relationship(back_populates='studenti')
 
     __mapper_args__ = {
         'polymorphic_identity': 'S'
@@ -83,12 +85,23 @@ class Studente(Persona):
         self.matricola = matricola
 
 
+class CorsoLaurea(Model):
+    __table_name__ = 'corsi_laurea'
+
+    cod_corso_laurea: Mapped[str] = mapped_column(primary_key=True)
+    nome_corso_laurea: Mapped[str] = mapped_column()
+    esami: Mapped['Esame'] = relationship(back_populates='corso_laurea')
+
+
 class Esame(Model):
     __tablename__ = 'esami'
     cod_esame: Mapped[str] = mapped_column(primary_key=True)
     nome_corso: Mapped[str] = mapped_column()
+    descrizione_corso: Mapped[str] = mapped_column()
     anno: Mapped[int] = mapped_column()
     cfu: Mapped[int] = mapped_column()
+    cod_corso_laurea: Mapped[str] = mapped_column(ForeignKey('corsi_laurea.cod_corso_laurea'))
+    corso_laurea: Mapped[CorsoLaurea] = relationship(back_populates='esami')
     prove: Mapped[list['Prova']] = relationship(back_populates='esame')
 
     def __init__(self, cod_esame: str, nome_corso: str, anno: int, cfu: int):
