@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS corso_laurea CASCADE;
+DROP TABLE IF EXISTS corsi_laurea CASCADE;
 CREATE TABLE corsi_laurea (
     cod_corso_laurea TEXT NOT NULL PRIMARY KEY,
     nome_corso_laurea TEXT NOT NULL
@@ -49,14 +49,6 @@ CREATE TABLE docenti (
     FOREIGN KEY (cod_docente) REFERENCES persone (cod_persona)
                      ON UPDATE CASCADE
                      ON DELETE CASCADE
-);
-
-DROP TABLE IF EXISTS esami;
-CREATE TABLE esami (
-    cod_esame TEXT NOT NULL PRIMARY KEY,
-    nome_corso TEXT NOT NULL,
-    anno INT NOT NULL,
-    cfu INT NOT NULL
 );
 
 DROP TABLE IF EXISTS prove CASCADE;
@@ -132,8 +124,8 @@ INSERT INTO ruoli VALUES ('D'), ('S');
 INSERT INTO corsi_laurea VALUES
                              ('CT3', 'Informatica');
 
-INSERT INTO corsi VALUES
-                      ('123', 'Basi di dati', 'Dati basati?', 2, 'CT3');
+--INSERT INTO corsi_laurea VALUES
+ --                     ('123', 'Basi di dati', 'Dati basati?', 2, 'CT3');
 
 -- Docenti
 INSERT INTO persone VALUES
