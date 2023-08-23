@@ -40,3 +40,9 @@ def login():
             return render_template('login.html')
 
     return redirect(url_for('view.index'))
+
+
+@view.route('/calendar')
+def calendar():
+    return render_template('calendar.html')
+

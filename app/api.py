@@ -17,7 +17,7 @@ users = [
 ]
 
 
-@api.route('/esame', method='POST')
+@api.route('/esame', methods=['POST'])
 def insert_esame():
     esame = Esame.from_json(request.json['esame'])
 
