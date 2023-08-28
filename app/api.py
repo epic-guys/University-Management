@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from .models import Persona, Esame
 from .db import db
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, insert
 
 api = Blueprint('api', __name__)
 
