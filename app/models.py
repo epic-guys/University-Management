@@ -91,6 +91,7 @@ class CorsoLaurea(Model):
     cod_corso_laurea: Mapped[str] = mapped_column(primary_key=True)
     nome_corso_laurea: Mapped[str] = mapped_column()
     esami: Mapped['Esame'] = relationship(back_populates='corso_laurea')
+    studenti: Mapped[list[Studente]] = relationship(back_populates='corso_laurea')
 
 
 class Esame(Model):
