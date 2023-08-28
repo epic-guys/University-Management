@@ -3,6 +3,7 @@ from .db import db
 from .models import Persona
 
 login_manager = LoginManager()
+login_manager.login_view = 'view.login'
 
 
 @login_manager.user_loader

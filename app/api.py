@@ -5,17 +5,6 @@ from sqlalchemy import select, update, delete, insert
 
 api = Blueprint('api', __name__)
 
-users = [
-    {
-        'first_name': 'paolo',
-        'last_name': 'brosio'
-    },
-    {
-        'first_name': 'dio',
-        'last_name': 'mio'
-    }
-]
-
 
 def insert_esame():
     # TODO opportuna sanificazione dell'input

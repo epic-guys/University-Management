@@ -1,38 +1,14 @@
-from functools import wraps
-from typing import Callable
+from flask_roles import RoleManager
+import flask_login
+from flask import render_template
 
 
-class Role:
-    pass
+def unauthorized_callback():
+    return render_template('unauthorized.html')
 
 
-class RoleException(Exception):
-    pass
-
-
-class RoleManager:
-    def __init__(self, role_loader: Callable[[], Role] = None, default_unauthorized_callback: Callable = None):
-        self.role_loader = role_loader
-        self.default_unauthorized_callback = default_unauthorized_callback
-
-    def set_role_loader(self, role_loader: Callable[[], Role]):
-        self.role_loader = role_loader
-
-    def set_default_unauthorized_callback(self, default_unauthorized_callback: Callable = None):
-        self.default_unauthorized_callback = default_unauthorized_callback
-
-    def roles(self, *roles: type[Role], unauthorized_callback: Callable = None):
-        if self.role_loader is None:
-            raise RoleException('Role loader not defined, use set_role_loader to define one')
-
-        def decorator(func):
-            @wraps(func)
-            def wrapper(*args, **kwargs):
-                if isinstance(self.role_loader(), roles):
-                    return func(*args, *kwargs)
-                if unauthorized_callback is not None:
-                    return unauthorized_callback(*args, **kwargs)
-
-            return wrapper
-
-        return decorator
+role_manager = RoleManager(
+    role_loader=lambda: flask_login.current_user,
+    default_unauthorized_callback=unauthorized_callback,
+    other_decorator=flask_login.login_required
+)

@@ -4,6 +4,7 @@ from .db import db
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import ForeignKey
 from flask_login import UserMixin
+from flask_roles import RoleMixin
 
 
 class Model(db.Model):
@@ -19,7 +20,7 @@ class Model(db.Model):
         return cls(**obj)
 
 
-class Persona(Model, UserMixin):
+class Persona(Model, UserMixin, RoleMixin):
     __tablename__ = 'persone'
 
     ruolo: Mapped[str] = mapped_column()
@@ -73,7 +74,7 @@ class Studente(Persona):
     __tablename__ = 'studenti'
     matricola: Mapped[str] = mapped_column(ForeignKey('persone.cod_persona'), primary_key=True)
     cod_corso_laurea: Mapped[str] = mapped_column(ForeignKey('corsi_laurea.cod_corso_laurea'))
-    #corso_laurea: Mapped['CorsoLaurea'] = relationship(back_populates='studenti')
+    corso_laurea: Mapped['CorsoLaurea'] = relationship(back_populates='studenti')
 
     __mapper_args__ = {
         'polymorphic_identity': 'S'
@@ -86,12 +87,12 @@ class Studente(Persona):
 
 
 class CorsoLaurea(Model):
-    __table_name__ = 'corsi_laurea'
+    __tablename__ = 'corsi_laurea'
 
     cod_corso_laurea: Mapped[str] = mapped_column(primary_key=True)
     nome_corso_laurea: Mapped[str] = mapped_column()
-    #esami: Mapped['Esame'] = relationship(back_populates='corso_laurea')
-    #studenti: Mapped[list[Studente]] = relationship(back_populates='corso_laurea')
+    esami: Mapped['Esame'] = relationship(back_populates='corso_laurea')
+    studenti: Mapped[list[Studente]] = relationship(back_populates='corso_laurea')
 
 
 class Esame(Model):
@@ -102,7 +103,7 @@ class Esame(Model):
     anno: Mapped[int] = mapped_column()
     cfu: Mapped[int] = mapped_column()
     cod_corso_laurea: Mapped[str] = mapped_column(ForeignKey('corsi_laurea.cod_corso_laurea'))
-    #corso_laurea: Mapped[CorsoLaurea] = relationship(back_populates='esame')
+    corso_laurea: Mapped[CorsoLaurea] = relationship(back_populates='esami')
     prove: Mapped[list['Prova']] = relationship(back_populates='esame')
 
     def __init__(self, cod_esame: str, nome_corso: str, anno: int, cfu: int):

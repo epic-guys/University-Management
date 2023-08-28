@@ -1,9 +1,8 @@
-import app.roles as roles
-import pytest
+import rolemanager.roles as roles
 
 
 # Sample classes
-class User(roles.Role):
+class User(roles.RoleMixin):
     def __init__(self, username):
         self.username = username
 
