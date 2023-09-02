@@ -4,6 +4,7 @@
     "@toast-ui/calendar": "^2.1.3",
     "bootstrap": "4.6",
     "chart.js": "^4.3.1",
+    "fullcalendar": "^6.1.8",
     "jquery": "^3.7.0"
   }
 }
