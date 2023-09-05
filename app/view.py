@@ -29,14 +29,13 @@ view.register_blueprint(docenti)
 
 @studenti.route('/')
 def index():
-    return '<h1>Studente</h1>'
+    usr = flask_login.current_user
+    return usr.nome + ' ' + usr.cognome
 
 
 @docenti.route('/')
 def index():
-    query = select(Docente).where(Docente.cod_docente == '01')
-    docente = db.session.scalar(query)
-    return render_template('dashboard.html', docente=docente)
+    return render_template('admin/dashboard.html', docente=flask_login.current_user)
 
 
 @flask_login.login_required
