@@ -1,3 +1,5 @@
+import json
+
 from flask import Blueprint, request
 from .models import Persona, Esame
 from .db import db
@@ -18,12 +20,20 @@ def delete_esame(cod):
     """
     db.session.execute(delete(Esame).where(Esame.cod_esame == cod))
 
-@api.route('/esame/<cod>')
-def esame(cod):
+
+@api.route('/esami')
+def tutti_esami():
+    esami = db.session.scalars(select(Esame)).all()
+    esami_json = [e.to_json() for e in esami]
+    return esami_json
+
+
+@api.route('/esami/<cod>')
+def esami(cod):
     match request.method:
         case 'GET':
             return 69
         case 'POST':
             return insert_esame()
         case 'DELETE':
-            return delete_esame()
+            return delete_esame(cod)
