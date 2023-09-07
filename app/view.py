@@ -29,13 +29,12 @@ view.register_blueprint(docenti)
 
 @studenti.route('/')
 def index():
-    usr = flask_login.current_user
-    return usr.nome + ' ' + usr.cognome
+    return render_template('studenti/dashboard.html')
 
 
 @docenti.route('/')
 def index():
-    return render_template('docenti/dashboard.html', docente=flask_login.current_user)
+    return render_template('docenti/dashboard.html')
 
 
 @docenti.route('/esami')

@@ -54,11 +54,16 @@ CREATE TABLE docenti (
 DROP TABLE IF EXISTS prove CASCADE;
 CREATE TABLE prove (
     cod_prova TEXT NOT NULL PRIMARY KEY,
+    -- Fare tabella poi
+    tipo_prova TEXT NOT NULL,
+    descrizione_prova TEXT NOT NULL,
     scadenza DATE DEFAULT NULL,
     cod_esame TEXT NOT NULL,
+    cod_docente TEXT NOT NULL,
     FOREIGN KEY (cod_esame) REFERENCES esami (cod_esame)
                    ON UPDATE CASCADE
-                   ON DELETE CASCADE
+                   ON DELETE CASCADE,
+    FOREIGN KEY (cod_docente) REFERENCES docenti(cod_docente)
 );
 
 DROP TABLE IF EXISTS appelli CASCADE;
@@ -124,49 +129,75 @@ INSERT INTO ruoli VALUES ('D'), ('S');
 INSERT INTO corsi_laurea VALUES
                              ('CT3', 'Informatica');
 
---INSERT INTO corsi_laurea VALUES
- --                     ('123', 'Basi di dati', 'Dati basati?', 2, 'CT3');
 
--- Docenti
-INSERT INTO persone VALUES
-                        ('D', '01','Alvise','Spanò','03-07-67','M', 'sample1@unive.it', 'lmao'),
-                        ('D', '02', 'Stefano', 'Calzavara', '01-02-69', 'M', 'sample2@unive.it', 'zedong');
-
-INSERT INTO docenti VALUES
-                        ('01'),
-                        ('02');
-
+--#region DATI STUDENTI
 
 -- Studenti (assolutamente non generati da ChatGPT)
 INSERT INTO persone (ruolo, cod_persona, nome, cognome, data_nascita, sesso, email, password_hash)
 VALUES
-    ('S', '1', 'Marco', 'Rossi', '2000-01-01', 'M', 'marco@email.com', 'hash1'),
-    ('S', '2', 'Linda', 'Bianchi', '2000-02-02', 'F', 'linda@email.com', 'hash2'),
-    ('S', '3', 'Luca', 'Verdi', '2000-03-03', 'M', 'luca@email.com', 'hash3'),
-    ('S', '4', 'Alessia', 'Neri', '2000-04-04', 'F', 'alessia@email.com', 'hash4'),
-    ('S', '5', 'Simone', 'Giallo', '2000-05-05', 'M', 'simone@email.com', 'hash5'),
-    ('S', '6', 'Chiara', 'Rosa', '2000-06-06', 'F', 'chiara@email.com', 'hash6'),
-    ('S', '7', 'Fabio', 'Marrone', '2000-07-07', 'M', 'fabio@email.com', 'hash7'),
-    ('S', '8', 'Laura', 'Blu', '2000-08-08', 'F', 'laura@email.com', 'hash8'),
-    ('S', '9', 'Giovanni', 'Viola', '2000-09-09', 'M', 'giovanni@email.com', 'hash9'),
-    ('S', '10', 'Valeria', 'Arancio', '2000-10-10', 'F', 'valeria@email.com', 'hash10');
+    ('S', '11', 'Marco', 'Rossi', '2000-01-01', 'M', 'marco@email.com', 'hash1'),
+    ('S', '12', 'Linda', 'Bianchi', '2000-02-02', 'F', 'linda@email.com', 'hash2'),
+    ('S', '13', 'Luca', 'Verdi', '2000-03-03', 'M', 'luca@email.com', 'hash3'),
+    ('S', '14', 'Alessia', 'Neri', '2000-04-04', 'F', 'alessia@email.com', 'hash4'),
+    ('S', '15', 'Simone', 'Giallo', '2000-05-05', 'M', 'simone@email.com', 'hash5'),
+    ('S', '16', 'Chiara', 'Rosa', '2000-06-06', 'F', 'chiara@email.com', 'hash6'),
+    ('S', '17', 'Fabio', 'Marrone', '2000-07-07', 'M', 'fabio@email.com', 'hash7'),
+    ('S', '18', 'Laura', 'Blu', '2000-08-08', 'F', 'laura@email.com', 'hash8'),
+    ('S', '19', 'Giovanni', 'Viola', '2000-09-09', 'M', 'giovanni@email.com', 'hash9'),
+    ('S', '20', 'Valeria', 'Arancio', '2000-10-10', 'F', 'valeria@email.com', 'hash10');
 
 INSERT INTO studenti (matricola, cod_corso_laurea)
 VALUES
-    ('1', 'CT3'),
-    ('2', 'CT3'),
-    ('3', 'CT3'),
-    ('4', 'CT3'),
-    ('5', 'CT3'),
-    ('6', 'CT3'),
-    ('7', 'CT3'),
-    ('8', 'CT3'),
-    ('9', 'CT3'),
-    ('10', 'CT3');
+    ('11', 'CT3'),
+    ('12', 'CT3'),
+    ('13', 'CT3'),
+    ('14', 'CT3'),
+    ('15', 'CT3'),
+    ('16', 'CT3'),
+    ('17', 'CT3'),
+    ('18', 'CT3'),
+    ('19', 'CT3'),
+    ('20', 'CT3');
 
+--#endregion
+
+
+--#region DATI DOCENTI
+
+-- Inserisci docenti con codici da 1 a 10 e ruolo 'D'
+INSERT INTO persone (ruolo, cod_persona, nome, cognome, data_nascita, sesso, email, password_hash)
+VALUES
+    ('D', '1', 'Alvise', 'Spanò', '1975-05-10', 'M', 'alvise.spano@example.com', 'hash1'),
+    ('D', '2', 'Maria', 'Verdi', '1980-03-15', 'F', 'maria.verdi@example.com', 'hash2'),
+    ('D', '3', 'Stefano', 'Calzavara', '1972-11-22', 'M', 'stefano.calzavara@example.com', 'hash3'),
+    ('D', '4', 'Elena', 'Marchetti', '1985-07-18', 'F', 'elena.marchetti@example.com', 'hash4'),
+    ('D', '5', 'Fabio', 'Martini', '1988-09-02', 'M', 'fabio.martini@example.com', 'hash5'),
+    ('D', '6', 'Laura', 'Ferrari', '1979-12-09', 'F', 'laura.ferrari@example.com', 'hash6'),
+    ('D', '7', 'Marco', 'Santoro', '1974-06-25', 'M', 'marco.santoro@example.com', 'hash7'),
+    ('D', '8', 'Paola', 'Gallo', '1983-04-14', 'F', 'paola.gallo@example.com', 'hash8'),
+    ('D', '9', 'Luca', 'Lombardi', '1981-08-30', 'M', 'luca.lombardi@example.com', 'hash9'),
+    ('D', '10', 'Francesca', 'Conti', '1977-01-12', 'F', 'francesca.conti@example.com', 'hash10');
+
+-- Inserisci dati per la tabella "docenti"
+INSERT INTO docenti (cod_docente)
+VALUES
+    ('1'),
+    ('2'),
+    ('3'),
+    ('4'),
+    ('5'),
+    ('6'),
+    ('7'),
+    ('8'),
+    ('9'),
+    ('10');
+
+--#endregion
+
+
+--#region DATI ESAMI
 
 -- Esami (anche questi non li ha generati ChatGPT, soprattutto perché sono tutti esami che abbiamo anche noi)
-
 INSERT INTO esami (cod_esame, nome_corso, descrizione_corso, anno, cfu, cod_corso_laurea)
 VALUES
     ('E1', 'Matematica 1', 'Fondamenti di matematica', 1, 6, 'CT3'),
@@ -180,3 +211,38 @@ VALUES
     ('E9', 'Reti di Calcolatori', 'Introduzione alle reti di calcolatori', 3, 6, 'CT3'),
     ('E10', 'Progettazione dei Circuiti', 'Progettazione di circuiti elettronici', 3, 9, 'CT3');
 
+
+-- Inserisci dati delle prove
+INSERT INTO prove (cod_prova, tipo_prova, descrizione_prova, scadenza, cod_esame, cod_docente)
+VALUES
+    ('P1', 'Scritto', E'Un esame scritto impegnativo per testare le tue abilità matematiche.', '2023-12-31', 'E1', '1'),
+    ('P2', 'Orale', E'Un esame orale coinvolgente per discutere i principi della fisica.', '2023-12-31', 'E1', '2'),
+    ('P3', 'Pratico', E'Un esame pratico che richiede l\'applicazione delle teorie matematiche.', '2023-12-31', 'E1', '3'),
+
+    ('P4', 'Scritto', E'Un esame scritto completo per valutare la comprensione della fisica classica.', '2023-12-31', 'E2', '4'),
+    ('P5', 'Orale', E'Un esame orale coinvolgente per discutere i principi della fisica.', '2023-12-31', 'E2', '5'),
+
+    ('P6', 'Scritto', E'Un esame scritto impegnativo per valutare le tue competenze informatiche.', '2023-12-31', 'E3', '6'),
+    ('P7', 'Orale', E'Un esame orale coinvolgente per discutere i concetti informatici fondamentali.', '2023-12-31', 'E3', '7'),
+
+    ('P8', 'Scritto', E'Un esame scritto completo per valutare la comprensione dei concetti chimici di base.', '2023-12-31', 'E4', '8'),
+
+    ('P9', 'Scritto', E'Un esame scritto impegnativo per testare la tua conoscenza dell\'ingegneria del software.', '2023-12-31', 'E5', '9'),
+    ('P10', 'Orale', E'Un esame orale coinvolgente per discutere i principi dell\'ingegneria del software.', '2023-12-31', 'E5', '10'),
+
+    ('P11', 'Scritto', E'Un esame scritto impegnativo per testare la tua comprensione dei sistemi operativi.', '2023-12-31', 'E6', '1'),
+    ('P12', 'Orale', E'Un esame orale coinvolgente per discutere i fondamenti dei sistemi operativi.', '2023-12-31', 'E6', '2'),
+
+    ('P13', 'Scritto', E'Un esame scritto completo per valutare la comprensione dei principi di elettrotecnica.', '2023-12-31', 'E7', '3'),
+    ('P14', 'Orale', E'Un esame orale coinvolgente per discutere i concetti di base dell\'elettrotecnica.', '2023-12-31', 'E7', '4'),
+
+    ('P15', 'Scritto', E'Un esame scritto impegnativo per testare le tue abilità di analisi dei dati.', '2023-12-31', 'E8', '5'),
+    ('P16', 'Orale', E'Un esame orale coinvolgente per discutere i metodi di analisi dei dati.', '2023-12-31', 'E8', '6'),
+
+    ('P17', 'Scritto', E'Un esame scritto completo per valutare la comprensione delle reti di calcolatori.', '2023-12-31', 'E9', '7'),
+    ('P18', 'Orale', E'Un esame orale coinvolgente per discutere i concetti introduttivi sulle reti di calcolatori.', '2023-12-31', 'E9', '8'),
+
+    ('P19', 'Scritto', E'Un esame scritto impegnativo per testare la progettazione di circuiti elettronici.', '2023-12-31', 'E10', '9'),
+    ('P20', 'Orale', E'Un esame orale coinvolgente per discutere la progettazione dei circuiti elettronici.', '2023-12-31', 'E10', '10');
+
+--#endregion
