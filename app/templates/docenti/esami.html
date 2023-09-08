@@ -1,0 +1,23 @@
+{% extends 'docenti/docenti.html' %}
+{% block title %} Esami {% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/esami.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+    <h1>Esami</h1>
+    <table id="esami_t">
+    <thead>
+    <tr>
+        <th>Codice</th>
+        <th>Nome corso</th>
+        <th>Descrizione</th>
+        <th>Anno</th>
+        <th>CFU</th>
+        <th>Corso di Laurea</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+    </table>
+{% endblock %}

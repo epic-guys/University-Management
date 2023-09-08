@@ -29,14 +29,17 @@ view.register_blueprint(docenti)
 
 @studenti.route('/')
 def index():
-    return '<h1>Studente</h1>'
+    return render_template('studenti/dashboard.html')
 
 
 @docenti.route('/')
 def index():
-    query = select(Docente).where(Docente.cod_docente == '01')
-    docente = db.session.scalar(query)
-    return render_template('dashboard.html', docente=docente)
+    return render_template('docenti/dashboard.html')
+
+
+@docenti.route('/esami')
+def esami():
+    return render_template('docenti/esami.html')
 
 
 @flask_login.login_required

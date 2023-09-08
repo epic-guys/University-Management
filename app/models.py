@@ -11,7 +11,10 @@ class Model(db.Model):
     __abstract__ = True
 
     def to_json(self):
-        return {col.key: getattr(self, col.key) for col in self.__table__.columns}
+        return {
+            col.key: getattr(self, col.key) if not isinstance(getattr(self, col.key), date) else getattr(self,col.key).isoformat()
+            for col in self.__table__.columns
+        }
 
     @classmethod
     def from_json(cls, obj: str | dict):
@@ -56,6 +59,7 @@ class Persona(Model, UserMixin, RoleMixin):
 class Docente(Persona):
     __tablename__ = 'docenti'
     cod_docente: Mapped[str] = mapped_column(ForeignKey('persone.cod_persona'), primary_key=True)
+    prove: Mapped[list['Prova']] = relationship(back_populates='docente')
 
     __mapper_args__ = {
         'polymorphic_identity': 'D'
@@ -116,10 +120,14 @@ class Esame(Model):
 class Prova(Model):
     __tablename__ = 'prove'
     cod_prova: Mapped[str] = mapped_column(primary_key=True)
+    tipo_prova: Mapped[str] = mapped_column()
+    descrizione_prova: Mapped[str] = mapped_column()
     scadenza: Mapped[date] = mapped_column()
     cod_esame: Mapped[str] = mapped_column(ForeignKey('esami.cod_esame'))
     esame: Mapped[Esame] = relationship(back_populates='prove')
     appelli: Mapped[list['Appello']] = relationship(back_populates='prova')
+    cod_docente: Mapped[str] = mapped_column(ForeignKey('docenti.cod_docente'))
+    docente: Mapped[Docente] = relationship(back_populates='prove')
 
     def __init__(self, esame: Esame, cod_prova: str, scadenza: date):
         self.cod_prova = cod_prova
