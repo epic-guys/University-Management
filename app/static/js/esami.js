@@ -1,12 +1,30 @@
 $(() => {
     $("#esami-table").DataTable({
         columns: [
-            {data: "cod_esame"},
-            {data: "nome_corso"},
-            {data: "descrizione_corso"},
-            {data: "anno"},
-            {data: "cfu"},
-            {data: "cod_corso_laurea"}
+            {
+                data: "cod_esame",
+                render: $.fn.dataTable.render.text()
+            },
+            {
+                data: "nome_corso",
+                render: $.fn.dataTable.render.text()
+            },
+            {
+                data: "descrizione_corso",
+                render: $.fn.dataTable.render.text()
+            },
+            {
+                data: "anno",
+                render: $.fn.dataTable.render.number()
+            },
+            {
+                data: "cfu",
+                render: $.fn.dataTable.render.number()
+            },
+            {
+                data: "cod_corso_laurea",
+                render: $.fn.dataTable.render.text()
+            }
         ],
         ajax: {
             url: "/api/esami",

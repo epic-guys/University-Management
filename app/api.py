@@ -25,7 +25,7 @@ def delete_esame(cod):
 
 
 def jsonify_list(l: list[Model]):
-    return json.dumps([elem.to_json() for elem in l])
+    return jsonify([elem.to_dict() for elem in l])
 
 
 @api.route('/esami/', methods=['GET', 'DELETE', 'POST'])

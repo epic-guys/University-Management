@@ -10,7 +10,7 @@ from flask_roles import RoleMixin
 class Model(db.Model):
     __abstract__ = True
 
-    def to_json(self):
+    def to_dict(self):
         return {
             col.key: getattr(self, col.key) if not isinstance(getattr(self, col.key), date) else getattr(self,col.key).isoformat()
             for col in self.__table__.columns
