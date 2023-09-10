@@ -1,6 +1,6 @@
 import json
 
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from .models import *
 from .db import db
 from sqlalchemy import select, update, delete, insert
