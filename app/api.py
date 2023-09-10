@@ -1,7 +1,7 @@
 import json
 
 from flask import Blueprint, request
-from .models import Persona, Esame, Appello, Prova, Model
+from .models import *
 from .db import db
 from sqlalchemy import select, update, delete, insert
 
@@ -10,7 +10,9 @@ api = Blueprint('api', __name__)
 
 def insert_esame():
     # TODO opportuna sanificazione dell'input
-    db.session.execute(insert(Esame), request.json['esame'])
+    db.session.execute(insert(Esame), request.form.to_dict())
+    db.session.commit()
+    return '', 204
 
 
 def delete_esame(cod):
@@ -26,7 +28,7 @@ def jsonify_list(l: list[Model]):
     return json.dumps([elem.to_json() for elem in l])
 
 
-@api.route('/esami/', methods=['GET', 'DELETE'])
+@api.route('/esami/', methods=['GET', 'DELETE', 'POST'])
 @api.route('/esami/<cod_esame>', methods=['GET', 'DELETE'])
 def esami(cod_esame=None):
     match request.method:
@@ -58,3 +60,9 @@ def prove(cod_esame, cod_prova=None):
 def prove_docenti(cod_docente):
     prove = db.session.scalars(select(Prova).where(Prova.cod_docente == cod_docente)).all()
     return jsonify_list(prove)
+
+
+@api.route('/corsi_laurea')
+def corsi_laurea():
+    corsi = db.session.scalars(select(CorsoLaurea)).all()
+    return jsonify_list(corsi)
