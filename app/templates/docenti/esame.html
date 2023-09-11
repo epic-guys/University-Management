@@ -1,0 +1,27 @@
+{% extends "docenti/docenti.html" %}
+{% block title %}{{ esame.nome_corso }}
+{% endblock %}>
+
+{% block main %}
+    <h1>{{ esame.nome_corso }}</h1>
+    <p>
+    Codice esame: <span id="cod-esame">{{ esame.cod_esame }}</span>
+    </p>
+
+    <h2>Prove</h2>
+    <table class="table" id="prove-table">
+    <thead>
+    <tr>
+        <th>Codice</th>
+        <th>Descrizione prova</th>
+        <th>Tipo prova</th>
+        <th>Scadenza</th>
+        <th>Peso</th>
+        <th>Esame</th>
+        <th>Docente</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+    </table>
+    <script src="{{ url_for('static', filename='js/esame.js') }}"></script>
+{% endblock %}

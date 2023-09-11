@@ -1,6 +1,6 @@
 import json
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, abort
 from .models import *
 from .db import db
 from sqlalchemy import select, update, delete, insert
@@ -44,14 +44,19 @@ def esami(cod_esame=None):
             return delete_esame(cod_esame)
 
 
-@api.route('/prove/<cod_esame>')
-@api.route('/prove/<cod_esame>/<cod_prova>')
-def prove(cod_esame, cod_prova=None):
+@api.route('/esami/<cod_esame>/prove')
+@api.route('/prove/<cod_prova>')
+def prove(cod_esame=None, cod_prova=None):
     match request.method:
         case 'GET':
-            query = select(Prova).where(Prova.cod_esame == cod_esame)
-            if cod_prova is not None:
-                query = query.where(Prova.cod_prova == cod_prova)
+            query = None
+            if cod_esame is not None:
+                query = select(Prova).where(Prova.cod_esame == cod_esame)
+            elif cod_prova is not None:
+                query = select(Prova).where(Prova.cod_prova == cod_prova)
+            else:
+                # TODO magari rendere più bello
+                return abort(404)
             prove = db.session.scalars(query).all()
             return jsonify_list(prove)
 

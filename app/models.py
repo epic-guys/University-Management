@@ -120,9 +120,10 @@ class Esame(Model):
 class Prova(Model):
     __tablename__ = 'prove'
     cod_prova: Mapped[str] = mapped_column(primary_key=True)
-    tipo_prova: Mapped[str] = mapped_column()
+    tipo_prova: Mapped[str] = mapped_column(ForeignKey('tipi_prove.tipo_prova'))
     descrizione_prova: Mapped[str] = mapped_column()
     scadenza: Mapped[date] = mapped_column()
+    peso: Mapped[float] = mapped_column()
     cod_esame: Mapped[str] = mapped_column(ForeignKey('esami.cod_esame'))
     esame: Mapped[Esame] = relationship(back_populates='prove')
     appelli: Mapped[list['Appello']] = relationship(back_populates='prova')

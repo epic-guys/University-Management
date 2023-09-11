@@ -24,6 +24,20 @@ $(() => {
             {
                 data: "cod_corso_laurea",
                 render: $.fn.dataTable.render.text()
+            },
+            {
+                render: function (data, type, row) {
+                    return $("<a>")
+                        .attr("class", "btn btn-primary")
+                        .html(
+                            $("<i>")
+                                .attr("class", "fa-solid fa-eye")
+                        )
+                        // FIXME potenziale XSS
+                        .attr("href", "/docenti/esami/" + row.cod_esame)
+                        .prop("outerHTML");
+                },
+                orderable: false
             }
         ],
         ajax: {
@@ -34,8 +48,7 @@ $(() => {
 
     $.ajax({
         url: "/api/corsi_laurea",
-        success: (res) => {
-            let corsi = JSON.parse(res);
+        success: (corsi) => {
             let options = [];
             for (const c of corsi) {
                 let option = $("<option>");
@@ -56,8 +69,6 @@ $(() => {
 
 
 function createEsame() {
-    let obj = {};
-
     $.ajax({
         url: "/api/esami",
         method: "POST",

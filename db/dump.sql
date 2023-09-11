@@ -43,12 +43,17 @@ CREATE TABLE studenti (
     FOREIGN KEY (cod_corso_laurea) REFERENCES corsi_laurea (cod_corso_laurea)
 );
 
-DROP TABLE IF EXISTS docenti;
+DROP TABLE IF EXISTS docenti CASCADE;
 CREATE TABLE docenti (
     cod_docente TEXT NOT NULL PRIMARY KEY,
     FOREIGN KEY (cod_docente) REFERENCES persone (cod_persona)
                      ON UPDATE CASCADE
                      ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS tipi_prove CASCADE;
+CREATE TABLE tipi_prove (
+    tipo_prova TEXT NOT NULL PRIMARY KEY
 );
 
 DROP TABLE IF EXISTS prove CASCADE;
@@ -58,12 +63,14 @@ CREATE TABLE prove (
     tipo_prova TEXT NOT NULL,
     descrizione_prova TEXT NOT NULL,
     scadenza DATE DEFAULT NULL,
+    peso NUMERIC(2, 1) NOT NULL CHECK ( peso BETWEEN 0 AND 1),
     cod_esame TEXT NOT NULL,
     cod_docente TEXT NOT NULL,
     FOREIGN KEY (cod_esame) REFERENCES esami (cod_esame)
                    ON UPDATE CASCADE
                    ON DELETE CASCADE,
-    FOREIGN KEY (cod_docente) REFERENCES docenti(cod_docente)
+    FOREIGN KEY (cod_docente) REFERENCES docenti(cod_docente),
+    FOREIGN KEY (tipo_prova) REFERENCES tipi_prove(tipo_prova)
 );
 
 DROP TABLE IF EXISTS appelli CASCADE;
@@ -77,8 +84,8 @@ CREATE TABLE appelli(
 );
 
 -- Trigger
-DROP TRIGGER IF EXISTS role_check_docenti_t ON docenti;
-DROP TRIGGER IF EXISTS role_check_studenti_t ON studenti;
+DROP TRIGGER IF EXISTS role_check_t ON docenti;
+DROP TRIGGER IF EXISTS role_check_t ON studenti;
 DROP FUNCTION IF EXISTS role_check();
 CREATE FUNCTION role_check()
 RETURNS TRIGGER
@@ -91,7 +98,7 @@ BEGIN
             FROM persone
             WHERE cod_persona = NEW.matricola;
         IF persona.ruolo <> 'S' THEN
-            RETURN NULL;
+            RAISE EXCEPTION 'Ruolo sbagliato in tabella studenti';
         END IF;
     ELSIF tg_table_name = 'docenti' THEN
         SELECT *
@@ -99,7 +106,7 @@ BEGIN
         FROM persone
         WHERE cod_persona = NEW.cod_docente;
         IF persona.ruolo <> 'D' THEN
-            RETURN NULL;
+            RAISE EXCEPTION 'Ruolo sbagliato in tabella docenti';
         END IF;
     END IF;
 
@@ -121,6 +128,9 @@ CREATE TRIGGER role_check_t
     FOR EACH ROW
 EXECUTE FUNCTION role_check();
 
+
+
+
 -- Data
 
 -- Ruoli di docente e studente
@@ -128,6 +138,11 @@ INSERT INTO ruoli VALUES ('D'), ('S');
 
 INSERT INTO corsi_laurea VALUES
                              ('CT3', 'Informatica');
+
+INSERT INTO tipi_prove VALUES
+                           ('Scritto'),
+                           ('Orale'),
+                           ('Pratico');
 
 
 --#region DATI STUDENTI
@@ -213,36 +228,36 @@ VALUES
 
 
 -- Inserisci dati delle prove
-INSERT INTO prove (cod_prova, tipo_prova, descrizione_prova, scadenza, cod_esame, cod_docente)
+INSERT INTO prove (cod_prova, tipo_prova, descrizione_prova, scadenza, peso, cod_esame, cod_docente)
 VALUES
-    ('P1', 'Scritto', E'Un esame scritto impegnativo per testare le tue abilità matematiche.', '2023-12-31', 'E1', '1'),
-    ('P2', 'Orale', E'Un esame orale coinvolgente per discutere i principi della fisica.', '2023-12-31', 'E1', '2'),
-    ('P3', 'Pratico', E'Un esame pratico che richiede l\'applicazione delle teorie matematiche.', '2023-12-31', 'E1', '3'),
+    ('P1', 'Scritto', E'Un esame scritto impegnativo per testare le tue abilità matematiche.', '2023-12-31', 0.5, 'E1', '1'),
+    ('P2', 'Orale', E'Un esame orale coinvolgente per discutere i principi della fisica.', '2023-12-31', 0.2, 'E1', '2'),
+    ('P3', 'Pratico', E'Un esame pratico che richiede l\'applicazione delle teorie matematiche.', '2023-12-31', 0.3, 'E1', '3'),
 
-    ('P4', 'Scritto', E'Un esame scritto completo per valutare la comprensione della fisica classica.', '2023-12-31', 'E2', '4'),
-    ('P5', 'Orale', E'Un esame orale coinvolgente per discutere i principi della fisica.', '2023-12-31', 'E2', '5'),
+    ('P4', 'Scritto', E'Un esame scritto completo per valutare la comprensione della fisica classica.', '2023-12-31', 0.7, 'E2', '4'),
+    ('P5', 'Orale', E'Un esame orale coinvolgente per discutere i principi della fisica.', '2023-12-31', 0.3, 'E2', '5'),
 
-    ('P6', 'Scritto', E'Un esame scritto impegnativo per valutare le tue competenze informatiche.', '2023-12-31', 'E3', '6'),
-    ('P7', 'Orale', E'Un esame orale coinvolgente per discutere i concetti informatici fondamentali.', '2023-12-31', 'E3', '7'),
+    ('P6', 'Scritto', E'Un esame scritto impegnativo per valutare le tue competenze informatiche.', '2023-12-31', 0.5, 'E3', '6'),
+    ('P7', 'Orale', E'Un esame orale coinvolgente per discutere i concetti informatici fondamentali.', '2023-12-31', 0.5, 'E3', '7'),
 
-    ('P8', 'Scritto', E'Un esame scritto completo per valutare la comprensione dei concetti chimici di base.', '2023-12-31', 'E4', '8'),
+    ('P8', 'Scritto', E'Un esame scritto completo per valutare la comprensione dei concetti chimici di base.', '2023-12-31', 1, 'E4', '8'),
 
-    ('P9', 'Scritto', E'Un esame scritto impegnativo per testare la tua conoscenza dell\'ingegneria del software.', '2023-12-31', 'E5', '9'),
-    ('P10', 'Orale', E'Un esame orale coinvolgente per discutere i principi dell\'ingegneria del software.', '2023-12-31', 'E5', '10'),
+    ('P9', 'Scritto', E'Un esame scritto impegnativo per testare la tua conoscenza dell\'ingegneria del software.', '2023-12-31', 0.6, 'E5', '9'),
+    ('P10', 'Orale', E'Un esame orale coinvolgente per discutere i principi dell\'ingegneria del software.', '2023-12-31', 0.4, 'E5', '10'),
 
-    ('P11', 'Scritto', E'Un esame scritto impegnativo per testare la tua comprensione dei sistemi operativi.', '2023-12-31', 'E6', '1'),
-    ('P12', 'Orale', E'Un esame orale coinvolgente per discutere i fondamenti dei sistemi operativi.', '2023-12-31', 'E6', '2'),
+    ('P11', 'Scritto', E'Un esame scritto impegnativo per testare la tua comprensione dei sistemi operativi.', '2023-12-31', 0.8, 'E6', '1'),
+    ('P12', 'Orale', E'Un esame orale coinvolgente per discutere i fondamenti dei sistemi operativi.', '2023-12-31', 0.2, 'E6', '2'),
 
-    ('P13', 'Scritto', E'Un esame scritto completo per valutare la comprensione dei principi di elettrotecnica.', '2023-12-31', 'E7', '3'),
-    ('P14', 'Orale', E'Un esame orale coinvolgente per discutere i concetti di base dell\'elettrotecnica.', '2023-12-31', 'E7', '4'),
+    ('P13', 'Scritto', E'Un esame scritto completo per valutare la comprensione dei principi di elettrotecnica.', '2023-12-31', 0.5, 'E7', '3'),
+    ('P14', 'Orale', E'Un esame orale coinvolgente per discutere i concetti di base dell\'elettrotecnica.', '2023-12-31', 0.5, 'E7', '4'),
 
-    ('P15', 'Scritto', E'Un esame scritto impegnativo per testare le tue abilità di analisi dei dati.', '2023-12-31', 'E8', '5'),
-    ('P16', 'Orale', E'Un esame orale coinvolgente per discutere i metodi di analisi dei dati.', '2023-12-31', 'E8', '6'),
+    ('P15', 'Scritto', E'Un esame scritto impegnativo per testare le tue abilità di analisi dei dati.', '2023-12-31', 0.5, 'E8', '5'),
+    ('P16', 'Orale', E'Un esame orale coinvolgente per discutere i metodi di analisi dei dati.', '2023-12-31', 0.5, 'E8', '6'),
 
-    ('P17', 'Scritto', E'Un esame scritto completo per valutare la comprensione delle reti di calcolatori.', '2023-12-31', 'E9', '7'),
-    ('P18', 'Orale', E'Un esame orale coinvolgente per discutere i concetti introduttivi sulle reti di calcolatori.', '2023-12-31', 'E9', '8'),
+    ('P17', 'Scritto', E'Un esame scritto completo per valutare la comprensione delle reti di calcolatori.', '2023-12-31', 0.6, 'E9', '7'),
+    ('P18', 'Orale', E'Un esame orale coinvolgente per discutere i concetti introduttivi sulle reti di calcolatori.', '2023-12-31', 0.4, 'E9', '8'),
 
-    ('P19', 'Scritto', E'Un esame scritto impegnativo per testare la progettazione di circuiti elettronici.', '2023-12-31', 'E10', '9'),
-    ('P20', 'Orale', E'Un esame orale coinvolgente per discutere la progettazione dei circuiti elettronici.', '2023-12-31', 'E10', '10');
+    ('P19', 'Scritto', E'Un esame scritto impegnativo per testare la progettazione di circuiti elettronici.', '2023-12-31', 0.5, 'E10', '9'),
+    ('P20', 'Orale', E'Un esame orale coinvolgente per discutere la progettazione dei circuiti elettronici.', '2023-12-31', 0.5, 'E10', '10');
 
 --#endregion

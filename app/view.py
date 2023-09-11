@@ -1,8 +1,7 @@
 from .db import db
 from sqlalchemy import select
-from flask import render_template, request, Blueprint, session, url_for, flash, redirect
-from .models import Docente, Studente
-from .models import Persona
+from flask import render_template, request, Blueprint, session, url_for, flash, redirect, abort
+from .models import *
 import flask_login
 from .roles import role_manager
 
@@ -37,9 +36,18 @@ def index():
     return render_template('docenti/dashboard.html')
 
 
-@docenti.route('/esami')
-def esami():
-    return render_template('docenti/esami.html')
+@docenti.route('/esami/')
+@docenti.route('/esami/<cod_esame>')
+def esami(cod_esame=None):
+    if cod_esame is None:
+        return render_template('docenti/esami.html')
+
+    q = select(Esame).where(Esame.cod_esame == cod_esame)
+    esame = db.session.scalar(q)
+    if esame is None:
+        return abort(404)
+
+    return render_template('docenti/esame.html', esame=esame)
 
 
 @flask_login.login_required
