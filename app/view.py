@@ -87,11 +87,6 @@ def login():
     return redirect(url_for('view.index'))
 
 
-@view.route('/calendar')
-def calendar():
-    return render_template('calendar.html')
-
-
 @view.route('/logout')
 def logout():
     flask_login.logout_user()
