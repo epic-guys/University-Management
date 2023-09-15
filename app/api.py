@@ -24,8 +24,8 @@ def delete_esame(cod):
     db.session.execute(delete(Esame).where(Esame.cod_esame == cod))
 
 
-def jsonify_list(l: list[Model]):
-    return jsonify([elem.to_dict() for elem in l])
+def jsonify_list(l: list[Model], includes=None):
+    return jsonify([elem.to_dict(includes) for elem in l])
 
 
 @api.route('/esami/', methods=['GET', 'DELETE', 'POST'])
@@ -49,7 +49,6 @@ def esami(cod_esame=None):
 def prove(cod_esame=None, cod_prova=None):
     match request.method:
         case 'GET':
-            query = None
             if cod_esame is not None:
                 query = select(Prova).where(Prova.cod_esame == cod_esame)
             elif cod_prova is not None:
@@ -58,7 +57,7 @@ def prove(cod_esame=None, cod_prova=None):
                 # TODO magari rendere più bello
                 return abort(404)
             prove = db.session.scalars(query).all()
-            return jsonify_list(prove)
+            return jsonify_list(prove, ['anno_accademico'])
 
 
 @api.route('/docenti/<cod_docente>/prove')

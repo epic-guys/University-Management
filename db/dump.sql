@@ -4,6 +4,14 @@ CREATE TABLE corsi_laurea (
     nome_corso_laurea TEXT NOT NULL
 );
 
+
+DROP TABLE IF EXISTS anni_accademici CASCADE;
+CREATE TABLE anni_accademici (
+     cod_anno_accademico INTEGER PRIMARY KEY,
+     anno_accademico CHAR(9)
+);
+
+
 DROP TABLE IF EXISTS esami CASCADE;
 CREATE TABLE esami (
     cod_esame TEXT NOT NULL PRIMARY KEY,
@@ -59,23 +67,24 @@ CREATE TABLE tipi_prove (
 DROP TABLE IF EXISTS prove CASCADE;
 CREATE TABLE prove (
     cod_prova TEXT NOT NULL PRIMARY KEY,
-    -- Fare tabella poi
     tipo_prova TEXT NOT NULL,
     descrizione_prova TEXT NOT NULL,
-    scadenza DATE DEFAULT NULL,
     peso NUMERIC(2, 1) NOT NULL CHECK ( peso BETWEEN 0 AND 1),
+    scadenza DATE NOT NULL,
     cod_esame TEXT NOT NULL,
     cod_docente TEXT NOT NULL,
+    cod_anno_accademico INT NOT NULL,
     FOREIGN KEY (cod_esame) REFERENCES esami (cod_esame)
                    ON UPDATE CASCADE
                    ON DELETE CASCADE,
     FOREIGN KEY (cod_docente) REFERENCES docenti(cod_docente),
-    FOREIGN KEY (tipo_prova) REFERENCES tipi_prove(tipo_prova)
+    FOREIGN KEY (tipo_prova) REFERENCES tipi_prove(tipo_prova),
+    FOREIGN KEY (cod_anno_accademico) REFERENCES anni_accademici (cod_anno_accademico)
 );
 
 DROP TABLE IF EXISTS appelli CASCADE;
 CREATE TABLE appelli(
-    data DATE NOT NULL,
+    data timestamptz NOT NULL,
     cod_prova TEXT NOT NULL,
     PRIMARY KEY (cod_prova, data),
     FOREIGN KEY (cod_prova) REFERENCES prove(cod_prova)
@@ -143,6 +152,16 @@ INSERT INTO tipi_prove VALUES
                            ('Scritto'),
                            ('Orale'),
                            ('Pratico');
+
+
+-- Anni accademici
+INSERT INTO anni_accademici (cod_anno_accademico, anno_accademico)
+VALUES
+    (2023, '2023-2024'),
+    (2022, '2022-2023'),
+    (2021, '2021-2022'),
+    (2020, '2020-2021');
+
 
 
 --#region DATI STUDENTI
@@ -228,36 +247,37 @@ VALUES
 
 
 -- Inserisci dati delle prove
-INSERT INTO prove (cod_prova, tipo_prova, descrizione_prova, scadenza, peso, cod_esame, cod_docente)
+INSERT INTO prove (cod_prova, tipo_prova, descrizione_prova, cod_anno_accademico, peso, scadenza, cod_esame, cod_docente)
 VALUES
-    ('P1', 'Scritto', E'Un esame scritto impegnativo per testare le tue abilità matematiche.', '2023-12-31', 0.5, 'E1', '1'),
-    ('P2', 'Orale', E'Un esame orale coinvolgente per discutere i principi della fisica.', '2023-12-31', 0.2, 'E1', '2'),
-    ('P3', 'Pratico', E'Un esame pratico che richiede l\'applicazione delle teorie matematiche.', '2023-12-31', 0.3, 'E1', '3'),
+    ('P1', 'Scritto', E'Un esame scritto impegnativo per testare le tue abilità matematiche.', 2023, 0.5, '2024-01-01', 'E1', '1'),
+    ('P2', 'Orale', E'Un esame orale coinvolgente per discutere i principi della fisica.', 2023, 0.2, '2024-02-01', 'E1', '2'),
+    ('P3', 'Pratico', E'Un esame pratico che richiede l\'applicazione delle teorie matematiche.', 2023, 0.3, '2024-03-01', 'E1', '3'),
 
-    ('P4', 'Scritto', E'Un esame scritto completo per valutare la comprensione della fisica classica.', '2023-12-31', 0.7, 'E2', '4'),
-    ('P5', 'Orale', E'Un esame orale coinvolgente per discutere i principi della fisica.', '2023-12-31', 0.3, 'E2', '5'),
+    ('P4', 'Scritto', E'Un esame scritto completo per valutare la comprensione della fisica classica.', 2023, 0.7, '2024-04-01', 'E2', '4'),
+    ('P5', 'Orale', E'Un esame orale coinvolgente per discutere i principi della fisica.', 2023, 0.3, '2024-05-01', 'E2', '5'),
 
-    ('P6', 'Scritto', E'Un esame scritto impegnativo per valutare le tue competenze informatiche.', '2023-12-31', 0.5, 'E3', '6'),
-    ('P7', 'Orale', E'Un esame orale coinvolgente per discutere i concetti informatici fondamentali.', '2023-12-31', 0.5, 'E3', '7'),
+    ('P6', 'Scritto', E'Un esame scritto impegnativo per valutare le tue competenze informatiche.', 2023, 0.5, '2024-06-01', 'E3', '6'),
+    ('P7', 'Orale', E'Un esame orale coinvolgente per discutere i concetti informatici fondamentali.', 2023, 0.5, '2024-07-01', 'E3', '7'),
 
-    ('P8', 'Scritto', E'Un esame scritto completo per valutare la comprensione dei concetti chimici di base.', '2023-12-31', 1, 'E4', '8'),
+    ('P8', 'Scritto', E'Un esame scritto completo per valutare la comprensione dei concetti chimici di base.', 2023, 1, '2024-08-01', 'E4', '8'),
 
-    ('P9', 'Scritto', E'Un esame scritto impegnativo per testare la tua conoscenza dell\'ingegneria del software.', '2023-12-31', 0.6, 'E5', '9'),
-    ('P10', 'Orale', E'Un esame orale coinvolgente per discutere i principi dell\'ingegneria del software.', '2023-12-31', 0.4, 'E5', '10'),
+    ('P9', 'Scritto', E'Un esame scritto impegnativo per testare la tua conoscenza dell\'ingegneria del software.', 2023, 0.6, '2024-09-01', 'E5', '9'),
+    ('P10', 'Orale', E'Un esame orale coinvolgente per discutere i principi dell\'ingegneria del software.', 2023, 0.4, '2024-10-01', 'E5', '10'),
 
-    ('P11', 'Scritto', E'Un esame scritto impegnativo per testare la tua comprensione dei sistemi operativi.', '2023-12-31', 0.8, 'E6', '1'),
-    ('P12', 'Orale', E'Un esame orale coinvolgente per discutere i fondamenti dei sistemi operativi.', '2023-12-31', 0.2, 'E6', '2'),
+    ('P11', 'Scritto', E'Un esame scritto impegnativo per testare la tua comprensione dei sistemi operativi.', 2023, 0.8, '2024-11-01', 'E6', '1'),
+    ('P12', 'Orale', E'Un esame orale coinvolgente per discutere i fondamenti dei sistemi operativi.', 2023, 0.2, '2024-12-01', 'E6', '2'),
 
-    ('P13', 'Scritto', E'Un esame scritto completo per valutare la comprensione dei principi di elettrotecnica.', '2023-12-31', 0.5, 'E7', '3'),
-    ('P14', 'Orale', E'Un esame orale coinvolgente per discutere i concetti di base dell\'elettrotecnica.', '2023-12-31', 0.5, 'E7', '4'),
+    ('P13', 'Scritto', E'Un esame scritto completo per valutare la comprensione dei principi di elettrotecnica.', 2023, 0.5, '2024-01-01', 'E7', '3'),
+    ('P14', 'Orale', E'Un esame orale coinvolgente per discutere i concetti di base dell\'elettrotecnica.', 2023, 0.5, '2024-02-01', 'E7', '4'),
 
-    ('P15', 'Scritto', E'Un esame scritto impegnativo per testare le tue abilità di analisi dei dati.', '2023-12-31', 0.5, 'E8', '5'),
-    ('P16', 'Orale', E'Un esame orale coinvolgente per discutere i metodi di analisi dei dati.', '2023-12-31', 0.5, 'E8', '6'),
+    ('P15', 'Scritto', E'Un esame scritto impegnativo per testare le tue abilità di analisi dei dati.', 2023, 0.5, '2024-03-01', 'E8', '5'),
+    ('P16', 'Orale', E'Un esame orale coinvolgente per discutere i metodi di analisi dei dati.', 2023, 0.5, '2024-04-01', 'E8', '6'),
 
-    ('P17', 'Scritto', E'Un esame scritto completo per valutare la comprensione delle reti di calcolatori.', '2023-12-31', 0.6, 'E9', '7'),
-    ('P18', 'Orale', E'Un esame orale coinvolgente per discutere i concetti introduttivi sulle reti di calcolatori.', '2023-12-31', 0.4, 'E9', '8'),
+    ('P17', 'Scritto', E'Un esame scritto completo per valutare la comprensione delle reti di calcolatori.', 2023, 0.6, '2024-05-01', 'E9', '7'),
+    ('P18', 'Orale', E'Un esame orale coinvolgente per discutere i concetti introduttivi sulle reti di calcolatori.', 2023, 0.4, '2024-06-01', 'E9', '8'),
 
-    ('P19', 'Scritto', E'Un esame scritto impegnativo per testare la progettazione di circuiti elettronici.', '2023-12-31', 0.5, 'E10', '9'),
-    ('P20', 'Orale', E'Un esame orale coinvolgente per discutere la progettazione dei circuiti elettronici.', '2023-12-31', 0.5, 'E10', '10');
+    ('P19', 'Scritto', E'Un esame scritto impegnativo per testare la progettazione di circuiti elettronici.', 2023, 0.5, '2024-07-01', 'E10', '9'),
+    ('P20', 'Orale', E'Un esame orale coinvolgente per discutere la progettazione dei circuiti elettronici.', 2023, 0.5, '2024-08-01', 'E10', '10');
+
 
 --#endregion

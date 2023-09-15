@@ -1,5 +1,5 @@
 import json
-from datetime import date
+from datetime import date, datetime
 from .db import db
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import ForeignKey
@@ -10,11 +10,17 @@ from flask_roles import RoleMixin
 class Model(db.Model):
     __abstract__ = True
 
-    def to_dict(self):
-        return {
+    def to_dict(self, includes=None):
+        if includes is None:
+            includes = []
+
+        d = {
             col.key: getattr(self, col.key) if not isinstance(getattr(self, col.key), date) else getattr(self,col.key).isoformat()
             for col in self.__table__.columns
         }
+        for attr in includes:
+            d[attr] = getattr(self, attr).to_dict()
+        return d
 
     @classmethod
     def from_json(cls, obj: str | dict):
@@ -90,6 +96,14 @@ class Studente(Persona):
         self.matricola = matricola
 
 
+class AnnoAccademico(Model):
+    __tablename__ = 'anni_accademici'
+
+    cod_anno_accademico: Mapped[int] = mapped_column(primary_key=True)
+    anno_accademico: Mapped[str] = mapped_column()
+    prove: Mapped[list['Prova']] = relationship(back_populates='anno_accademico')
+
+
 class CorsoLaurea(Model):
     __tablename__ = 'corsi_laurea'
 
@@ -119,16 +133,21 @@ class Esame(Model):
 
 class Prova(Model):
     __tablename__ = 'prove'
+
     cod_prova: Mapped[str] = mapped_column(primary_key=True)
     tipo_prova: Mapped[str] = mapped_column(ForeignKey('tipi_prove.tipo_prova'))
     descrizione_prova: Mapped[str] = mapped_column()
-    scadenza: Mapped[date] = mapped_column()
     peso: Mapped[float] = mapped_column()
+    scadenza: Mapped[date]= mapped_column()
     cod_esame: Mapped[str] = mapped_column(ForeignKey('esami.cod_esame'))
+    cod_docente: Mapped[str] = mapped_column(ForeignKey('docenti.cod_docente'))
+    cod_anno_accademico: Mapped[int] = mapped_column(ForeignKey('anni_accademici.cod_anno_accademico'))
+
+    # relazioni
     esame: Mapped[Esame] = relationship(back_populates='prove')
     appelli: Mapped[list['Appello']] = relationship(back_populates='prova')
-    cod_docente: Mapped[str] = mapped_column(ForeignKey('docenti.cod_docente'))
     docente: Mapped[Docente] = relationship(back_populates='prove')
+    anno_accademico: Mapped[AnnoAccademico] = relationship(back_populates='prove')
 
     def __init__(self, esame: Esame, cod_prova: str, scadenza: date):
         self.cod_prova = cod_prova
@@ -138,7 +157,7 @@ class Prova(Model):
 
 
 class Appello(Model):
-    data: Mapped[date] = mapped_column(primary_key=True)
+    data: Mapped[datetime] = mapped_column(primary_key=True)
     cod_prova: Mapped[str] = mapped_column(ForeignKey('prove.cod_prova'), primary_key=True)
     prova: Mapped[Prova] = relationship(back_populates='appelli')
 

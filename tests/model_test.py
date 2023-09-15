@@ -1,4 +1,4 @@
-from app.models import Persona, Studente, Docente
+from app.models import *
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
@@ -15,3 +15,11 @@ def test_utenti():
         query_persone = select(Persona)
         print(session.execute(query_persone).fetchall())
         print(session.scalars(query_persone).fetchall())
+
+
+def test_prove():
+    with Session(engine) as session:
+        print()
+        query = select(Prova)
+        prove = session.scalars(query)
+        print(prove.all())
