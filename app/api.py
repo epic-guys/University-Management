@@ -70,3 +70,10 @@ def prove_docenti(cod_docente):
 def corsi_laurea():
     corsi = db.session.scalars(select(CorsoLaurea)).all()
     return jsonify_list(corsi)
+@api.route('/appelli')
+def appelli():
+    appelli = db.session.scalars(select(Appello)).all()
+    list_appelli = []
+    for appello in appelli:
+        list_appelli.append({'id': appello.cod_prova, 'start': appello.data.isoformat(), 'title': appello.prova.esame.nome_corso})
+    return list_appelli

@@ -23,3 +23,10 @@ def test_prove():
         query = select(Prova)
         prove = session.scalars(query)
         print(prove.all())
+
+def test_appelli():
+    with Session(engine) as session:
+        print()
+        query = select(Appello)
+        appelli = session.scalars(query)
+        print(appelli.all())

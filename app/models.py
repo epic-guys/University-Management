@@ -157,6 +157,8 @@ class Prova(Model):
 
 
 class Appello(Model):
+    __tablename__ = 'appelli'
+
     data: Mapped[datetime] = mapped_column(primary_key=True)
     cod_prova: Mapped[str] = mapped_column(ForeignKey('prove.cod_prova'), primary_key=True)
     prova: Mapped[Prova] = relationship(back_populates='appelli')
