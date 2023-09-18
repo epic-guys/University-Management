@@ -1,12 +1,12 @@
-var calendar = undefined;
+const NAMESPACE = {};
 
 document.addEventListener('DOMContentLoaded', function() {
         let calendarEl = document.getElementById('calendar');
-        calendar = new FullCalendar.Calendar(calendarEl, {
+        NAMESPACE.calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
             editable: true,
             events: '/api/appelli'
         });
-        calendar.render();
+        NAMESPACE.calendar.render();
       });
 

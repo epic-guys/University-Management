@@ -20,9 +20,9 @@ def test_utenti():
 def test_prove():
     with Session(engine) as session:
         print()
-        query = select(Prova)
-        prove = session.scalars(query)
-        print(prove.all())
+        query = select(Appello)
+        appelli = session.scalars(query).all()
+        for a in appelli: print(a.prova.esame.nome_corso)
 
 def test_appelli():
     with Session(engine) as session:
@@ -30,3 +30,9 @@ def test_appelli():
         query = select(Appello)
         appelli = session.scalars(query)
         print(appelli.all())
+
+
+def test_doc():
+    with Session(engine) as session:
+        d = session.scalar(select(Docente))
+        print(d.to_dict())

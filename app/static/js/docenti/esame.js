@@ -1,5 +1,13 @@
+const page = {};
+
 $(() => {
-    $("#prove-table").DataTable({
+    page.tableElement = $("#prove-table");
+    initTable();
+});
+
+
+function initTable() {
+    page.table = page.tableElement.DataTable({
         columns: [
             {
                 data: "cod_prova",
@@ -26,14 +34,21 @@ $(() => {
                 render: $.fn.dataTable.render.text()
             },
             {
-                data: "cod_docente",
-                render: $.fn.dataTable.render.text()
+                data: "docente",
+                // render: $.fn.dataTable.render.text()
+                render: function (data, type, row) {
+                    // FIXME XSS
+                    return data.nome + " " + data.cognome;
+                }
             }
         ],
         ajax: {
             url: "/api/esami/" + $("#cod-esame").html() + "/prove",
             dataSrc: ""
+        },
+        rowGroup: {
+            dataSrc: "anno_accademico.cod_anno_accademico"
         }
     });
+}
 
-});

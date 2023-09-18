@@ -1,7 +1,6 @@
 {% extends "docenti/docenti.html" %}
 {% block head %}
     {{ super() }}
-    <script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
 {% endblock %}
 {% block title %}User-Dashboard{% endblock %}
 
@@ -91,10 +90,7 @@
         <a class="scroll-to-top rounded" href="#page-top">
             <i class="fas fa-angle-up"></i>
         </a>
-
-
-
-
     </div>
 
+    <script src="{{ url_for('static', filename='js/docenti/calendar.js') }}"></script>
 {% endblock %}

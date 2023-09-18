@@ -57,7 +57,7 @@ def prove(cod_esame=None, cod_prova=None):
                 # TODO magari rendere più bello
                 return abort(404)
             prove = db.session.scalars(query).all()
-            return jsonify_list(prove, ['anno_accademico'])
+            return jsonify_list(prove, ['anno_accademico', 'docente'])
 
 
 @api.route('/docenti/<cod_docente>/prove')
@@ -70,6 +70,8 @@ def prove_docenti(cod_docente):
 def corsi_laurea():
     corsi = db.session.scalars(select(CorsoLaurea)).all()
     return jsonify_list(corsi)
+
+
 @api.route('/appelli')
 def appelli():
     appelli = db.session.scalars(select(Appello)).all()

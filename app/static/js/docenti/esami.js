@@ -1,5 +1,36 @@
+const page = {};
+
+
 $(() => {
-    $("#esami-table").DataTable({
+    page.tableEelement = $("#esami-table");
+    initAddEsame();
+    initTable();
+});
+
+
+function initAddEsame() {
+    $.ajax({
+        url: "/api/corsi_laurea",
+        success: (corsi) => {
+            let options = [];
+            for (const c of corsi) {
+                let option = $("<option>");
+                option.attr("value", c.cod_corso_laurea);
+                option.html(c.nome_corso_laurea);
+                options.push(option);
+            }
+            $('#cod_corso_laurea').html(options);
+        },
+        error: () => {
+            // TODO cambiare ovviamente, è solo per debug
+            alert("Richiesta a corsi di laurea fallita");
+        }
+    });
+}
+
+
+function initTable() {
+    page.table = page.tableEelement.DataTable({
         columns: [
             {
                 data: "cod_esame",
@@ -45,27 +76,7 @@ $(() => {
             dataSrc: ""
         }
     });
-
-    $.ajax({
-        url: "/api/corsi_laurea",
-        success: (corsi) => {
-            let options = [];
-            for (const c of corsi) {
-                let option = $("<option>");
-                option.attr("value", c.cod_corso_laurea);
-                option.html(c.nome_corso_laurea);
-                options.push(option);
-            }
-            $('#cod_corso_laurea').html(options);
-        },
-        error: () => {
-            // TODO cambiare ovviamente, è solo per debug
-            alert("Richiesta a corsi di laurea fallita");
-        }
-    });
-
-
-});
+}
 
 
 function createEsame() {
@@ -74,7 +85,7 @@ function createEsame() {
         method: "POST",
         data: $("#add-form").serialize(),
         success: (res) => {
-            $("#esami-table").DataTable().ajax.reload();
+            page.table.ajax.reload();
         }
     })
 }

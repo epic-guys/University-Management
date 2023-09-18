@@ -2,7 +2,6 @@
 {% block title %} Esami {% endblock %}
 {% block head %}
     {{ super() }}
-    <script src="{{ url_for('static', filename='js/esami.js') }}"></script>
 {% endblock %}
 
 {% block main %}
@@ -73,4 +72,5 @@
         </thead>
         <tbody></tbody>
     </table>
+    <script src="{{ url_for('static', filename='js/docenti/esami.js') }}"></script>
 {% endblock %}

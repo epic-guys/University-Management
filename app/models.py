@@ -15,8 +15,11 @@ class Model(db.Model):
             includes = []
 
         d = {
-            col.key: getattr(self, col.key) if not isinstance(getattr(self, col.key), date) else getattr(self,col.key).isoformat()
-            for col in self.__table__.columns
+            col.key: getattr(self, col.key)
+            if not isinstance(getattr(self, col.key), date)
+            else getattr(self, col.key).isoformat()
+            # Se si usa __table__ invece di __mapper__ restituisce solo le colonne della tabella Docenti senza Persone
+            for col in self.__mapper__.columns
         }
         for attr in includes:
             d[attr] = getattr(self, attr).to_dict()
@@ -75,9 +78,6 @@ class Docente(Persona):
                  password_hash: str, ruolo: str):
         super().__init__(cod_docente, nome, cognome, data_nascita, sesso, email, password_hash, ruolo)
         self.cod_docente = cod_docente
-
-    def to_json(self):
-        return json.dumps(self.__dict__)
 
 
 class Studente(Persona):
