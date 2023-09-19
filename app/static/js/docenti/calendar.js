@@ -1,12 +1,23 @@
-const NAMESPACE = {};
+const page = {};
 
 document.addEventListener('DOMContentLoaded', function() {
         let calendarEl = document.getElementById('calendar');
-        NAMESPACE.calendar = new FullCalendar.Calendar(calendarEl, {
+        page.calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
             editable: true,
-            events: '/api/appelli'
+            events: '/api/appelli',
+            themeSystem: 'bootstrapFontAwesome',
+            customButtons: {
+              addEventButton: {
+                  text: '+',
+                  click: function(){
+                      $('#add-modal').modal('show');
+                  }
+              }
+            },
+            headerToolbar: {
+              right: 'addEventButton today prev,next'
+            }
         });
-        NAMESPACE.calendar.render();
+        page.calendar.render();
       });
-
