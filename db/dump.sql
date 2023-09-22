@@ -86,6 +86,7 @@ DROP TABLE IF EXISTS appelli CASCADE;
 CREATE TABLE appelli(
     data timestamptz NOT NULL,
     cod_prova TEXT NOT NULL,
+    aula TEXT NOT NULL,
     PRIMARY KEY (cod_prova, data),
     FOREIGN KEY (cod_prova) REFERENCES prove(cod_prova)
                     ON UPDATE CASCADE
@@ -281,27 +282,27 @@ VALUES
 
 
 -- Inserimento dati nella tabella degli appelli
-INSERT INTO appelli (data, cod_prova)
+INSERT INTO appelli (data, cod_prova, aula)
 VALUES
-    ('2023-11-15', 'P1'),
-    ('2023-11-17', 'P2'),
-    ('2023-11-20', 'P3'),
-    ('2023-11-15', 'P4'),
-    ('2023-11-17', 'P5'),
-    ('2023-11-20', 'P6'),
-    ('2023-11-15', 'P7'),
-    ('2023-11-17', 'P8'),
-    ('2023-11-20', 'P9'),
-    ('2023-11-15', 'P10'),
-    ('2023-11-17', 'P11'),
-    ('2023-11-20', 'P12'),
-    ('2023-11-15', 'P13'),
-    ('2023-11-17', 'P14'),
-    ('2023-11-20', 'P15'),
-    ('2023-11-15', 'P16'),
-    ('2023-11-17', 'P17'),
-    ('2023-11-20', 'P18'),
-    ('2023-11-15', 'P19'),
-    ('2023-11-17', 'P20');
+    ('2023-11-15', 'P1', 'Aula 1'),
+    ('2023-11-17', 'P2', 'Aula 2'),
+    ('2023-11-20', 'P3', 'Aula 3'),
+    ('2023-11-15', 'P4', 'Aula 1'),
+    ('2023-11-17', 'P5', 'Aula 2'),
+    ('2023-11-20', 'P6', 'Aula 3'),
+    ('2023-11-15', 'P7', 'Aula 1'),
+    ('2023-11-17', 'P8', 'Aula 2'),
+    ('2023-11-20', 'P9', 'Aula 3'),
+    ('2023-11-15', 'P10', 'Aula 1'),
+    ('2023-11-17', 'P11', 'Aula 2'),
+    ('2023-11-20', 'P12', 'Aula 3'),
+    ('2023-11-15', 'P13', 'Aula 1'),
+    ('2023-11-17', 'P14', 'Aula 2'),
+    ('2023-11-20', 'P15', 'Aula 3'),
+    ('2023-11-15', 'P16', 'Aula 1'),
+    ('2023-11-17', 'P17', 'Aula 2'),
+    ('2023-11-20', 'P18', 'Aula 3'),
+    ('2023-11-15', 'P19', 'Aula 1'),
+    ('2023-11-17', 'P20', 'Aula 2');
 
 --#endregion
