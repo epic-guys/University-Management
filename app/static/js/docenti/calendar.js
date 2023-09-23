@@ -10,17 +10,21 @@ document.addEventListener('DOMContentLoaded', function() {
           initialView: 'dayGridMonth',
             editable: true,
             events: '/api/appelli',
-            themeSystem: 'bootstrapFontAwesome',
+            themeSystem: 'bootstrap',
             customButtons: {
-              addEventButton: {
-                  text: '+',
-                  click: function(){
-                      $('#add-modal').modal('show');
-                  }
-              }
+                addEventButton: {
+                    text: '+',
+                    click: function(){
+                        $('#add-modal').modal('show');
+                    }
+                }
             },
             headerToolbar: {
-              right: 'addEventButton today prev,next'
+                right: 'addEventButton today prev,next'
+            },
+            eventClick: function(event){
+                // TODO popover sugli eventi
+                alert('Hai premuto ' + event.title);
             }
         });
         page.calendar.render();
@@ -46,4 +50,16 @@ function initAddAppelli(){
             alert("Richiesta a corsi di laurea fallita");
         }
     });
+}
+
+
+function createAppello(){
+    $.ajax({
+        url: "/api/appelli",
+        method: "POST",
+        data: $("#add-form").serialize(),
+        success: (res) => {
+            page.table.ajax.reload();
+        }
+    })
 }

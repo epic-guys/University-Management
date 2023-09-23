@@ -2,7 +2,7 @@ const page = {};
 
 
 $(() => {
-    page.tableEelement = $("#esami-table");
+    page.tableElement = $("#esami-table");
     initAddEsame();
     initTable();
 });

@@ -1,0 +1,12 @@
+{% extends 'docenti/docenti.html' %}
+{% block title %} Esami {% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+    <h1>Voti</h1>
+
+
+    <script src="{{ url_for('static', filename='js/docenti/voti.js') }}"></script>
+{% endblock %}

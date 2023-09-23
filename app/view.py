@@ -49,6 +49,9 @@ def esami(cod_esame=None):
 
     return render_template('docenti/esame.html', esame=esame)
 
+@docenti.route('/voti/')
+def voti():
+    return render_template('docenti/voti.html')
 
 @flask_login.login_required
 @view.route('/')
