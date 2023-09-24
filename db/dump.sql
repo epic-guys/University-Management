@@ -93,6 +93,18 @@ CREATE TABLE appelli(
                     ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS voti CASCADE;
+CREATE TABLE voti(
+    data timestamptz NOT NULL,
+    cod_prova TEXT NOT NULL,
+    matricola TEXT NOT NULL,
+    voto INT NOT NULL,
+    FOREIGN KEY (data, cod_prova) REFERENCES appelli(data,cod_prova),
+    FOREIGN KEY (matricola) REFERENCES studenti(matricola)
+                 ON UPDATE CASCADE
+                 ON DELETE CASCADE
+);
+
 -- Trigger
 DROP TRIGGER IF EXISTS role_check_t ON docenti;
 DROP TRIGGER IF EXISTS role_check_t ON studenti;
@@ -304,5 +316,29 @@ VALUES
     ('2023-11-20', 'P18', 'Aula 3'),
     ('2023-11-15', 'P19', 'Aula 1'),
     ('2023-11-17', 'P20', 'Aula 2');
+
+INSERT INTO voti (data, cod_prova, matricola, voto)
+VALUES
+    ('2023-11-15', 'P1', '11', 22),
+    ('2023-11-17', 'P2', '12', 25),
+    ('2023-11-20', 'P3', '13', 28),
+    ('2023-11-15', 'P4', '14', 26),
+    ('2023-11-17', 'P5', '15', 30),
+    ('2023-11-20', 'P6', '16', 20),
+    ('2023-11-15', 'P7', '17', 27),
+    ('2023-11-17', 'P8', '18', 24),
+    ('2023-11-20', 'P9', '19', 29),
+    ('2023-11-15', 'P10', '20', 18),
+    ('2023-11-17', 'P11', '11', 26),
+    ('2023-11-20', 'P12', '12', 21),
+    ('2023-11-15', 'P13', '13', 23),
+    ('2023-11-17', 'P14', '14', 27),
+    ('2023-11-20', 'P15', '15', 30),
+    ('2023-11-15', 'P16', '16', 19),
+    ('2023-11-17', 'P17', '17', 25),
+    ('2023-11-20', 'P18', '18', 28),
+    ('2023-11-15', 'P19', '19', 30),
+    ('2023-11-17', 'P20', '20', 18);
+
 
 --#endregion

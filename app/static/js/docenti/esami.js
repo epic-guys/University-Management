@@ -30,7 +30,7 @@ function initAddEsame() {
 
 
 function initTable() {
-    page.table = page.tableEelement.DataTable({
+    page.tableElement = page.tableElement.DataTable({
         columns: [
             {
                 data: "cod_esame",
