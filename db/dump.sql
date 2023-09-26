@@ -84,22 +84,36 @@ CREATE TABLE prove (
 
 DROP TABLE IF EXISTS appelli CASCADE;
 CREATE TABLE appelli(
-    data timestamptz NOT NULL,
+    cod_appello TEXT NOT NULL PRIMARY KEY,
+    data_appello timestamptz NOT NULL,
     cod_prova TEXT NOT NULL,
     aula TEXT NOT NULL,
-    PRIMARY KEY (cod_prova, data),
     FOREIGN KEY (cod_prova) REFERENCES prove(cod_prova)
                     ON UPDATE CASCADE
                     ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS voti CASCADE;
-CREATE TABLE voti(
-    data timestamptz NOT NULL,
+CREATE TABLE iscrizioni_appelli (
+    cod_appello TEXT NOT NULL,
+    matricola TEXT NOT NULL,
+    data_iscrizione timestamptz NOT NULL,
+    data_appello timestamptz NOT NULL,
     cod_prova TEXT NOT NULL,
+
+    PRIMARY KEY (cod_appello, matricola),
+    FOREIGN KEY (cod_appello) REFERENCES appelli(cod_appello)
+);
+
+DROP TABLE IF EXISTS voti CASCADE;
+CREATE TABLE voti (
+    cod_appello TEXT NOT NULL,
     matricola TEXT NOT NULL,
     voto INT NOT NULL,
-    FOREIGN KEY (data, cod_prova) REFERENCES appelli(data,cod_prova),
+
+    PRIMARY KEY (cod_appello, matricola),
+    FOREIGN KEY (cod_appello, matricola) REFERENCES iscrizioni_appelli(cod_appello, matricola),
+
+    FOREIGN KEY (cod_appello) REFERENCES appelli(cod_appello),
     FOREIGN KEY (matricola) REFERENCES studenti(matricola)
                  ON UPDATE CASCADE
                  ON DELETE CASCADE
@@ -294,30 +308,31 @@ VALUES
 
 
 -- Inserimento dati nella tabella degli appelli
-INSERT INTO appelli (data, cod_prova, aula)
+INSERT INTO appelli (cod_appello, data_appello, cod_prova, aula)
 VALUES
-    ('2023-11-15', 'P1', 'Aula 1'),
-    ('2023-11-17', 'P2', 'Aula 2'),
-    ('2023-11-20', 'P3', 'Aula 3'),
-    ('2023-11-15', 'P4', 'Aula 1'),
-    ('2023-11-17', 'P5', 'Aula 2'),
-    ('2023-11-20', 'P6', 'Aula 3'),
-    ('2023-11-15', 'P7', 'Aula 1'),
-    ('2023-11-17', 'P8', 'Aula 2'),
-    ('2023-11-20', 'P9', 'Aula 3'),
-    ('2023-11-15', 'P10', 'Aula 1'),
-    ('2023-11-17', 'P11', 'Aula 2'),
-    ('2023-11-20', 'P12', 'Aula 3'),
-    ('2023-11-15', 'P13', 'Aula 1'),
-    ('2023-11-17', 'P14', 'Aula 2'),
-    ('2023-11-20', 'P15', 'Aula 3'),
-    ('2023-11-15', 'P16', 'Aula 1'),
-    ('2023-11-17', 'P17', 'Aula 2'),
-    ('2023-11-20', 'P18', 'Aula 3'),
-    ('2023-11-15', 'P19', 'Aula 1'),
-    ('2023-11-17', 'P20', 'Aula 2');
+    ('App1', '2023-11-15', 'P1', 'Aula 1'),
+    ('App2', '2023-11-17', 'P2', 'Aula 2'),
+    ('App3', '2023-11-20', 'P3', 'Aula 3'),
+    ('App4', '2023-11-15', 'P4', 'Aula 1'),
+    ('App5', '2023-11-17', 'P5', 'Aula 2'),
+    ('App6', '2023-11-20', 'P6', 'Aula 3'),
+    ('App7', '2023-11-15', 'P7', 'Aula 1'),
+    ('App8', '2023-11-17', 'P8', 'Aula 2'),
+    ('App9', '2023-11-20', 'P9', 'Aula 3'),
+    ('App10', '2023-11-15', 'P10', 'Aula 1'),
+    ('App11', '2023-11-17', 'P11', 'Aula 2'),
+    ('App12', '2023-11-20', 'P12', 'Aula 3'),
+    ('App13', '2023-11-15', 'P13', 'Aula 1'),
+    ('App14', '2023-11-17', 'P14', 'Aula 2'),
+    ('App15', '2023-11-20', 'P15', 'Aula 3'),
+    ('App16', '2023-11-15', 'P16', 'Aula 1'),
+    ('App17', '2023-11-17', 'P17', 'Aula 2'),
+    ('App18', '2023-11-20', 'P18', 'Aula 3'),
+    ('App19', '2023-11-15', 'P19', 'Aula 1'),
+    ('App20', '2023-11-17', 'P20', 'Aula 2');
 
-INSERT INTO voti (data, cod_prova, matricola, voto)
+
+INSERT INTO voti (data_appello, cod_prova, matricola, voto)
 VALUES
     ('2023-11-15', 'P1', '11', 22),
     ('2023-11-17', 'P2', '12', 25),
