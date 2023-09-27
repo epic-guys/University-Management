@@ -6,135 +6,81 @@
 
 {% block main %}
     <div id="page-top">
-                <!-- Main Content -->
-                <div id="content">
-                    <!-- Begin Page Content -->
-                        <!-- Page Heading -->
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                                <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
-                            </a>
+        <!-- Main Content -->
+        <div id="content">
+            <!-- Begin Page Content -->
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                    <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
+                </a>
+            </div>
+
+            <div class="row">
+                <!-- Area Calendar -->
+                <div class="col-xl-8 col-lg-7 container">
+                    <div class="card shadow mb-4">
+                        <!-- Card Header - Dropdown -->
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Prossimi esami</h6>
                         </div>
+                        <!-- Card Body -->
+                        <div class="card-body">
+                            <!-- Card Calendar -->
 
-                        <div class="row">
-                            <!-- Area Calendar -->
-                            <div class="col-xl-8 col-lg-7 container">
-                                <div class="card shadow mb-4">
-                                    <!-- Card Header - Dropdown -->
-                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                        <h6 class="m-0 font-weight-bold text-primary">Prossimi esami</h6>
-                                    </div>
-                                    <!-- Card Body -->
-                                    <div class="card-body">
-                                        <!-- Card Calendar -->
+                            <div id="calendar" style="height:100%"></div>
 
-                                      <!-- Modale aggiunta appello -->
-                                        <div class="modal" tabindex="-1" role="dialog" id="add-modal">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Aggiungi appello</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <!-- Form aggiunta appello -->
-                                                        <form id="add-form">
-                                                            <div class="form-group">
-                                                                <label for="cod_esame">Esame</label>
-                                                                <select name="cod_esame" id="cod_esame" class="form-control">
-                                                                </select>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="cod_prova">Codice Prova</label>
-                                                                <input type="text" name="cod_prova" id="cod_prova" class="form-control">
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="aula">Aula</label>
-                                                                <input type="text" name="aula" id="aula" class="form-control">
-                                                            </div>
-                                                            <div class="form-row">
-                                                                <div class="col">
-                                                                    <label for="anno">Data</label>
-                                                                    <input type="date" name="data" id="data" class="form-control">
-                                                                </div>
-                                                                <div class="col">
-                                                                    <label for="cfu">Ora</label>
-                                                                    <input type="time" name="ora" id="ora" class="form-control">
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-success" id="add-btn" onclick="createAppello();" data-dismiss="modal">
-                                                            <i class="fa-solid fa-check"></i> Aggiungi
-                                                        </button>
-                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">
-                                                            <i class="fa-solid fa-xmark"></i> Annulla
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                        </div>
+                    </div>
+                </div>
 
-                                        <div id="calendar" style="height:100%"></div>
-
-                                    </div>
+                <!-- Pie Chart -->
+                <div class="col-xl-4 col-lg-5">
+                    <div class="card shadow mb-4">
+                        <!-- Card Header - Dropdown -->
+                        <div
+                                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
+                            <div class="dropdown no-arrow">
+                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                     aria-labelledby="dropdownMenuLink">
+                                    <div class="dropdown-header">Dropdown Header:</div>
+                                    <a class="dropdown-item" href="#">Action</a>
+                                    <a class="dropdown-item" href="#">Another action</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#">Something else here</a>
                                 </div>
                             </div>
-
-                            <!-- Pie Chart -->
-                            <div class="col-xl-4 col-lg-5">
-                                <div class="card shadow mb-4">
-                                    <!-- Card Header - Dropdown -->
-                                    <div
-                                            class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                        <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
-                                        <div class="dropdown no-arrow">
-                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                 aria-labelledby="dropdownMenuLink">
-                                                <div class="dropdown-header">Dropdown Header:</div>
-                                                <a class="dropdown-item" href="#">Action</a>
-                                                <a class="dropdown-item" href="#">Another action</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#">Something else here</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Card Body -->
-                                    <div class="card-body">
-                                        <div class="chart-pie pt-4 pb-2">
-                                            <canvas id="myPieChart"></canvas>
-                                        </div>
-                                        <div class="mt-4 text-center small">
+                        </div>
+                        <!-- Card Body -->
+                        <div class="card-body">
+                            <div class="chart-pie pt-4 pb-2">
+                                <canvas id="myPieChart"></canvas>
+                            </div>
+                            <div class="mt-4 text-center small">
                                         <span class="mr-2">
                                             <i class="fas fa-circle text-primary"></i> Direct
                                         </span>
-                                            <span class="mr-2">
+                                <span class="mr-2">
                                             <i class="fas fa-circle text-success"></i> Social
                                         </span>
-                                            <span class="mr-2">
+                                <span class="mr-2">
                                             <i class="fas fa-circle text-info"></i> Referral
                                         </span>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
-
-
-                    <!-- /.container-fluid -->
-
+                    </div>
                 </div>
-                <!-- End of Main Content -->
+            </div>
+        </div>
+        <!-- End of Main Content -->
 
-            <!-- End of Content Wrapper -->
+        <!-- End of Content Wrapper -->
 
         <!-- End of Page Wrapper -->
 
@@ -144,5 +90,65 @@
         </a>
     </div>
 
+
+    <!-- Modale aggiunta appello -->
+    <div class="modal" tabindex="-1" role="dialog" id="add-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Aggiungi appello</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form aggiunta appello -->
+                    <form id="add-form">
+                        <div class="form-group">
+                            <label for="cod_esame">Esame</label>
+                            <select name="cod_esame" id="cod_esame" class="form-control"
+                                    onchange="fetchProve();">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cod_appello">Codice Appello</label>
+                            <input type="text" name="cod_appello" id="cod_appello"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="cod_prova">Tipo Prova</label>
+                            <select type="text" name="cod_prova" id="cod_prova"
+                                    class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="aula">Aula</label>
+                            <input type="text" name="aula" id="aula" class="form-control">
+                        </div>
+                        <div class="form-row">
+                            <div class="col">
+                                <label for="anno">Data</label>
+                                <input type="date" name="data" id="data" class="form-control">
+                            </div>
+                            <div class="col">
+                                <label for="cfu">Ora</label>
+                                <input type="time" name="ora" id="ora" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="add-btn"
+                            onclick="createAppello();" data-dismiss="modal">
+                        <i class="fa-solid fa-check"></i> Aggiungi
+                    </button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i> Annulla
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/docenti/calendar.js') }}"></script>
 {% endblock %}
+

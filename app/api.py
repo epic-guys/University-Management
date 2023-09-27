@@ -24,6 +24,14 @@ def delete_esame(cod):
     db.session.execute(delete(Esame).where(Esame.cod_esame == cod))
 
 
+def insert_eventi():
+    req = request.form.to_dict()
+    req['data_appello'] = req['data'] + 'T' + req['ora']
+    req.pop('data', 'ora')
+    db.session.execute(insert(Appello), req)
+    db.session.commit()
+    return "", 204
+
 def jsonify_list(l: list[Model], includes=None):
     return jsonify([elem.to_dict(includes) for elem in l])
 
@@ -72,9 +80,13 @@ def corsi_laurea():
     return jsonify_list(corsi)
 
 
-@api.route('/appelli')
+@api.route('/appelli', methods=['GET', 'POST'])
 def appelli():
-    appelli = db.session.scalars(select(Appello)).all()
-    list_appelli = [{'id': appello.cod_prova, 'start': appello.data.isoformat(), 'title': appello.prova.esame.nome_corso} for appello in appelli]
-    return list_appelli
-
+    match request.method:
+        case 'GET':
+            appelli = db.session.scalars(select(Appello)).all()
+            list_appelli = [{'id': appello.cod_prova, 'start': appello.data_appello.isoformat(), 'title': appello.prova.esame.nome_corso} for appello in appelli]
+            return list_appelli
+        case 'POST':
+            insert_eventi()
+            return '', 204

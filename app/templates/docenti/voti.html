@@ -7,6 +7,18 @@
 {% block main %}
     <h1>Voti</h1>
 
+    <table id="voti-table" class="table table-hover">
+        <thead>
+        <tr>
+            <th>Data</th>
+            <th>Codice Prova</th>
+            <th>Matricola</th>
+            <th>Voto</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
     <script src="{{ url_for('static', filename='js/docenti/voti.js') }}"></script>
 {% endblock %}

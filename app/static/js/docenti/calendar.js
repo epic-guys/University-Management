@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
             editable: true,
             events: '/api/appelli',
             themeSystem: 'bootstrap',
+            displayEventTime: false,
             customButtons: {
                 addEventButton: {
                     text: '+',
@@ -59,7 +60,7 @@ function createAppello(){
         method: "POST",
         data: $("#add-form").serialize(),
         success: (res) => {
-            page.table.ajax.reload();
+            page.calendar.refetchEvents();
         }
     })
 }

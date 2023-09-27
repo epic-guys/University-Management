@@ -138,7 +138,7 @@ class Prova(Model):
     tipo_prova: Mapped[str] = mapped_column(ForeignKey('tipi_prove.tipo_prova'))
     descrizione_prova: Mapped[str] = mapped_column()
     peso: Mapped[float] = mapped_column()
-    scadenza: Mapped[date]= mapped_column()
+    scadenza: Mapped[date] = mapped_column()
     cod_esame: Mapped[str] = mapped_column(ForeignKey('esami.cod_esame'))
     cod_docente: Mapped[str] = mapped_column(ForeignKey('docenti.cod_docente'))
     cod_anno_accademico: Mapped[int] = mapped_column(ForeignKey('anni_accademici.cod_anno_accademico'))
@@ -159,11 +159,31 @@ class Prova(Model):
 class Appello(Model):
     __tablename__ = 'appelli'
 
-    data: Mapped[datetime] = mapped_column(primary_key=True)
-    cod_prova: Mapped[str] = mapped_column(ForeignKey('prove.cod_prova'), primary_key=True)
+    cod_appello: Mapped[str] = mapped_column(primary_key=True)
+    data_appello: Mapped[datetime] = mapped_column()
+    cod_prova: Mapped[str] = mapped_column(ForeignKey('prove.cod_prova'))
+    aula: Mapped[str] = mapped_column()
     prova: Mapped[Prova] = relationship(back_populates='appelli')
 
-    def __init__(self, prova: Prova, data: date):
+    def __init__(self, prova: Prova, data_appello: date, aula: str):
         self.cod_prova = prova.cod_prova
         self.prova = prova
-        self.data = data
+        self.data_appello = data_appello
+        self.aula = aula
+
+
+
+#class Voto(Model):
+#    __tablename__ = 'voti'
+
+#    cod_appello: Mapped[str] = mapped_column(ForeignKey('appelli.cod_appello'))
+#    matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'))
+#    voto: Mapped[int] = mapped_column()
+
+    # relazioni
+
+#    def __init__(self, voto: int):
+#        self.data = Appello.data
+#        self.cod_prova = Appello.cod_prova
+#        self.matricola = Studente.matricola
+#        self.voto = voto
