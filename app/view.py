@@ -49,9 +49,11 @@ def esami(cod_esame=None):
 
     return render_template('docenti/esame.html', esame=esame)
 
+
 @docenti.route('/voti/')
 def voti():
     return render_template('docenti/voti.html')
+
 
 @flask_login.login_required
 @view.route('/')
@@ -94,3 +96,8 @@ def login():
 def logout():
     flask_login.logout_user()
     return redirect(url_for('view.index'))
+
+
+@view.route('/appelli')
+def appelli():
+    return render_template('appelli.html')
