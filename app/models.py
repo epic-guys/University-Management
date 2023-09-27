@@ -172,6 +172,15 @@ class Appello(Model):
         self.aula = aula
 
 
+class IscrizioneAppello(Model):
+    cod_appello: Mapped[str] = mapped_column(ForeignKey('appelli.cod_appello'), primary_key=True)
+    matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'), primary_key=True)
+    data_iscrizione: Mapped[datetime] = mapped_column()
+
+    # Relationships
+    studente: Mapped[Studente] = relationship()
+    appello: Mapped[Appello] = relationship()
+
 
 #class Voto(Model):
 #    __tablename__ = 'voti'

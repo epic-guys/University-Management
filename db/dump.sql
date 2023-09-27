@@ -98,8 +98,6 @@ CREATE TABLE iscrizioni_appelli (
     cod_appello TEXT NOT NULL,
     matricola TEXT NOT NULL,
     data_iscrizione timestamptz NOT NULL,
-    data_appello timestamptz NOT NULL,
-    cod_prova TEXT NOT NULL,
 
     PRIMARY KEY (cod_appello, matricola),
     FOREIGN KEY (cod_appello) REFERENCES appelli(cod_appello)
