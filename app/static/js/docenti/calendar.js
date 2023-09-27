@@ -38,6 +38,7 @@ function initAddAppelli(){
        url: '/api/esami',
         success: (esami) => {
             let options = [];
+            options.push($("<option disabled selected value> -- Seleziona un'opzione -- </option>"));
             for (const e of esami) {
                 let option = $("<option>");
                 option.attr("value", e.cod_esame);
@@ -62,5 +63,22 @@ function createAppello(){
         success: (res) => {
             page.calendar.refetchEvents();
         }
-    })
+    });
+}
+
+function fetchProve() {
+    let cod_esame = $("#cod_esame").val();
+    $.ajax({
+        url: "/api/esami/" + cod_esame + "/prove",
+        success: (prove) => {
+            let options = [];
+            for (const p of prove) {
+                let option = $("<option>");
+                option.attr("value", p.cod_prova);
+                option.html(p.tipo_prova);
+                options.push(option);
+            }
+            $("#cod_prova").html(options);
+        }
+    });
 }
