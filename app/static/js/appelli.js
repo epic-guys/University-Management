@@ -31,7 +31,7 @@ function initTable(){
                         .attr("class", "btn btn-primary")
                         .html(
                             $("<i>")
-                                .attr("class", "fa-solid fa-eye")
+                                .attr("class", "fa-solid fa-plus")
                         )
                         // FIXME potenziale XSS
                         .prop("outerHTML");
@@ -40,7 +40,7 @@ function initTable(){
            }
        ],
          ajax: {
-            url: "/api/appelli",
+            url: "/api/appelli/info",
             dataSrc: ""
         }
     });

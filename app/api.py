@@ -90,3 +90,8 @@ def appelli():
         case 'POST':
             insert_eventi()
             return '', 204
+
+@api.route('/appelli/info')
+def appelli_table():
+    appelli = db.session.scalars(select(Appello)).all()
+    return jsonify_list(appelli)

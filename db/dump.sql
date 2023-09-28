@@ -163,8 +163,31 @@ CREATE TRIGGER role_check_t
     FOR EACH ROW
 EXECUTE FUNCTION role_check();
 
+DROP TRIGGER IF EXISTS data_appello_check_t ON appelli;
+DROP FUNCTION IF EXISTS data_appello_check();
+CREATE FUNCTION data_appello_check()
+RETURNS TRIGGER
+AS $$
+DECLARE prova prove;
+BEGIN
+    SELECT * INTO prova
+    FROM prove p
+    WHERE p.cod_prova = NEW.cod_prova;
 
+    IF NEW.data_appello > prova.scadenza THEN
+        RAISE EXCEPTION 'Appello supera scadenza della prova';
+    END IF;
 
+    RETURN NEW;
+
+END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER data_appello_check_t
+    BEFORE INSERT OR UPDATE
+    ON appelli
+    FOR EACH ROW
+EXECUTE FUNCTION data_appello_check();
 
 -- Data
 
