@@ -32,6 +32,13 @@ def insert_eventi():
     db.session.commit()
     return "", 204
 
+# TODO Sistemare la relazione nel moddels.py
+def insert_iscrizione_appelli():
+    db.session.execute(insert(IscrizioneAppello), request.form.to_dict())
+    db.session.commit()
+    return "", 204
+
+
 def jsonify_list(l: list[Model], includes=None):
     return jsonify([elem.to_dict(includes) for elem in l])
 
@@ -82,16 +89,24 @@ def corsi_laurea():
 
 @api.route('/appelli', methods=['GET', 'POST'])
 def appelli():
+    args = request.args
     match request.method:
         case 'GET':
             appelli = db.session.scalars(select(Appello)).all()
-            list_appelli = [{'id': appello.cod_prova, 'start': appello.data_appello.isoformat(), 'title': appello.prova.esame.nome_corso} for appello in appelli]
+            list_appelli = [{'id': appello.cod_prova, 'start': appello.data_appello.isoformat(),
+                             'title': appello.prova.esame.nome_corso} for appello in appelli]
             return list_appelli
         case 'POST':
             insert_eventi()
             return '', 204
 
-@api.route('/appelli/info')
+
+@api.route('/appelli/info', methods=['GET', 'POST'])
 def appelli_table():
-    appelli = db.session.scalars(select(Appello)).all()
-    return jsonify_list(appelli)
+    match request.method:
+        case 'GET':
+            appelli = db.session.scalars(select(Appello)).all()
+            return jsonify_list(appelli)
+        case 'POST':
+            insert_iscrizione_appelli()
+            return '', 204

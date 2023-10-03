@@ -7,6 +7,7 @@ $(() => {
 
 //TODO modifica api.py cambiando il dictionary
 function initTable(){
+    $("#appelli-table").on("click", "a", iscrizioneAppello);
     page.tableElement = page.tableElement.DataTable({
        columns: [
            {
@@ -27,14 +28,17 @@ function initTable(){
            },
            {
                render: function (data, type, row) {
-                    return $("<a>")
+
+
+                   let elem = $("<a>")
                         .attr("class", "btn btn-primary")
                         .html(
                             $("<i>")
                                 .attr("class", "fa-solid fa-plus")
                         )
                         // FIXME potenziale XSS
-                        .prop("outerHTML");
+                        .prop("outerHTML")
+                   return elem;
                 },
                 orderable: false
            }
@@ -44,4 +48,15 @@ function initTable(){
             dataSrc: ""
         }
     });
+}
+
+function iscrizioneAppello(){
+    $.ajax({
+        url: "/api/appelli/info",
+        method: 'POST',
+        data: $("#appelli-table"),
+        success: (res) => {
+            page.table.ajax.reload();
+        }
+    })
 }
