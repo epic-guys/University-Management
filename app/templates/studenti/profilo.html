@@ -1,0 +1,11 @@
+{% extends 'studenti/studenti.html' %}
+{% block title %} Profilo {% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+    <h1>{{ current_user.nome }} {{ current_user.cognome }}</h1>
+
+    <script src="{{ url_for('static', filename='js/studenti/profilo.js') }}"></script>
+{% endblock %}

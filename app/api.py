@@ -32,6 +32,7 @@ def insert_eventi():
     db.session.commit()
     return "", 204
 
+
 # TODO Sistemare la relazione nel moddels.py
 def insert_iscrizione_appelli():
     db.session.execute(insert(IscrizioneAppello), request.form.to_dict())
@@ -110,3 +111,9 @@ def appelli_table():
         case 'POST':
             insert_iscrizione_appelli()
             return '', 204
+
+
+@api.route('/studenti/<matricola>')
+def studenti(matricola):
+    stud = db.session.scalars(select(Studente).where(Studente.matricola == matricola))
+    return jsonify_list(stud)
