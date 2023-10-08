@@ -1,5 +1,6 @@
 import json
 
+import flask_login
 from flask import Blueprint, request, jsonify, abort
 from .models import *
 from .db import db
@@ -113,7 +114,7 @@ def appelli_table():
             return '', 204
 
 
-@api.route('/studenti/<matricola>')
-def studenti(matricola):
-    stud = db.session.scalars(select(Studente).where(Studente.matricola == matricola))
-    return jsonify_list(stud)
+@api.route('/persone')
+def persone():
+    pers = db.session.scalars(select(Persona)).all()
+    return jsonify_list(pers)
