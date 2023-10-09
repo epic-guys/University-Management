@@ -101,3 +101,8 @@ def logout():
 @view.route('/appelli')
 def appelli():
     return render_template('appelli.html')
+
+
+@view.route('/profilo')
+def profilo():
+    return render_template('studenti/profilo.html')

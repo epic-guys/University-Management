@@ -1,5 +1,6 @@
 import json
 
+import flask_login
 from flask import Blueprint, request, jsonify, abort
 from .models import *
 from .db import db
@@ -31,6 +32,7 @@ def insert_eventi():
     db.session.execute(insert(Appello), req)
     db.session.commit()
     return "", 204
+
 
 # TODO Sistemare la relazione nel moddels.py
 def insert_iscrizione_appelli():
@@ -110,3 +112,9 @@ def appelli_table():
         case 'POST':
             insert_iscrizione_appelli()
             return '', 204
+
+
+@api.route('/persone')
+def persone():
+    pers = db.session.scalars(select(Persona)).all()
+    return jsonify_list(pers)

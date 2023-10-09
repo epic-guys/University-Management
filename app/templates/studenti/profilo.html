@@ -1,0 +1,26 @@
+{% extends 'studenti/studenti.html' %}
+{% block title %} Profilo {% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+    <h1>{{ current_user.nome }} {{ current_user.cognome }}</h1>
+
+    <table id="profilo-table" class="table table-hover">
+        <thead>
+            <tr>
+                <th>Ruolo</th>
+                <th>Codice Persona</th>
+                <th>Nome</th>
+                <th>Cognome</th>
+                <th>Data di Nascita</th>
+                <th>Sesso</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="{{ url_for('static', filename='js/studenti/profilo.js') }}"></script>
+{% endblock %}

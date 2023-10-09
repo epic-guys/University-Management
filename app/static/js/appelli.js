@@ -5,7 +5,7 @@ $(() => {
    initTable();
 });
 
-//TODO modifica api.py cambiando il dictionary
+
 function initTable(){
     $("#appelli-table").on("click", "a", iscrizioneAppello);
     page.tableElement = page.tableElement.DataTable({
