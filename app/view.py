@@ -105,4 +105,5 @@ def appelli():
 
 @view.route('/profilo')
 def profilo():
-    return render_template('studenti/profilo.html')
+    user = flask_login.current_user
+    return render_template('studenti/profilo.html',user=user)
