@@ -173,6 +173,8 @@ class Appello(Model):
 
 
 class IscrizioneAppello(Model):
+    __tablename__ = 'iscrizioni_appelli'
+
     cod_appello: Mapped[str] = mapped_column(ForeignKey('appelli.cod_appello'), primary_key=True)
     matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'), primary_key=True)
     data_iscrizione: Mapped[datetime] = mapped_column()
