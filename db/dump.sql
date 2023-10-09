@@ -354,4 +354,17 @@ VALUES
     ('App20', '2023-11-17', 'P20', 'Aula 2');
 
 
+INSERT INTO iscrizioni_appelli (cod_appello, matricola, data_iscrizione)
+VALUES
+    ('App1', '11', NOW() - INTERVAL '3 days'),
+    ('App1', '12', NOW() - INTERVAL '2 days'),
+    ('App2', '13', NOW() - INTERVAL '1 days'),
+    ('App2', '14', NOW() - INTERVAL '1 days'),
+    ('App3', '15', NOW() - INTERVAL '2 days'),
+    ('App3', '16', NOW() - INTERVAL '3 days'),
+    ('App4', '17', NOW() - INTERVAL '1 days'),
+    ('App4', '18', NOW() - INTERVAL '2 days'),
+    ('App5', '19', NOW() - INTERVAL '3 days'),
+    ('App5', '20', NOW() - INTERVAL '1 days');
+
 --#endregion

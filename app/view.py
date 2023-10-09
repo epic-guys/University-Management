@@ -3,27 +3,29 @@ from sqlalchemy import select
 from flask import render_template, request, Blueprint, session, url_for, flash, redirect, abort
 from .models import *
 import flask_login
-from .roles import role_manager
+from .roles import view_role_manager
 
 view = Blueprint('view', __name__)
 studenti = Blueprint('studenti', __name__, url_prefix='/studenti')
 docenti = Blueprint('docenti', __name__, url_prefix='/docenti')
 
 
+view.register_blueprint(studenti)
+view.register_blueprint(docenti)
+
+
 @studenti.before_request
+@view_role_manager.roles(Studente)
 def before_request():
-    if not isinstance(flask_login.current_user, Studente):
-        return role_manager.default_unauthorized_callback()
+    """Used to apply Studente role"""
+    pass
 
 
 @docenti.before_request
+@view_role_manager.roles(Docente)
 def before_request():
-    if not isinstance(flask_login.current_user, Docente):
-        return role_manager.default_unauthorized_callback()
-
-
-view.register_blueprint(studenti)
-view.register_blueprint(docenti)
+    """Used to apply Docente role"""
+    pass
 
 
 @studenti.route('/')

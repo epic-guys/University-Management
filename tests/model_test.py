@@ -35,4 +35,4 @@ def test_appelli():
 def test_doc():
     with Session(engine) as session:
         d = session.scalar(select(Docente))
-        print(d.to_dict())
+        print(d.asdict())

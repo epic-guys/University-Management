@@ -14,7 +14,7 @@ def create_app(config: Config = None) -> Flask:
     from .view import view
     from .api import api
     app.register_blueprint(view)
-    app.register_blueprint(api, url_prefix='/api')
+    app.register_blueprint(api)
 
     # Flask login
     from .login import login_manager

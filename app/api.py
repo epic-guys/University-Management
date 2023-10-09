@@ -1,3 +1,4 @@
+import dataclasses
 import json
 
 import flask_login
@@ -5,8 +6,36 @@ from flask import Blueprint, request, jsonify, abort
 from .models import *
 from .db import db
 from sqlalchemy import select, update, delete, insert
+from .roles import api_role_manager
+from dataclasses import dataclass, fields
 
-api = Blueprint('api', __name__)
+api = Blueprint('api', __name__, url_prefix='/api')
+
+
+@dataclass
+class ApiResponse:
+    def asdict(self):
+        return {
+            field.name: getattr(self, field.name)
+            for field in fields(self)
+        }
+
+
+@dataclass
+class SuccessResponse(ApiResponse):
+    status = 'success'
+    data: any
+
+
+class FailResponse(ApiResponse):
+    status = 'fail'
+    data: any
+
+
+@dataclass
+class ErrorResponse(ApiResponse):
+    status = 'error'
+    message: str
 
 
 def insert_esame():
@@ -42,7 +71,7 @@ def insert_iscrizione_appelli():
 
 
 def jsonify_list(l: list[Model], includes=None):
-    return jsonify([elem.to_dict(includes) for elem in l])
+    return jsonify([elem.asdict(includes) for elem in l])
 
 
 @api.route('/esami/', methods=['GET', 'DELETE', 'POST'])
@@ -101,6 +130,26 @@ def appelli():
         case 'POST':
             insert_eventi()
             return '', 204
+
+
+@api.route('/appelli/<cod_appello>/iscrizioni')
+def iscrizioni(cod_appello):
+    query = select(IscrizioneAppello) \
+        .where(IscrizioneAppello.cod_appello == cod_appello)
+    return jsonify_list(db.session.scalars(query).all(), ['studente'])
+
+
+@api.route('/appelli/<cod_appello>/iscrizioni', methods=['POST'])
+@api_role_manager.roles(Studente)
+def add_iscrizione(cod_appello):
+    query = insert(IscrizioneAppello).values({
+        'matricola': flask_login.current_user.matricola,
+        'cod_appello': cod_appello,
+        'data_iscrizione': datetime.now().isoformat()
+    })
+    db.session.execute(query)
+    db.session.commit()
+    return '', 204
 
 
 @api.route('/appelli/info', methods=['GET', 'POST'])

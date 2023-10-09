@@ -10,7 +10,7 @@ from flask_roles import RoleMixin
 class Model(db.Model):
     __abstract__ = True
 
-    def to_dict(self, includes=None):
+    def asdict(self, includes=None):
         if includes is None:
             includes = []
 
@@ -22,7 +22,7 @@ class Model(db.Model):
             for col in self.__mapper__.columns
         }
         for attr in includes:
-            d[attr] = getattr(self, attr).to_dict()
+            d[attr] = getattr(self, attr).asdict()
         return d
 
     @classmethod
