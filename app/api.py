@@ -112,9 +112,3 @@ def appelli_table():
         case 'POST':
             insert_iscrizione_appelli()
             return '', 204
-
-
-@api.route('/persone')
-def persone():
-    pers = db.session.scalars(select(Persona)).all()
-    return jsonify_list(pers)
