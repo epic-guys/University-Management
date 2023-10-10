@@ -36,3 +36,8 @@ def test_doc():
     with Session(engine) as session:
         d = session.scalar(select(Docente))
         print(d.asdict())
+
+
+def test_voti():
+    with Session(engine) as session:
+        print(session.scalars(select(Voto)))

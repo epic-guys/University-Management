@@ -2,7 +2,7 @@ import json
 from datetime import date, datetime
 from .db import db
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, ForeignKeyConstraint
 from flask_login import UserMixin
 from flask_roles import RoleMixin
 
@@ -184,17 +184,27 @@ class IscrizioneAppello(Model):
     appello: Mapped[Appello] = relationship()
 
 
-#class Voto(Model):
-#    __tablename__ = 'voti'
+class Voto(Model):
+    __tablename__ = 'voti'
 
-#    cod_appello: Mapped[str] = mapped_column(ForeignKey('appelli.cod_appello'))
-#    matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'))
-#    voto: Mapped[int] = mapped_column()
+    cod_appello: Mapped[str] = mapped_column(ForeignKey('appelli.cod_appello'), primary_key=True)
+    matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'), primary_key=True)
+    voto: Mapped[int] = mapped_column()
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ['cod_appello', 'matricola'],
+            ['iscrizioni_appelli.cod_appello', 'iscrizioni_appelli.matricola']
+        ),
+    )
 
     # relazioni
+    iscrizioneAppello: Mapped[IscrizioneAppello] = relationship()
 
-#    def __init__(self, voto: int):
-#        self.data = Appello.data
-#        self.cod_prova = Appello.cod_prova
-#        self.matricola = Studente.matricola
-#        self.voto = voto
+
+
+    def __init__(self, voto: int):
+        self.data = Appello.data
+        self.cod_prova = Appello.cod_prova
+        self.matricola = Studente.matricola
+        self.voto = voto
