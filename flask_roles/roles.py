@@ -28,7 +28,7 @@ class RoleManager:
             @wraps(func)
             def wrapper(*args, **kwargs):
                 if isinstance(self.role_loader(), roles):
-                    return func(*args, *kwargs)
+                    return func(*args, **kwargs)
                 if unauthorized_callback is not None:
                     return unauthorized_callback(*args, **kwargs)
                 if self.default_unauthorized_callback is not None:
