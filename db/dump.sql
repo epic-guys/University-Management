@@ -367,4 +367,18 @@ VALUES
     ('App5', '19', NOW() - INTERVAL '3 days'),
     ('App5', '20', NOW() - INTERVAL '1 days');
 
+
+INSERT INTO voti (cod_appello, matricola, voto)
+VALUES
+    ('App1', '11', 18),
+    ('App1', '12', 22),
+    ('App2', '13', 25),
+    ('App2', '14', 20),
+    ('App3', '15', 28),
+    ('App3', '16', 31),
+    ('App4', '17', 19),
+    ('App4', '18', 24),
+    ('App5', '19', 27),
+    ('App5', '20', 21);
+
 --#endregion

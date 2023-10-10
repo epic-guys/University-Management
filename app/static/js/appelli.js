@@ -52,11 +52,14 @@ function initTable(){
 
 function iscrizioneAppello(){
     $.ajax({
-        url: "/api/appelli/info",
+        url: "/api/appelli/<cod_appello>/iscrizioni",
         method: 'POST',
-        data: $("#appelli-table"),
+        data: $("#appelli-table").serialize(),
         success: (res) => {
             page.table.ajax.reload();
+        },
+        error: () => {
+            console.log($("#appelli-table").serialize())
         }
     })
 }

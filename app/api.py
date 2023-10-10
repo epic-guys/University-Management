@@ -63,13 +63,6 @@ def insert_eventi():
     return "", 204
 
 
-# TODO Sistemare la relazione nel moddels.py
-def insert_iscrizione_appelli():
-    db.session.execute(insert(IscrizioneAppello), request.form.to_dict())
-    db.session.commit()
-    return "", 204
-
-
 def jsonify_list(l: list[Model], includes=None):
     return jsonify([elem.asdict(includes) for elem in l])
 
@@ -152,12 +145,13 @@ def add_iscrizione(cod_appello):
     return '', 204
 
 
-@api.route('/appelli/info', methods=['GET', 'POST'])
+@api.route('/appelli/info')
 def appelli_table():
-    match request.method:
-        case 'GET':
-            appelli = db.session.scalars(select(Appello)).all()
-            return jsonify_list(appelli)
-        case 'POST':
-            insert_iscrizione_appelli()
-            return '', 204
+        appelli = db.session.scalars(select(Appello)).all()
+        return jsonify_list(appelli)
+
+
+@api.route('/voti')
+def voti():
+    voti = db.session.scalars((select(Voto))).all()
+    return jsonify_list(voti)

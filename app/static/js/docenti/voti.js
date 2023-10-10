@@ -10,11 +10,7 @@ function initTable(){
     page.tableElement = page.tableElement.DataTable({
         columns: [
             {
-                data: "data",
-                render: $.fn.dataTable.render.text()
-            },
-            {
-                data: "codice_prova",
+                data: "cod_appello",
                 render: $.fn.dataTable.render.text()
             },
             {
