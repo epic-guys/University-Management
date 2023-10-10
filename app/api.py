@@ -1,7 +1,6 @@
-import dataclasses
-import json
-
 import flask_login
+from sqlalchemy.exc import SQLAlchemyError
+import werkzeug.exceptions
 from flask import Blueprint, request, jsonify, abort
 from .models import *
 from .db import db
@@ -14,6 +13,10 @@ api = Blueprint('api', __name__, url_prefix='/api')
 
 @dataclass
 class ApiResponse:
+    status: str
+    message: str
+    data: any
+
     def asdict(self):
         return {
             field.name: getattr(self, field.name)
@@ -21,21 +24,14 @@ class ApiResponse:
         }
 
 
-@dataclass
-class SuccessResponse(ApiResponse):
-    status = 'success'
-    data: any
+@api.errorhandler(Exception)
+def not_found_handler(e):
+    if isinstance(e, werkzeug.exceptions.HTTPException):
+        return ApiResponse('Fail', e.description, {}).asdict(), 404
 
+    else:
+        return ApiResponse('Error', 'Error on server', e.args).asdict(), 500
 
-class FailResponse(ApiResponse):
-    status = 'fail'
-    data: any
-
-
-@dataclass
-class ErrorResponse(ApiResponse):
-    status = 'error'
-    message: str
 
 
 def insert_esame():
@@ -93,8 +89,8 @@ def prove(cod_esame=None, cod_prova=None):
             elif cod_prova is not None:
                 query = select(Prova).where(Prova.cod_prova == cod_prova)
             else:
-                # TODO magari rendere più bello
-                return abort(404)
+                # Bad request
+                return abort(400)
             prove = db.session.scalars(query).all()
             return jsonify_list(prove, ['anno_accademico', 'docente'])
 
@@ -155,3 +151,18 @@ def appelli_table():
 def voti():
     voti = db.session.scalars((select(Voto))).all()
     return jsonify_list(voti)
+
+
+@api.route('/voti', methods=['POST'])
+def add_voti():
+    payload = request.json
+    for voto in payload:
+        try:
+            stmt = insert(Voto) \
+                    .values(voto)
+            db.session.execute(stmt)
+        except SQLAlchemyError as e:
+            return ApiResponse('Fail', 'Failed to add voto', e.params).asdict(), 400
+
+    db.session.commit()
+    return '', 204
