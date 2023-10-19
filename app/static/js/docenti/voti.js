@@ -30,7 +30,7 @@ function initTable(){
                                 .attr("class", "fa-solid fa-eye")
                         )
                         // FIXME potenziale XSS
-                        .attr("href", "/docenti/esami/" + row.cod_esame)
+                        .attr("href", "/docenti/voti/" + row.cod_appello + "/" + row.matricola)
                         .prop("outerHTML");
                 },
                 orderable: false

@@ -56,6 +56,11 @@ def esami(cod_esame=None):
 def voti():
     return render_template('docenti/voti.html')
 
+@docenti.route('/voti/<cod_appello>/<matricola>/')
+def voti_info(cod_appello, matricola):
+    voto = db.session.scalars(select(Voto).where(Voto.cod_appello == cod_appello and Voto.matricola == matricola))
+    return render_template('docenti/voto-info.html', voto=voto)
+
 
 @flask_login.login_required
 @view.route('/')

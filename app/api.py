@@ -166,3 +166,9 @@ def add_voti():
 
     db.session.commit()
     return '', 204
+
+
+@api.route('/voti/<cod_appello>/<matricola>/')
+def voto_info(cod_appello, matricola):
+    voto = db.session.scalars(select(Voto).where(Voto.cod_appello == cod_appello and Voto.matricola == matricola)).all()
+    return jsonify_list(voto)
