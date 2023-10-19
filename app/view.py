@@ -56,10 +56,18 @@ def esami(cod_esame=None):
 def voti():
     return render_template('docenti/voti.html')
 
+
 @docenti.route('/voti/<cod_appello>/<matricola>/')
 def voti_info(cod_appello, matricola):
     voto = db.session.scalars(select(Voto).where(Voto.cod_appello == cod_appello and Voto.matricola == matricola))
     return render_template('docenti/voto-info.html', voto=voto)
+
+
+@docenti.route('/appelli/<cod_appello>')
+def appello(cod_appello):
+    appello = db.session.scalar(select(Appello).where(Appello.cod_appello == cod_appello))
+    iscrizioni = db.session.scalars(select(IscrizioneAppello).where(IscrizioneAppello.cod_appello == cod_appello))
+    return render_template('docenti/appello.html', appello=appello, iscrizioni=iscrizioni)
 
 
 @flask_login.login_required

@@ -2,5 +2,48 @@
 {% block title %}Appello di {{ appello.prova.esame.nome_corso }}{% endblock %}
 
 {% block main %}
-
+    <h1>Appello di {{ appello.prova.esame.nome_corso }}</h1>
+    <div class="container-fluid border rounded my-3">
+        <div class="row my-2">
+            <div class="col-lg-2">Codice appello</div>
+            <div class="col-lg-2">
+                <input
+                        class="form-control-plaintext"
+                        id="cod_appello"
+                        type="text"
+                        readonly
+                        value="{{ appello.cod_appello }}"
+                >
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col-lg-2">Data e ora</div>
+            <div class="col-lg-2">
+                <input
+                        class="form-control-plaintext"
+                        id="appello-datetime"
+                        readonly
+                        type="datetime-local"
+                        value="{{ appello.data_appello.strftime("%Y-%m-%dT%H:%M") }}"
+                >
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col-lg-2">Aula</div>
+            <div class="col-lg-2">{{ appello.aula }}</div>
+        </div>
+    </div>
+    <h2>Iscritti</h2>
+    <table class="table" id="studenti-table">
+    <thead>
+    <tr>
+        <th>Cognome</th>
+        <th>Nome</th>
+        <th>Matricola</th>
+        <th>Data iscrizione</th>
+        <th>Voto</th>
+    </tr>
+    </thead>
+    </table>
+    <script src="{{ url_for('static', filename='js/docenti/appello.js') }}"></script>
 {% endblock %}

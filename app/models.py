@@ -165,7 +165,7 @@ class Appello(Model):
     aula: Mapped[str] = mapped_column()
     prova: Mapped[Prova] = relationship(back_populates='appelli')
 
-    def __init__(self, prova: Prova, data_appello: date, aula: str):
+    def __init__(self, prova: Prova, data_appello: datetime, aula: str):
         self.cod_prova = prova.cod_prova
         self.prova = prova
         self.data_appello = data_appello
