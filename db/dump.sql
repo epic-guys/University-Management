@@ -51,6 +51,21 @@ CREATE TABLE studenti (
     FOREIGN KEY (cod_corso_laurea) REFERENCES corsi_laurea (cod_corso_laurea)
 );
 
+
+DROP TABLE IF EXISTS voti_esame CASCADE;
+CREATE TABLE voti_esame (
+    cod_esame TEXT NOT NULL,
+    matricola TEXT NOT NULL,
+    voto INT NOT NULL,
+    data_completamento timestamptz NOT NULL,
+
+    -- È più frequente cercare gli esami a partire dallo studente piuttosto che viceversa
+    PRIMARY KEY (matricola, cod_esame),
+    FOREIGN KEY (cod_esame) REFERENCES esami (cod_esame),
+    FOREIGN KEY (matricola) REFERENCES studenti (matricola)
+);
+
+
 DROP TABLE IF EXISTS docenti CASCADE;
 CREATE TABLE docenti (
     cod_docente TEXT NOT NULL PRIMARY KEY,
@@ -103,8 +118,8 @@ CREATE TABLE iscrizioni_appelli (
     FOREIGN KEY (cod_appello) REFERENCES appelli(cod_appello)
 );
 
-DROP TABLE IF EXISTS voti CASCADE;
-CREATE TABLE voti (
+DROP TABLE IF EXISTS voti_prove CASCADE;
+CREATE TABLE voti_prove (
     cod_appello TEXT NOT NULL,
     matricola TEXT NOT NULL,
     voto INT NOT NULL,
@@ -368,7 +383,7 @@ VALUES
     ('App5', '20', NOW() - INTERVAL '1 days');
 
 
-INSERT INTO voti (cod_appello, matricola, voto)
+INSERT INTO voti_prove (cod_appello, matricola, voto)
 VALUES
     ('App1', '11', 18),
     ('App1', '12', 22),
