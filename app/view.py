@@ -63,6 +63,14 @@ def voti_info(cod_appello, matricola):
     return render_template('docenti/voto-info.html', voto=voto)
 
 
+@view.route('/appelli')
+def appelli():
+    if isinstance(flask_login.current_user,Docente):
+        return render_template('docenti/appelli_docenti.html')
+    else:
+        return render_template('studenti/appelli_studenti.html')
+
+
 @docenti.route('/appelli/<cod_appello>')
 def appello(cod_appello):
     appello = db.session.scalar(select(Appello).where(Appello.cod_appello == cod_appello))
@@ -112,10 +120,6 @@ def logout():
     flask_login.logout_user()
     return redirect(url_for('view.index'))
 
-
-@view.route('/appelli')
-def appelli():
-    return render_template('appelli.html')
 
 
 @view.route('/profilo')
