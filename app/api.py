@@ -143,8 +143,11 @@ def add_iscrizione(cod_appello):
 
 @api.route('/appelli/info')
 def appelli_table():
+    if isinstance(flask_login.current_user, Docente):
+        appelli = db.session.scalars(select(Appello).where(Appello.prova.cod_docente == flask_login.current_user.cod_docente)).all()
+    else:
         appelli = db.session.scalars(select(Appello)).all()
-        return jsonify_list(appelli)
+    return jsonify_list(appelli)
 
 
 @api.route('/voti')

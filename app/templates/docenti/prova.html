@@ -1,0 +1,47 @@
+{% extends 'docenti/docenti.html' %}
+{% block title %} {% endblock %}
+{% block main %}
+
+    <h1>Prova di {{ prova.esame.nome_corso }}</h1>
+    <div class="container-fluid border rounded my-3">
+        <div class="row my-2">
+            <div class="col-lg-2">Codice prova</div>
+            <div class="col-lg-2">
+                <input
+                        class="form-control-plaintext"
+                        id="cod-prova"
+                        type="text"
+                        readonly
+                        value="{{ prova.cod_prova }}"
+                >
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col-lg-2">Tipo prova</div>
+            <div class="col-lg-2">
+                <input
+                        class="form-control-plaintext"
+                        id="tipo_prova"
+                        type="text"
+                        readonly
+                        value="{{ prova.tipo_prova }}"
+                >
+            </div>
+        </div>
+        <div>
+            {{ prova.descrizione_prova }}
+        </div>
+    </div>
+    <h2>Appelli</h2>
+    <table class="table" id="appelli-table">
+        <thead>
+        <tr>
+            <th>Data appello</th>
+            <th>Codice appello</th>
+            <th>Aula</th>
+            <th></th>
+        </tr>
+        </thead>
+    </table>
+    <script src="{{ url_for('static', filename='js/docenti/prova.js') }}"></script>
+{% endblock %}
