@@ -95,6 +95,14 @@ def prove(cod_esame=None, cod_prova=None):
             return jsonify_list(prove, ['anno_accademico', 'docente'])
 
 
+@api.route('/prove/<cod_prova>/appelli')
+def appelli_prova(cod_prova):
+    query = select(Appello).where(Appello.cod_prova == cod_prova)
+    appelli = db.session.scalars(query).all()
+    return jsonify_list(appelli)
+
+
+
 @api.route('/docenti/<cod_docente>/prove')
 def prove_docenti(cod_docente):
     prove = db.session.scalars(select(Prova).where(Prova.cod_docente == cod_docente)).all()

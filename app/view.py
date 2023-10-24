@@ -52,6 +52,16 @@ def esami(cod_esame=None):
     return render_template('docenti/esame.html', esame=esame)
 
 
+@docenti.route('/prove/<cod_prova>')
+def prove(cod_prova):
+    query = select(Prova).where(Prova.cod_prova == cod_prova)
+    prova = db.session.scalar(query)
+    if prova is None:
+        return abort(404)
+
+    return render_template('docenti/prova.html', prova=prova)
+
+
 @docenti.route('/voti/')
 def voti():
     return render_template('docenti/voti.html')

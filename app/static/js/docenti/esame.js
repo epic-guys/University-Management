@@ -40,6 +40,20 @@ function initTable() {
                     // FIXME XSS
                     return data.nome + " " + data.cognome;
                 }
+            },
+            {
+                render: function (data, type, row) {
+                    return $("<a>")
+                        .attr("class", "btn btn-primary")
+                        .html(
+                            $("<i>")
+                                .attr("class", "fa-solid fa-eye")
+                        )
+                        // FIXME potenziale XSS
+                        .attr("href", "/docenti/prove/" + row.cod_prova)
+                        .prop("outerHTML");
+                },
+                orderable: false
             }
         ],
         ajax: {
