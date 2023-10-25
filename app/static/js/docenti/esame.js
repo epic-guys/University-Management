@@ -57,8 +57,7 @@ function initTable() {
             }
         ],
         ajax: {
-            url: "/api/esami/" + $("#cod-esame").html() + "/prove",
-            dataSrc: ""
+            url: "/api/esami/" + $("#cod-esame").html() + "/prove"
         },
         rowGroup: {
             dataSrc: "anno_accademico.cod_anno_accademico"

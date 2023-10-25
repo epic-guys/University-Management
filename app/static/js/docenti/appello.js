@@ -83,8 +83,7 @@ function initTable() {
             }
         ],
         ajax: {
-            url: "/api/appelli/" + $("#cod_appello").val() + "/iscrizioni",
-            dataSrc: ""
+            url: "/api/appelli/" + $("#cod_appello").val() + "/iscrizioni"
         }
     });
 }

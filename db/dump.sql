@@ -187,10 +187,11 @@ DECLARE prova prove;
 BEGIN
     SELECT * INTO prova
     FROM prove p
-    WHERE p.cod_prova = NEW.cod_prova;
+    NATURAL JOIN iscrizioni_appelli i
+    WHERE i.cod_appello = NEW.cod_appello;
 
-    IF NEW.data_appello > prova.scadenza THEN
-        RAISE EXCEPTION 'Appello supera scadenza della prova';
+    IF NEW.data_iscrizione > prova.scadenza THEN
+        RAISE EXCEPTION 'Iscrizione appello supera scadenza della prova';
     END IF;
 
     RETURN NEW;
@@ -200,7 +201,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER data_appello_check_t
     BEFORE INSERT OR UPDATE
-    ON appelli
+    ON iscrizioni_appelli
     FOR EACH ROW
 EXECUTE FUNCTION data_appello_check();
 

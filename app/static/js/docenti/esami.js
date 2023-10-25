@@ -72,8 +72,7 @@ function initTable() {
             }
         ],
         ajax: {
-            url: "/api/esami",
-            dataSrc: ""
+            url: "/api/esami"
         }
     });
 }
