@@ -111,7 +111,7 @@ def prove_docenti(cod_docente):
 
 @api.route('/corsi_laurea')
 def corsi_laurea():
-    corsi = db.session.scalars(select(CorsoLaurea)).all()
+    corsi = db.session.scalars(select(CorsoLaurea).join(Esame).join(Prova).where(Prova.cod_docente == flask_login.current_user.cod_docente)).all()
     return jsonify_list(corsi)
 
 
@@ -152,7 +152,7 @@ def add_iscrizione(cod_appello):
 @api.route('/appelli/info')
 def appelli_table():
     if isinstance(flask_login.current_user, Docente):
-        appelli = db.session.scalars(select(Appello).where(Appello.prova.cod_docente == flask_login.current_user.cod_docente)).all()
+        appelli = db.session.scalars(select(Appello).join(Prova).where(Prova.cod_docente == flask_login.current_user.cod_docente)).all()
     else:
         appelli = db.session.scalars(select(Appello)).all()
     return jsonify_list(appelli)
