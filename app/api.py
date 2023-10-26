@@ -147,25 +147,27 @@ def appelli():
             return insert_eventi()
 
 
-@api.route('/appelli/<cod_appello>/iscrizioni', methods=['GET', 'POST'])
+@api.route('/appelli/<cod_appello>/iscrizioni')
 def iscrizioni(cod_appello):
-    if request.method == 'GET':
-        query = select(IscrizioneAppello) \
-            .where(IscrizioneAppello.cod_appello == cod_appello)
-        res = db.session.scalars(query).all()
-        data = map_to_dict(res, ['studente'])
+    query = select(IscrizioneAppello) \
+        .where(IscrizioneAppello.cod_appello == cod_appello)
+    res = db.session.scalars(query).all()
+    data = map_to_dict(res, ['studente'])
 
-        return ApiResponse(data).asdict()
+    return ApiResponse(data).asdict()
 
-    elif request.method == 'POST':
-        query = insert(IscrizioneAppello).values({
-            'matricola': flask_login.current_user.matricola,
-            'cod_appello': cod_appello,
-            'data_iscrizione': datetime.now().isoformat()
-        })
-        db.session.execute(query)
-        db.session.commit()
-        return ApiResponse(message='Successfully added iscrizione')
+
+@api.route('/appelli/<cod_appello>/iscrizioni', methods=['POST'])
+@api_role_manager.roles(Studente)
+def add_iscrizione(cod_appello):
+    query = insert(IscrizioneAppello).values({
+        'matricola': flask_login.current_user.matricola,
+        'cod_appello': cod_appello,
+        'data_iscrizione': datetime.now().isoformat()
+    })
+    db.session.execute(query)
+    db.session.commit()
+    return ApiResponse(message='Successfully added iscrizione')
 
 
 @api.route('/appelli/info')
@@ -175,7 +177,7 @@ def appelli_table():
             select(Appello).join(Prova).where(Prova.cod_docente == flask_login.current_user.cod_docente)).all()
     else:
         appelli = db.session.scalars(select(Appello)).all()
-        return map_to_dict(appelli)
+    return map_to_dict(appelli)
 
 
 @api.route('/voti')
