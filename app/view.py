@@ -33,6 +33,11 @@ def index():
     return render_template('studenti/dashboard.html')
 
 
+@studenti.route('/libretto')
+def libretto():
+    return render_template('studenti/libretto.html')
+
+
 @docenti.route('/')
 def index():
     return render_template('docenti/dashboard.html')

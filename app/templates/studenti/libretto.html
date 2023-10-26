@@ -1,0 +1,21 @@
+{% extends 'studenti/studenti-base.html' %}
+{% block title %}
+    Libretto
+{% endblock %}
+{% block main %}
+    <h1>Libretto</h1>
+    <table class="table table-hover" id="esami-table">
+        <thead>
+        <tr>
+            <th>Codice</th>
+            <th>Nome corso</th>
+            <th>Descrizione</th>
+            <th>Anno</th>
+            <th>CFU</th>
+            <th>Corso di Laurea</th>
+        </tr>
+        </thead>
+    </table>
+
+    <script src="{{ url_for('static', filename='js/studenti/libretto.js') }}"></script>
+{% endblock %}

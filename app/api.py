@@ -205,3 +205,12 @@ def add_voti():
 def voto_info(cod_appello, matricola):
     voto = db.session.scalars(select(Voto).where(Voto.cod_appello == cod_appello and Voto.matricola == matricola)).all()
     return map_to_dict(voto)
+
+
+@api.route('/studenti/libretto')
+@api_role_manager.roles(Studente)
+def libretto():
+    studente = flask_login.current_user
+    esami = studente.corso_laurea.esami
+    esami = map_to_dict(esami)
+    return ApiResponse(esami).asdict()

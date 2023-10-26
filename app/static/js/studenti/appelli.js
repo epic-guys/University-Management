@@ -16,7 +16,7 @@ function initTable(){
            },
            {
                data: "data_appello",
-               render: $.fn.dataTable.render.text()
+               render: $.fn.dataTable.render.datetime()
            },
            {
                data: "cod_prova",
