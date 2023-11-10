@@ -101,7 +101,6 @@ class AnnoAccademico(Model):
 
     cod_anno_accademico: Mapped[int] = mapped_column(primary_key=True)
     anno_accademico: Mapped[str] = mapped_column()
-    prove: Mapped[list['Prova']] = relationship(back_populates='anno_accademico')
 
 
 class CorsoLaurea(Model):
@@ -122,13 +121,26 @@ class Esame(Model):
     cfu: Mapped[int] = mapped_column()
     cod_corso_laurea: Mapped[str] = mapped_column(ForeignKey('corsi_laurea.cod_corso_laurea'))
     corso_laurea: Mapped[CorsoLaurea] = relationship(back_populates='esami')
-    prove: Mapped[list['Prova']] = relationship(back_populates='esame')
 
     def __init__(self, cod_esame: str, nome_corso: str, anno: int, cfu: int):
         self.cod_esame = cod_esame
         self.nome_corso = nome_corso
         self.anno = anno
         self.cfu = cfu
+
+
+class EsameAnno(Esame):
+    __tablename__ = 'esami_anni_accademici'
+
+    cod_anno_accademico: Mapped[str] = mapped_column(
+        ForeignKey('anni_accademici.cod_anno_accademico'),
+        primary_key=True
+    )
+    cod_esame: Mapped[str] = mapped_column(ForeignKey('esami.cod_esame'), primary_key=True)
+
+    # relazioni
+    prove: Mapped[list['Prova']] = relationship(back_populates='esame')
+    anno_accademico: Mapped[AnnoAccademico] = relationship()
 
 
 class Prova(Model):
@@ -144,10 +156,18 @@ class Prova(Model):
     cod_anno_accademico: Mapped[int] = mapped_column(ForeignKey('anni_accademici.cod_anno_accademico'))
 
     # relazioni
-    esame: Mapped[Esame] = relationship(back_populates='prove')
+    esame: Mapped[EsameAnno] = relationship(foreign_keys=[cod_anno_accademico, cod_esame], back_populates='prove')
     appelli: Mapped[list['Appello']] = relationship(back_populates='prova')
     docente: Mapped[Docente] = relationship(back_populates='prove')
-    anno_accademico: Mapped[AnnoAccademico] = relationship(back_populates='prove')
+    anno_accademico: Mapped[AnnoAccademico] = relationship()
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ['cod_anno_accademico', 'cod_esame'],
+            ['esami_anni_accademici.cod_anno_accademico', 'esami_anni_accademici.cod_esame']
+        ),
+    )
+
 
     def __init__(self, esame: Esame, cod_prova: str, scadenza: date):
         self.cod_prova = cod_prova

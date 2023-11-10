@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
         page.calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
             editable: true,
-            events: '/api/appelli',
+            events: '/api/appelli/?calendar=true',
             themeSystem: 'bootstrap',
             displayEventTime: false,
             customButtons: {
@@ -39,7 +39,7 @@ function initAddAppelli(){
         success: (esami) => {
             let options = [];
             options.push($("<option disabled selected value> -- Seleziona un'opzione -- </option>"));
-            for (const e of esami) {
+            for (const e of esami.data) {
                 let option = $("<option>");
                 option.attr("value", e.cod_esame);
                 option.html(e.nome_corso);
@@ -72,7 +72,7 @@ function fetchProve() {
         url: "/api/esami/" + cod_esame + "/prove",
         success: (prove) => {
             let options = [];
-            for (const p of prove) {
+            for (const p of prove.data) {
                 let option = $("<option>");
                 option.attr("value", p.cod_prova);
                 option.html(p.tipo_prova);

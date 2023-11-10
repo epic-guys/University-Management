@@ -130,13 +130,12 @@ def corsi_laurea():
     return map_to_dict(corsi)
 
 
-@api.route('/appelli', methods=['GET', 'POST'])
-@api.route('/appelli/calendar')
+@api.route('/appelli/', methods=['GET', 'POST'])
 def appelli():
     match request.method:
         case 'GET':
             appelli = db.session.scalars(select(Appello)).all()
-            if request.path == '/appelli/calendar':
+            if request.args['calendar'] == 'true':
                 list_appelli = [{'id': appello.cod_prova, 'start': appello.data_appello.isoformat(),
                              'title': appello.prova.esame.nome_corso} for appello in appelli]
                 return list_appelli
@@ -210,7 +209,7 @@ def voto_info(cod_appello, matricola):
 @api.route('/studenti/libretto')
 @api_role_manager.roles(Studente)
 def libretto():
-    studente = flask_login.current_user
+    studente: Studente = flask_login.current_user
     esami = studente.corso_laurea.esami
     esami = map_to_dict(esami)
     return ApiResponse(esami).asdict()

@@ -23,6 +23,17 @@ CREATE TABLE esami (
     FOREIGN KEY (cod_corso_laurea) REFERENCES corsi_laurea (cod_corso_laurea)
 );
 
+
+DROP TABLE IF EXISTS esami_anni_accademici CASCADE;
+CREATE TABLE esami_anni_accademici (
+    cod_esame TEXT NOT NULL,
+    cod_anno_accademico INTEGER NOT NULL,
+
+    PRIMARY KEY (cod_anno_accademico, cod_esame),
+    FOREIGN KEY (cod_esame) REFERENCES esami (cod_esame),
+    FOREIGN KEY (cod_anno_accademico) REFERENCES anni_accademici (cod_anno_accademico)
+);
+
 DROP TABLE IF EXISTS ruoli CASCADE;
 CREATE TABLE ruoli (
     ruolo CHAR(1) NOT NULL PRIMARY KEY
@@ -52,8 +63,8 @@ CREATE TABLE studenti (
 );
 
 
-DROP TABLE IF EXISTS voti_esame CASCADE;
-CREATE TABLE voti_esame (
+DROP TABLE IF EXISTS voti_esami CASCADE;
+CREATE TABLE voti_esami (
     cod_esame TEXT NOT NULL,
     matricola TEXT NOT NULL,
     voto INT NOT NULL,
@@ -89,6 +100,8 @@ CREATE TABLE prove (
     cod_esame TEXT NOT NULL,
     cod_docente TEXT NOT NULL,
     cod_anno_accademico INT NOT NULL,
+
+    FOREIGN KEY (cod_anno_accademico, cod_esame) REFERENCES esami_anni_accademici (cod_anno_accademico, cod_esame),
     FOREIGN KEY (cod_esame) REFERENCES esami (cod_esame)
                    ON UPDATE CASCADE
                    ON DELETE CASCADE,
@@ -309,6 +322,20 @@ VALUES
     ('E8', 'Analisi dei Dati', 'Metodi di analisi dei dati', 3, 9, 'CT3'),
     ('E9', 'Reti di Calcolatori', 'Introduzione alle reti di calcolatori', 3, 6, 'CT3'),
     ('E10', 'Progettazione dei Circuiti', 'Progettazione di circuiti elettronici', 3, 9, 'CT3');
+
+
+INSERT INTO esami_anni_accademici
+VALUES
+    ('E1', 2023),
+    ('E2', 2023),
+    ('E3', 2023),
+    ('E4', 2023),
+    ('E5', 2023),
+    ('E6', 2023),
+    ('E7', 2023),
+    ('E8', 2023),
+    ('E9', 2023),
+    ('E10', 2023);
 
 
 -- Inserisci dati delle prove
