@@ -92,6 +92,11 @@ def appello(cod_appello):
     iscrizioni = db.session.scalars(select(IscrizioneAppello).where(IscrizioneAppello.cod_appello == cod_appello))
     return render_template('docenti/appello.html', appello=appello, iscrizioni=iscrizioni)
 
+@studenti.route('/appelli/<cod_appello>/iscrizione')
+def appello(cod_appello):
+    appello = db.session.scalar(select(Appello).where(Appello.cod_appello == cod_appello))
+    iscrizioni = db.session.scalars(select(IscrizioneAppello).where(IscrizioneAppello.cod_appello == cod_appello))
+    return render_template('studenti/appelli-info.html', appello=appello, iscrizioni=iscrizioni)
 
 @flask_login.login_required
 @view.route('/')
