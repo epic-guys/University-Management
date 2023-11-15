@@ -1,6 +1,7 @@
 import dataclasses
 
 import flask_login
+import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
 import werkzeug.exceptions
 from flask import Blueprint, request, abort
@@ -209,6 +210,14 @@ def voto_info(cod_appello, matricola):
 @api_role_manager.roles(Studente)
 def libretto():
     studente: Studente = flask_login.current_user
-    esami = studente.corso_laurea.esami
-    esami = map_to_dict(esami)
-    return ApiResponse(esami).asdict()
+    query = select(Esame, VotoEsame) \
+        .outerjoin(VotoEsame)
+    # esami = studente.corso_laurea.esami
+    # esami = map_to_dict(esami)
+    esami = db.session.execute(query).all()
+    serialized_list = []
+    for esame, voto in esami:
+        serialized = esame.asdict()
+        serialized['voto'] = voto.asdict() if voto is not None else None
+        serialized_list.append(serialized)
+    return ApiResponse(serialized_list).asdict()

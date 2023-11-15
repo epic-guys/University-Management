@@ -30,8 +30,15 @@ function initTable() {
             {
                 data: "cod_corso_laurea",
                 render: $.fn.dataTable.render.text()
+            },
+            {
+                data: "voto.data_completamento",
+                render: $.fn.dataTable.render.date()
+            },
+            {
+                data: "voto.voto",
+                render: $.fn.dataTable.render.number()
             }
-
         ],
         ajax: {
             url: "/api/studenti/libretto"

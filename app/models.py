@@ -256,3 +256,15 @@ class VotoProva(Model):
     iscrizioneAppello: Mapped[IscrizioneAppello] = relationship()
     studente: Mapped[Studente] = relationship()
     appello: Mapped[Appello] = relationship()
+
+
+class VotoEsame(Model):
+    __tablename__ = 'voti_esami'
+
+    cod_esame: Mapped[str] = mapped_column(ForeignKey('esami.cod_esame'), primary_key=True)
+    matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'), primary_key=True)
+    voto: Mapped[int] = mapped_column()
+
+    # relazioni
+    studente: Mapped[Studente] = relationship()
+    esame: Mapped[Esame] = relationship()
