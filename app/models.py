@@ -70,6 +70,9 @@ class Docente(Persona):
     cod_docente: Mapped[str] = mapped_column(ForeignKey('persone.cod_persona'), primary_key=True)
     prove: Mapped[list['Prova']] = relationship(back_populates='docente')
 
+    # relazioni
+    esami_anni: Mapped[list['EsameAnno']] = relationship(back_populates='presidente')
+
     __mapper_args__ = {
         'polymorphic_identity': 'D'
     }
@@ -137,10 +140,12 @@ class EsameAnno(Esame):
         primary_key=True
     )
     cod_esame: Mapped[str] = mapped_column(ForeignKey('esami.cod_esame'), primary_key=True)
+    cod_presidente: Mapped[str] = mapped_column(ForeignKey('docenti.cod_docente'))
 
     # relazioni
     prove: Mapped[list['Prova']] = relationship(back_populates='esame')
     anno_accademico: Mapped[AnnoAccademico] = relationship()
+    presidente: Mapped[Docente] = relationship(back_populates='esami_anni')
 
 
 class Prova(Model):
@@ -148,6 +153,7 @@ class Prova(Model):
 
     cod_prova: Mapped[str] = mapped_column(primary_key=True)
     tipo_prova: Mapped[str] = mapped_column(ForeignKey('tipi_prove.tipo_prova'))
+    denominazione_prova: Mapped[str] = mapped_column()
     descrizione_prova: Mapped[str] = mapped_column()
     peso: Mapped[float] = mapped_column()
     scadenza: Mapped[date] = mapped_column()
