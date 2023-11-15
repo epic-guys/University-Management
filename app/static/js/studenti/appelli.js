@@ -7,7 +7,6 @@ $(() => {
 
 
 function initTable(){
-    $("#appelli-table").on("click", "a", iscrizioneAppello);
     page.tableElement = page.tableElement.DataTable({
        columns: [
            {
@@ -37,6 +36,7 @@ function initTable(){
                                 .attr("class", "fa-solid fa-plus")
                         )
                         // FIXME potenziale XSS
+                        .attr("href", "/studenti/appelli/" + row.cod_appello + "/iscrizione")
                         .prop("outerHTML")
                    return elem;
                 },
@@ -48,18 +48,4 @@ function initTable(){
             dataSrc: ""
         }
     });
-}
-
-function iscrizioneAppello(){
-    $.ajax({
-        url: "/api/appelli/<cod_appello>/iscrizioni",
-        method: 'POST',
-        data: $("#appelli-table").serialize(),
-        success: (res) => {
-            page.table.ajax.reload();
-        },
-        error: () => {
-            console.log($("#appelli-table").serialize())
-        }
-    })
 }

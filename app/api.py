@@ -54,7 +54,7 @@ def insert_esame():
     # TODO opportuna sanificazione dell'input
     db.session.execute(insert(Esame), request.form.to_dict())
     db.session.commit()
-    return ApiResponse(message='Esame inserted successfully')
+    return ApiResponse(message='Esame inserted successfully').asdict()
 
 
 def delete_esame(cod):
@@ -73,8 +73,7 @@ def insert_eventi():
     req.pop('data', 'ora')
     db.session.execute(insert(Appello), req)
     db.session.commit()
-    return ApiResponse(message='Events inserted successfully')
-
+    return ApiResponse(message='Events inserted successfully').asdict()
 
 @api.route('/esami/', methods=['GET', 'DELETE', 'POST'])
 @api.route('/esami/<cod_esame>', methods=['GET', 'DELETE'])
@@ -156,7 +155,7 @@ def iscrizioni(cod_appello):
     return ApiResponse(data).asdict()
 
 
-@api.route('/appelli/<cod_appello>/iscrizioni', methods=['POST'])
+@api.route('/appelli/<cod_appello>/iscrizione', methods=['POST'])
 @api_role_manager.roles(Studente)
 def add_iscrizione(cod_appello):
     query = insert(IscrizioneAppello).values({
