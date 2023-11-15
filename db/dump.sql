@@ -7,8 +7,10 @@ CREATE TABLE corsi_laurea (
 
 DROP TABLE IF EXISTS anni_accademici CASCADE;
 CREATE TABLE anni_accademici (
-     cod_anno_accademico INTEGER PRIMARY KEY,
-     anno_accademico CHAR(9)
+    cod_anno_accademico INTEGER PRIMARY KEY,
+    anno_accademico CHAR(9),
+    inizio_anno DATE,
+    fine_anno DATE
 );
 
 
@@ -156,6 +158,7 @@ CREATE TABLE voti_appelli (
 
 --#region Viste
 
+DROP VIEW IF EXISTS voti_prove CASCADE;
 CREATE VIEW voti_prove AS
 WITH appelli_recenti AS (SELECT a.cod_prova, v.matricola, MAX(a.data_appello) AS appello_recente
                          FROM voti_appelli v
@@ -264,12 +267,13 @@ INSERT INTO tipi_prove VALUES
 
 
 -- Anni accademici
-INSERT INTO anni_accademici (cod_anno_accademico, anno_accademico)
+INSERT INTO anni_accademici (cod_anno_accademico, anno_accademico, inizio_anno, fine_anno)
 VALUES
-    (2023, '2023-2024'),
-    (2022, '2022-2023'),
-    (2021, '2021-2022'),
-    (2020, '2020-2021');
+    (2023, '2023-2024', '2023-09-01', '2024-08-31'),
+    (2022, '2022-2023', '2022-09-01', '2023-08-31'),
+    (2021, '2021-2022', '2021-09-01', '2022-08-31'),
+    (2020, '2020-2021', '2020-09-01', '2021-08-31');
+
 
 
 

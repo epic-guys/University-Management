@@ -106,6 +106,8 @@ class AnnoAccademico(Model):
 
     cod_anno_accademico: Mapped[int] = mapped_column(primary_key=True)
     anno_accademico: Mapped[str] = mapped_column()
+    inizio_anno: Mapped[date] = mapped_column()
+    fine_anno: Mapped[date] = mapped_column()
 
 
 class CorsoLaurea(Model):

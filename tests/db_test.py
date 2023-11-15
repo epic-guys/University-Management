@@ -15,3 +15,11 @@ def test_join():
         print(query)
         for res in session.scalars(query):
             print(res)
+
+
+def test_anni():
+    with Session(engine) as session:
+        query = select(AnnoAccademico).where(AnnoAccademico.inizio_anno <= date.today()) \
+            .where(date.today() <= AnnoAccademico.fine_anno)
+        anni = session.scalars(query).all()
+        print(anni)

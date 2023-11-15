@@ -16,6 +16,13 @@ from collections.abc import Iterable
 api = Blueprint('api', __name__, url_prefix='/api')
 
 
+def current_anno_accademico() -> AnnoAccademico:
+    today = date.today()
+    query = select(AnnoAccademico).where(AnnoAccademico.inizio_anno <= today,
+                                         AnnoAccademico.fine_anno >= today)
+    return db.session.scalar(query)
+
+
 def map_to_dict(model: Iterable[Model] | Model, includes=None):
     if isinstance(model, Iterable):
         return [elem.asdict(includes) for elem in model]
@@ -77,19 +84,28 @@ def insert_eventi():
     return ApiResponse(message='Events inserted successfully').asdict()
 
 @api.route('/esami/', methods=['GET', 'DELETE', 'POST'])
-@api.route('/esami/<cod_esame>', methods=['GET', 'DELETE'])
+@api.route('/esami/<cod_esame>', methods=['GET'])
 def esami(cod_esame=None):
     match request.method:
         case 'GET':
-            query = select(Esame)
+            query = select(EsameAnno)
             if cod_esame is not None:
-                query = query.where(Esame.cod_esame == cod_esame)
+                query = query.where(EsameAnno.cod_esame == cod_esame)
+            query = query.where(EsameAnno.cod_anno_accademico == current_anno_accademico().cod_anno_accademico)
             esami = db.session.scalars(query).all()
             return ApiResponse(map_to_dict(esami)).asdict()
         case 'POST':
             return insert_esame()
         case 'DELETE':
             return delete_esame(cod_esame)
+
+
+@api.route('/esami/corso_laurea/<cod_corso_laurea>')
+def esami_corso_laurea(cod_corso_laurea):
+    query = select(EsameAnno).where(Esame.cod_corso_laurea == cod_corso_laurea) \
+        .where(EsameAnno.cod_anno_accademico == current_anno_accademico().cod_anno_accademico)
+    esami = db.session.scalars(query).all()
+    return ApiResponse(map_to_dict(esami)).asdict()
 
 
 @api.route('/esami/<cod_esame>/prove')
