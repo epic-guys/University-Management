@@ -181,7 +181,7 @@ def appelli_table():
 
 @api.route('/voti')
 def voti():
-    voti = db.session.scalars((select(Voto))).all()
+    voti = db.session.scalars((select(VotoAppello))).all()
     return map_to_dict(voti)
 
 
@@ -190,7 +190,7 @@ def add_voti():
     payload = request.json
     for voto in payload:
         try:
-            stmt = insert(Voto) \
+            stmt = insert(VotoAppello) \
                 .values(voto)
             db.session.execute(stmt)
         except SQLAlchemyError as e:
@@ -202,7 +202,7 @@ def add_voti():
 
 @api.route('/voti/<cod_appello>/<matricola>/')
 def voto_info(cod_appello, matricola):
-    voto = db.session.scalars(select(Voto).where(Voto.cod_appello == cod_appello and Voto.matricola == matricola)).all()
+    voto = db.session.scalars(select(VotoAppello).where(VotoAppello.cod_appello == cod_appello and VotoAppello.matricola == matricola)).all()
     return map_to_dict(voto)
 
 

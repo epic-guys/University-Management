@@ -74,7 +74,7 @@ def voti():
 
 @docenti.route('/voti/<cod_appello>/<matricola>/')
 def voti_info(cod_appello, matricola):
-    voto = db.session.scalars(select(Voto).where(Voto.cod_appello == cod_appello and Voto.matricola == matricola))
+    voto = db.session.scalars(select(VotoAppello).where(VotoAppello.cod_appello == cod_appello and VotoAppello.matricola == matricola))
     return render_template('docenti/voto-info.html', voto=voto)
 
 

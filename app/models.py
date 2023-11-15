@@ -87,11 +87,13 @@ class Studente(Persona):
     __tablename__ = 'studenti'
     matricola: Mapped[str] = mapped_column(ForeignKey('persone.cod_persona'), primary_key=True)
     cod_corso_laurea: Mapped[str] = mapped_column(ForeignKey('corsi_laurea.cod_corso_laurea'))
-    corso_laurea: Mapped['CorsoLaurea'] = relationship(back_populates='studenti')
 
     __mapper_args__ = {
         'polymorphic_identity': 'S'
     }
+
+    # relazioni
+    corso_laurea: Mapped['CorsoLaurea'] = relationship(back_populates='studenti')
 
     def __init__(self, matricola: str, nome: str, cognome: str, data_nascita: date, sesso: str, email: str,
                  password_hash: str, ruolo: str):
@@ -210,8 +212,8 @@ class IscrizioneAppello(Model):
     appello: Mapped[Appello] = relationship()
 
 
-class Voto(Model):
-    __tablename__ = 'voti'
+class VotoAppello(Model):
+    __tablename__ = 'voti_appelli'
 
     cod_appello: Mapped[str] = mapped_column(ForeignKey('appelli.cod_appello'), primary_key=True)
     matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'), primary_key=True)
@@ -226,7 +228,7 @@ class Voto(Model):
 
     # relazioni
     iscrizioneAppello: Mapped[IscrizioneAppello] = relationship()
-
+    studente: Mapped[Studente] = relationship()
 
 
     def __init__(self, voto: int):
@@ -234,3 +236,23 @@ class Voto(Model):
         self.cod_prova = Appello.cod_prova
         self.matricola = Studente.matricola
         self.voto = voto
+
+
+class VotoProva(Model):
+    __tablename__ = 'voti_prove'
+
+    cod_appello: Mapped[str] = mapped_column(ForeignKey('appelli.cod_appello'), primary_key=True)
+    matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'), primary_key=True)
+    voto: Mapped[int] = mapped_column()
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ['cod_appello', 'matricola'],
+            ['iscrizioni_appelli.cod_appello', 'iscrizioni_appelli.matricola']
+        ),
+    )
+
+    # relazioni
+    iscrizioneAppello: Mapped[IscrizioneAppello] = relationship()
+    studente: Mapped[Studente] = relationship()
+    appello: Mapped[Appello] = relationship()

@@ -40,4 +40,4 @@ def test_doc():
 
 def test_voti():
     with Session(engine) as session:
-        print(session.scalars(select(Voto)))
+        print(session.scalars(select(VotoAppello)))

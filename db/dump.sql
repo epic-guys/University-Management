@@ -60,8 +60,7 @@ CREATE TABLE esami (
     anno INT NOT NULL,
     cfu INT NOT NULL,
     cod_corso_laurea TEXT NOT NULL,
-    FOREIGN KEY (cod_corso_laurea) REFERENCES corsi_laurea (cod_corso_laurea),
-    FOREIGN KEY (cod_presidente) REFERENCES docenti (cod_docente)
+    FOREIGN KEY (cod_corso_laurea) REFERENCES corsi_laurea (cod_corso_laurea)
 );
 
 
@@ -138,8 +137,9 @@ CREATE TABLE iscrizioni_appelli (
     FOREIGN KEY (cod_appello) REFERENCES appelli(cod_appello)
 );
 
-DROP TABLE IF EXISTS voti_prove CASCADE;
-CREATE TABLE voti_prove (
+
+DROP TABLE IF EXISTS voti_appelli CASCADE;
+CREATE TABLE voti_appelli (
     cod_appello TEXT NOT NULL,
     matricola TEXT NOT NULL,
     voto INT NOT NULL,
@@ -153,7 +153,29 @@ CREATE TABLE voti_prove (
                  ON DELETE CASCADE
 );
 
--- Trigger
+
+--#region Viste
+
+CREATE VIEW voti_prove AS
+WITH appelli_recenti AS (SELECT a.cod_prova, v.matricola, MAX(a.data_appello) AS appello_recente
+                         FROM voti_appelli v
+                                  NATURAL JOIN appelli a
+                         GROUP BY a.cod_prova, v.matricola)
+SELECT v2.*
+FROM voti_appelli v2
+NATURAL JOIN appelli a2
+JOIN appelli_recenti ar ON a2.cod_prova = ar.cod_prova
+                        AND v2.matricola = ar.matricola
+                        AND a2.data_appello = ar.appello_recente
+WHERE v2.voto >= 18;
+
+
+
+--#endregion
+
+
+--#region Trigger
+
 DROP TRIGGER IF EXISTS role_check_t ON docenti;
 DROP TRIGGER IF EXISTS role_check_t ON studenti;
 DROP FUNCTION IF EXISTS role_check();
@@ -224,6 +246,8 @@ CREATE TRIGGER data_appello_check_t
     ON iscrizioni_appelli
     FOR EACH ROW
 EXECUTE FUNCTION data_appello_check();
+
+--#endregion
 
 -- Data
 
@@ -317,32 +341,32 @@ VALUES
 --#region DATI ESAMI
 
 -- Esami (anche questi non li ha generati ChatGPT, soprattutto perché sono tutti esami che abbiamo anche noi)
-INSERT INTO esami (cod_esame, nome_corso, descrizione_corso, anno, cfu, cod_presidente, cod_corso_laurea)
+INSERT INTO esami (cod_esame, nome_corso, descrizione_corso, anno, cfu, cod_corso_laurea)
 VALUES
-    ('E1', 'Matematica 1', 'Fondamenti di matematica', 1, 6, '1', 'CT3'),
-    ('E2', 'Fisica 1', 'Principi della fisica classica', 1, 6, '4', 'CT3'),
-    ('E3', 'Informatica 1', E'Introduzione all\'informatica', 1, 9, '6', 'CT3'),
-    ('E4', 'Chimica', 'Introduzione alla chimica', 1, 6, '8', 'CT3'),
-    ('E5', 'Ingegneria del Software', E'Principi dell\'ingegneria del software', 2, 9, '9', 'CT3'),
-    ('E6', 'Sistemi Operativi', 'Fondamenti dei sistemi operativi', 2, 9, '2', 'CT3'),
-    ('E7', 'Elettrotecnica', 'Principi di elettrotecnica', 2, 6, '3', 'CT3'),
-    ('E8', 'Analisi dei Dati', 'Metodi di analisi dei dati', 3, 9, '5', 'CT3'),
-    ('E9', 'Reti di Calcolatori', 'Introduzione alle reti di calcolatori', 3, 6, '7', 'CT3'),
-    ('E10', 'Progettazione dei Circuiti', 'Progettazione di circuiti elettronici', 3, 9, '10', 'CT3');
+    ('E1', 'Matematica 1', 'Fondamenti di matematica', 1, 6, 'CT3'),
+    ('E2', 'Fisica 1', 'Principi della fisica classica', 1, 6, 'CT3'),
+    ('E3', 'Informatica 1', E'Introduzione all\'informatica', 1, 9, 'CT3'),
+    ('E4', 'Chimica', 'Introduzione alla chimica', 1, 6, 'CT3'),
+    ('E5', 'Ingegneria del Software', E'Principi dell\'ingegneria del software', 2, 9, 'CT3'),
+    ('E6', 'Sistemi Operativi', 'Fondamenti dei sistemi operativi', 2, 9, 'CT3'),
+    ('E7', 'Elettrotecnica', 'Principi di elettrotecnica', 2, 6, 'CT3'),
+    ('E8', 'Analisi dei Dati', 'Metodi di analisi dei dati', 3, 9, 'CT3'),
+    ('E9', 'Reti di Calcolatori', 'Introduzione alle reti di calcolatori', 3, 6, 'CT3'),
+    ('E10', 'Progettazione dei Circuiti', 'Progettazione di circuiti elettronici', 3, 9, 'CT3');
 
 
 INSERT INTO esami_anni_accademici
 VALUES
-    ('E1', 2023),
-    ('E2', 2023),
-    ('E3', 2023),
-    ('E4', 2023),
-    ('E5', 2023),
-    ('E6', 2023),
-    ('E7', 2023),
-    ('E8', 2023),
-    ('E9', 2023),
-    ('E10', 2023);
+    ('E1', 2023, '1'),
+    ('E2', 2023, '4'),
+    ('E3', 2023, '6'),
+    ('E4', 2023, '8'),
+    ('E5', 2023, '9'),
+    ('E6', 2023, '2'),
+    ('E7', 2023, '3'),
+    ('E8', 2023, '5'),
+    ('E9', 2023, '7'),
+    ('E10', 2023, '10');
 
 
 -- Inserisci dati delle prove
@@ -419,7 +443,7 @@ VALUES
     ('App5', '20', NOW() - INTERVAL '1 days');
 
 
-INSERT INTO voti_prove (cod_appello, matricola, voto)
+INSERT INTO voti_appelli (cod_appello, matricola, voto)
 VALUES
     ('App1', '11', 18),
     ('App1', '12', 22),
