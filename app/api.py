@@ -172,7 +172,7 @@ def iscrizioni(cod_appello):
     return ApiResponse(data).asdict()
 
 
-@api.route('/appelli/<cod_appello>/iscrizione', methods=['POST'])
+@api.route('/appelli/<cod_appello>/iscrizione/', methods=['POST'])
 @api_role_manager.roles(Studente)
 def add_iscrizione(cod_appello):
     query = insert(IscrizioneAppello).values({
@@ -182,7 +182,7 @@ def add_iscrizione(cod_appello):
     })
     db.session.execute(query)
     db.session.commit()
-    return ApiResponse(message='Successfully added iscrizione')
+    return ApiResponse(message='Successfully added iscrizione').asdict()
 
 
 @api.route('/appelli/info')

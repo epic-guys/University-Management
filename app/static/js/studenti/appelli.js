@@ -37,6 +37,10 @@ function initTable(){
                         )
                         // FIXME potenziale XSS
                         .attr("href", "/studenti/appelli/" + row.cod_appello + "/iscrizione")
+                       .on("click", function (e) {
+                            e.preventDefault(); // Per evitare il comportamento predefinito del link
+                            iscriviti(row.cod_appello);
+                        })
                         .prop("outerHTML")
                    return elem;
                 },
@@ -48,4 +52,14 @@ function initTable(){
             dataSrc: ""
         }
     });
+}
+
+function iscriviti(cod_appello) {
+    $.ajax({
+        url: "/api/appelli/" + cod_appello + "/iscrizione",
+        method: "POST",
+        success: (res) => {
+           console.log("inviato")
+        }
+    })
 }
