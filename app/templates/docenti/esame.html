@@ -9,6 +9,9 @@
     </p>
 
     <h2>Prove</h2>
+
+     <button class="btn btn-primary" data-toggle="modal" data-target="#add-modal"><i class="fa-solid fa-plus"></i></button>
+
     <table class="table" id="prove-table">
     <thead>
     <tr>
@@ -24,5 +27,66 @@
     </thead>
     <tbody></tbody>
     </table>
+
+
+     <!-- Modale aggiunta prove -->
+    <div class="modal" tabindex="-1" role="dialog" id="add-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Aggiungi Prova</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form aggiunta prova -->
+                    <form id="add-form">
+                        <div class="form-group">
+                            <label for="tipo_prova">Tipo di prova</label>
+                            <select name="tipo_prova" id="tipo_prova" class="form-control">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cod_prova">Codice prova</label>
+                            <input type="text" name="cod_prova" id="cod_prova" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="denominazione_prova">Denominazione prova</label>
+                            <input type="text" name="denominazione_prova" id="denominazione_prova" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="descrizione_prova">Descrizione prova</label>
+                            <input type="text" name="descrizione_prova" id="descrizione_prova" class="form-control">
+                        </div>
+                        <div class="form-row">
+                            <div class="col">
+                                <label for="peso">Peso</label>
+                                <input type="number" name="peso" id="peso" min="0" max="1" class="form-control">
+                            </div>
+                            <div class="col">
+                                <label for="anno">Anno accademico</label>
+                                <select name="anno" id="anno" class="form-control">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="scadenza">Scadenza</label>
+                            <input type="datetime-local" name="scadenza" id="scadenza" class="form-control">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="add-btn" onclick="createEsame();" data-dismiss="modal">
+                        <i class="fa-solid fa-check"></i> Aggiungi
+                    </button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i> Annulla
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/docenti/esame.js') }}"></script>
 {% endblock %}
