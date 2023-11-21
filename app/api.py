@@ -237,3 +237,9 @@ def libretto():
         serialized['voto'] = voto.asdict() if voto is not None else None
         serialized_list.append(serialized)
     return ApiResponse(serialized_list).asdict()
+
+
+@api.route('/tipi-prova')
+def tipi_prova():
+    tipi_prova = db.session.scalars(select(TipoProva)).all()
+    return map_to_dict(tipi_prova)

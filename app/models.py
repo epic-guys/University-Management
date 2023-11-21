@@ -270,3 +270,12 @@ class VotoEsame(Model):
     # relazioni
     studente: Mapped[Studente] = relationship()
     esame: Mapped[Esame] = relationship()
+
+
+class TipoProva(Model):
+    __tablename__ = 'tipi_prove'
+
+    tipo_prova: Mapped[str] = mapped_column(primary_key=True)
+
+    def __init__(self, tipo_prova: str):
+        self.tipo_prova = tipo_prova

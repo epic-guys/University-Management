@@ -2,6 +2,7 @@ const page = {};
 
 $(() => {
     page.tableElement = $("#prove-table");
+    initAddProva();
     initTable();
 });
 
@@ -65,3 +66,23 @@ function initTable() {
     });
 }
 
+
+function initAddProva() {
+    $.ajax({
+        url: "/api/tipi-prova",
+        success: (tipo) => {
+            let options = [];
+            for (const t of tipo) {
+                let option = $("<option>");
+                option.attr("value", t.tipo_prova);
+                option.html(t.tipo_prova);
+                options.push(option);
+            }
+            $('#tipo_prova').html(options);
+        },
+        error: () => {
+            // TODO cambiare ovviamente, è solo per debug
+            alert("Richiesta a tipi-prove fallito");
+        }
+    });
+}
