@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS corsi_laurea CASCADE;
 CREATE TABLE corsi_laurea (
-    cod_corso_laurea TEXT NOT NULL PRIMARY KEY,
+    cod_corso_laurea TEXT NOT NULL PRIMARY KEY CHECK ( cod_corso_laurea LIKE 'C[TM]\d+' ),
     nome_corso_laurea TEXT NOT NULL
 );
 
@@ -23,7 +23,7 @@ CREATE TABLE ruoli (
 DROP TABLE IF EXISTS persone CASCADE;
 CREATE TABLE persone (
                          ruolo CHAR(1) NOT NULL,
-                         cod_persona TEXT NOT NULL PRIMARY KEY,
+                         cod_persona TEXT NOT NULL PRIMARY KEY CHECK (cod_persona LIKE '[a-zA-Z0-9_]+'),
                          nome TEXT NOT NULL,
                          cognome TEXT NOT NULL,
                          data_nascita DATE NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE docenti (
 
 DROP TABLE IF EXISTS esami CASCADE;
 CREATE TABLE esami (
-    cod_esame TEXT NOT NULL PRIMARY KEY,
+    cod_esame TEXT NOT NULL PRIMARY KEY CHECK ( cod_esame LIKE 'E\d+' ),
     nome_corso TEXT NOT NULL,
     descrizione_corso TEXT,
     anno INT NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE tipi_prove (
 
 DROP TABLE IF EXISTS prove CASCADE;
 CREATE TABLE prove (
-    cod_prova TEXT NOT NULL PRIMARY KEY,
+    cod_prova TEXT NOT NULL PRIMARY KEY CHECK ( cod_prova LIKE 'P\d+' ),
     tipo_prova TEXT NOT NULL,
     denominazione_prova TEXT NOT NULL,
     descrizione_prova TEXT NOT NULL,
@@ -124,7 +124,7 @@ CREATE TABLE prove (
 
 DROP TABLE IF EXISTS appelli CASCADE;
 CREATE TABLE appelli(
-    cod_appello TEXT NOT NULL PRIMARY KEY,
+    cod_appello TEXT NOT NULL PRIMARY KEY CHECK ( cod_appello LIKE 'A\d+' ),
     data_appello timestamptz NOT NULL,
     cod_prova TEXT NOT NULL,
     aula TEXT NOT NULL,
@@ -415,53 +415,53 @@ VALUES
 -- Inserimento dati nella tabella degli appelli
 INSERT INTO appelli (cod_appello, data_appello, cod_prova, aula)
 VALUES
-    ('App1', '2023-11-15', 'P1', 'Aula 1'),
-    ('App2', '2023-11-17', 'P2', 'Aula 2'),
-    ('App3', '2023-11-20', 'P3', 'Aula 3'),
-    ('App4', '2023-11-15', 'P4', 'Aula 1'),
-    ('App5', '2023-11-17', 'P5', 'Aula 2'),
-    ('App6', '2023-11-20', 'P6', 'Aula 3'),
-    ('App7', '2023-11-15', 'P7', 'Aula 1'),
-    ('App8', '2023-11-17', 'P8', 'Aula 2'),
-    ('App9', '2023-11-20', 'P9', 'Aula 3'),
-    ('App10', '2023-11-15', 'P10', 'Aula 1'),
-    ('App11', '2023-11-17', 'P11', 'Aula 2'),
-    ('App12', '2023-11-20', 'P12', 'Aula 3'),
-    ('App13', '2023-11-15', 'P13', 'Aula 1'),
-    ('App14', '2023-11-17', 'P14', 'Aula 2'),
-    ('App15', '2023-11-20', 'P15', 'Aula 3'),
-    ('App16', '2023-11-15', 'P16', 'Aula 1'),
-    ('App17', '2023-11-17', 'P17', 'Aula 2'),
-    ('App18', '2023-11-20', 'P18', 'Aula 3'),
-    ('App19', '2023-11-15', 'P19', 'Aula 1'),
-    ('App20', '2023-11-17', 'P20', 'Aula 2');
+    ('A1', '2023-11-15', 'P1', 'Aula 1'),
+    ('A2', '2023-11-17', 'P2', 'Aula 2'),
+    ('A3', '2023-11-20', 'P3', 'Aula 3'),
+    ('A4', '2023-11-15', 'P4', 'Aula 1'),
+    ('A5', '2023-11-17', 'P5', 'Aula 2'),
+    ('A6', '2023-11-20', 'P6', 'Aula 3'),
+    ('A7', '2023-11-15', 'P7', 'Aula 1'),
+    ('A8', '2023-11-17', 'P8', 'Aula 2'),
+    ('A9', '2023-11-20', 'P9', 'Aula 3'),
+    ('A10', '2023-11-15', 'P10', 'Aula 1'),
+    ('A11', '2023-11-17', 'P11', 'Aula 2'),
+    ('A12', '2023-11-20', 'P12', 'Aula 3'),
+    ('A13', '2023-11-15', 'P13', 'Aula 1'),
+    ('A14', '2023-11-17', 'P14', 'Aula 2'),
+    ('A15', '2023-11-20', 'P15', 'Aula 3'),
+    ('A16', '2023-11-15', 'P16', 'Aula 1'),
+    ('A17', '2023-11-17', 'P17', 'Aula 2'),
+    ('A18', '2023-11-20', 'P18', 'Aula 3'),
+    ('A19', '2023-11-15', 'P19', 'Aula 1'),
+    ('A20', '2023-11-17', 'P20', 'Aula 2');
 
 
 INSERT INTO iscrizioni_appelli (cod_appello, matricola, data_iscrizione)
 VALUES
-    ('App1', '11', NOW() - INTERVAL '3 days'),
-    ('App1', '12', NOW() - INTERVAL '2 days'),
-    ('App2', '13', NOW() - INTERVAL '1 days'),
-    ('App2', '14', NOW() - INTERVAL '1 days'),
-    ('App3', '15', NOW() - INTERVAL '2 days'),
-    ('App3', '16', NOW() - INTERVAL '3 days'),
-    ('App4', '17', NOW() - INTERVAL '1 days'),
-    ('App4', '18', NOW() - INTERVAL '2 days'),
-    ('App5', '19', NOW() - INTERVAL '3 days'),
-    ('App5', '20', NOW() - INTERVAL '1 days');
+    ('A1', '11', NOW() - INTERVAL '3 days'),
+    ('A1', '12', NOW() - INTERVAL '2 days'),
+    ('A2', '13', NOW() - INTERVAL '1 days'),
+    ('A2', '14', NOW() - INTERVAL '1 days'),
+    ('A3', '15', NOW() - INTERVAL '2 days'),
+    ('A3', '16', NOW() - INTERVAL '3 days'),
+    ('A4', '17', NOW() - INTERVAL '1 days'),
+    ('A4', '18', NOW() - INTERVAL '2 days'),
+    ('A5', '19', NOW() - INTERVAL '3 days'),
+    ('A5', '20', NOW() - INTERVAL '1 days');
 
 
 INSERT INTO voti_appelli (cod_appello, matricola, voto)
 VALUES
-    ('App1', '11', 18),
-    ('App1', '12', 22),
-    ('App2', '13', 25),
-    ('App2', '14', 20),
-    ('App3', '15', 28),
-    ('App3', '16', 31),
-    ('App4', '17', 19),
-    ('App4', '18', 24),
-    ('App5', '19', 27),
-    ('App5', '20', 21);
+    ('A1', '11', 18),
+    ('A1', '12', 22),
+    ('A2', '13', 25),
+    ('A2', '14', 20),
+    ('A3', '15', 28),
+    ('A3', '16', 31),
+    ('A4', '17', 19),
+    ('A4', '18', 24),
+    ('A5', '19', 27),
+    ('A5', '20', 21);
 
 --#endregion
