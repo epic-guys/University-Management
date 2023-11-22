@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS corsi_laurea CASCADE;
 CREATE TABLE corsi_laurea
 (
-    cod_corso_laurea  TEXT NOT NULL PRIMARY KEY CHECK ( cod_corso_laurea LIKE 'C[TM]\d+' ),
+    cod_corso_laurea  TEXT NOT NULL PRIMARY KEY CHECK ( cod_corso_laurea SIMILAR TO 'C[TM]\d+' ),
     nome_corso_laurea TEXT NOT NULL
 );
 
@@ -27,7 +27,7 @@ DROP TABLE IF EXISTS persone CASCADE;
 CREATE TABLE persone
 (
     ruolo         CHAR(1) NOT NULL,
-    cod_persona   TEXT    NOT NULL PRIMARY KEY CHECK (cod_persona LIKE '[a-zA-Z0-9_]+'),
+    cod_persona   TEXT    NOT NULL PRIMARY KEY CHECK (cod_persona SIMILAR TO '[a-zA-Z0-9_]+'),
     nome          TEXT    NOT NULL,
     cognome       TEXT    NOT NULL,
     data_nascita  DATE    NOT NULL,
@@ -41,12 +41,14 @@ CREATE TABLE persone
 DROP TABLE IF EXISTS studenti CASCADE;
 CREATE TABLE studenti
 (
-    matricola        TEXT NOT NULL PRIMARY KEY,
-    cod_corso_laurea TEXT NOT NULL,
+    matricola               TEXT NOT NULL PRIMARY KEY,
+    cod_corso_laurea        TEXT NOT NULL,
+    cod_anno_iscrizione     INT  NOT NULL,
     FOREIGN KEY (matricola) REFERENCES persone (cod_persona)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    FOREIGN KEY (cod_corso_laurea) REFERENCES corsi_laurea (cod_corso_laurea)
+    FOREIGN KEY (cod_corso_laurea) REFERENCES corsi_laurea (cod_corso_laurea),
+    FOREIGN KEY (cod_anno_iscrizione) REFERENCES anni_accademici (cod_anno_accademico)
 );
 
 
@@ -63,7 +65,7 @@ CREATE TABLE docenti
 DROP TABLE IF EXISTS esami CASCADE;
 CREATE TABLE esami
 (
-    cod_esame         TEXT NOT NULL PRIMARY KEY CHECK ( cod_esame LIKE 'E\d+' ),
+    cod_esame         TEXT NOT NULL PRIMARY KEY CHECK ( cod_esame SIMILAR TO 'E\d+' ),
     nome_corso        TEXT NOT NULL,
     descrizione_corso TEXT,
     anno              INT  NOT NULL,
@@ -114,7 +116,7 @@ CREATE TABLE tipi_prove
 DROP TABLE IF EXISTS prove CASCADE;
 CREATE TABLE prove
 (
-    cod_prova           TEXT          NOT NULL PRIMARY KEY CHECK ( cod_prova LIKE 'P\d+' ),
+    cod_prova           TEXT          NOT NULL PRIMARY KEY CHECK ( cod_prova SIMILAR TO 'P\d+' ),
     tipo_prova          TEXT          NOT NULL,
     denominazione_prova TEXT          NOT NULL,
     descrizione_prova   TEXT          NOT NULL,
@@ -136,7 +138,7 @@ CREATE TABLE prove
 DROP TABLE IF EXISTS appelli CASCADE;
 CREATE TABLE appelli
 (
-    cod_appello  TEXT        NOT NULL PRIMARY KEY CHECK ( cod_appello LIKE 'A\d+' ),
+    cod_appello  TEXT        NOT NULL PRIMARY KEY CHECK ( cod_appello SIMILAR TO 'A\d+' ),
     data_appello timestamptz NOT NULL,
     cod_prova    TEXT        NOT NULL,
     aula         TEXT        NOT NULL,
@@ -315,17 +317,17 @@ VALUES ('S', '11', 'Marco', 'Rossi', '2000-01-01', 'M', 'marco@email.com', 'hash
        ('S', '19', 'Giovanni', 'Viola', '2000-09-09', 'M', 'giovanni@email.com', 'hash9'),
        ('S', '20', 'Valeria', 'Arancio', '2000-10-10', 'F', 'valeria@email.com', 'hash10');
 
-INSERT INTO studenti (matricola, cod_corso_laurea)
-VALUES ('11', 'CT3'),
-       ('12', 'CT3'),
-       ('13', 'CT3'),
-       ('14', 'CT3'),
-       ('15', 'CT3'),
-       ('16', 'CT3'),
-       ('17', 'CT3'),
-       ('18', 'CT3'),
-       ('19', 'CT3'),
-       ('20', 'CT3');
+INSERT INTO studenti (matricola, cod_corso_laurea, cod_anno_iscrizione)
+VALUES ('11', 'CT3', 2022),
+       ('12', 'CT3', 2022),
+       ('13', 'CT3', 2022),
+       ('14', 'CT3', 2022),
+       ('15', 'CT3', 2022),
+       ('16', 'CT3', 2022),
+       ('17', 'CT3', 2022),
+       ('18', 'CT3', 2022),
+       ('19', 'CT3', 2022),
+       ('20', 'CT3', 2022);
 
 --#endregion
 

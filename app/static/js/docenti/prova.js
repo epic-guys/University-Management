@@ -40,9 +40,6 @@ function initTable() {
         ],
         ajax: {
             url: "/api/prove/" + $("#cod-prova").val() + "/appelli"
-        },
-        rowGroup: {
-            dataSrc: "anno_accademico.cod_anno_accademico"
         }
     });
 }

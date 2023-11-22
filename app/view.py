@@ -47,11 +47,9 @@ def esami(cod_esame=None):
     if cod_esame is None:
         return render_template('docenti/esami.html')
 
-    q = select(Esame).where(Esame.cod_esame == cod_esame)
-    esame = db.session.scalar(q)
     q = select(EsameAnno).where(EsameAnno.cod_esame == cod_esame and EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
     esame_anno = db.session.scalar(q)
-    if esame is None:
+    if esame_anno is None:
         return abort(404)
 
     return render_template('docenti/esame.html', esameanno=esame_anno)

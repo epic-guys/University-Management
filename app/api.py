@@ -86,7 +86,7 @@ def esami(cod_esame=None):
                 query = query.where(EsameAnno.cod_esame == cod_esame)
             query = query.where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
             esami = db.session.scalars(query).all()
-            return ApiResponse(map_to_dict(esami)).asdict()
+            return ApiResponse(map_to_dict(esami, includes=['anno_accademico'])).asdict()
         case 'POST':
             return insert_esame()
         case 'DELETE':

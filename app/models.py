@@ -87,6 +87,7 @@ class Studente(Persona):
     __tablename__ = 'studenti'
     matricola: Mapped[str] = mapped_column(ForeignKey('persone.cod_persona'), primary_key=True)
     cod_corso_laurea: Mapped[str] = mapped_column(ForeignKey('corsi_laurea.cod_corso_laurea'))
+    cod_anno_iscrizione: Mapped[int] = mapped_column(ForeignKey('anni_accademici.cod_anno_accademico'))
 
     __mapper_args__ = {
         'polymorphic_identity': 'S'
@@ -94,6 +95,7 @@ class Studente(Persona):
 
     # relazioni
     corso_laurea: Mapped['CorsoLaurea'] = relationship(back_populates='studenti')
+    anno_iscrizione: Mapped['AnnoAccademico'] = relationship()
 
     def __init__(self, matricola: str, nome: str, cognome: str, data_nascita: date, sesso: str, email: str,
                  password_hash: str, ruolo: str):

@@ -59,9 +59,6 @@ function initTable() {
         ],
         ajax: {
             url: "/api/esami/" + $("#cod-esame").html() + "/prove"
-        },
-        rowGroup: {
-            dataSrc: "anno_accademico.cod_anno_accademico"
         }
     });
 }
@@ -87,7 +84,7 @@ function initAddProva() {
     });
 }
 
-fucntion createProva(){
+function createProva(){
     $.ajax({
         url: "/api/esami",
         method: "POST",
