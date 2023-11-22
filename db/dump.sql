@@ -81,12 +81,16 @@ CREATE TABLE esami_anni_accademici (
 DROP TABLE IF EXISTS voti_esami CASCADE;
 CREATE TABLE voti_esami (
     cod_esame TEXT NOT NULL,
+    cod_anno_accademico INTEGER NOT NULL,
     matricola TEXT NOT NULL,
     voto INT NOT NULL,
     data_completamento timestamptz NOT NULL,
 
     -- È più frequente cercare gli esami a partire dallo studente piuttosto che viceversa
+    -- Usando matricola e cod_esame, si impone il vincolo che uno studente non possa sostenere lo stesso esame più volte
+    -- Se si usasse anche cod_anno_accademico, uno studente potrebbe sostenere lo stesso esame più volte in anni accademici diversi
     PRIMARY KEY (matricola, cod_esame),
+    FOREIGN KEY (cod_esame, cod_anno_accademico) REFERENCES esami_anni_accademici (cod_esame, cod_anno_accademico),
     FOREIGN KEY (cod_esame) REFERENCES esami (cod_esame),
     FOREIGN KEY (matricola) REFERENCES studenti (matricola)
 );

@@ -1,7 +1,6 @@
 import dataclasses
 
 import flask_login
-import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
 import werkzeug.exceptions
 from flask import Blueprint, request, abort
@@ -14,13 +13,6 @@ from typing import ClassVar
 from collections.abc import Iterable
 
 api = Blueprint('api', __name__, url_prefix='/api')
-
-
-def current_anno_accademico() -> AnnoAccademico:
-    today = date.today()
-    query = select(AnnoAccademico).where(AnnoAccademico.inizio_anno <= today,
-                                         AnnoAccademico.fine_anno >= today)
-    return db.session.scalar(query)
 
 
 def map_to_dict(model: Iterable[Model] | Model, includes=None):
@@ -83,6 +75,7 @@ def insert_eventi():
     db.session.commit()
     return ApiResponse(message='Events inserted successfully').asdict()
 
+
 @api.route('/esami/', methods=['GET', 'DELETE', 'POST'])
 @api.route('/esami/<cod_esame>', methods=['GET'])
 def esami(cod_esame=None):
@@ -91,7 +84,7 @@ def esami(cod_esame=None):
             query = select(EsameAnno)
             if cod_esame is not None:
                 query = query.where(EsameAnno.cod_esame == cod_esame)
-            query = query.where(EsameAnno.cod_anno_accademico == current_anno_accademico().cod_anno_accademico)
+            query = query.where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
             esami = db.session.scalars(query).all()
             return ApiResponse(map_to_dict(esami)).asdict()
         case 'POST':
@@ -103,12 +96,12 @@ def esami(cod_esame=None):
 @api.route('/esami/corso_laurea/<cod_corso_laurea>')
 def esami_corso_laurea(cod_corso_laurea):
     query = select(EsameAnno).where(Esame.cod_corso_laurea == cod_corso_laurea) \
-        .where(EsameAnno.cod_anno_accademico == current_anno_accademico().cod_anno_accademico)
+        .where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
     esami = db.session.scalars(query).all()
     return ApiResponse(map_to_dict(esami)).asdict()
 
 
-@api.route('/esami/<cod_esame>/prove')
+@api.route('/esami/<cod_esame>/prove', methods=['GET', 'POST'])
 @api.route('/prove/<cod_prova>')
 def prove(cod_esame=None, cod_prova=None):
     match request.method:
@@ -123,6 +116,20 @@ def prove(cod_esame=None, cod_prova=None):
             prove = db.session.scalars(query).all()
             prove = map_to_dict(prove, ['anno_accademico', 'docente'])
             return ApiResponse(prove).asdict()
+        case 'POST':
+            esame_stmt = select(EsameAnno).where(EsameAnno.cod_esame == cod_esame) \
+                .where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
+            esame = db.session.scalar(esame_stmt)
+            if esame is None:
+                abort(404, 'Esame not found')
+            if esame.presidente.cod_docente != flask_login.current_user.cod_docente:
+                abort(403, 'Only presidente can add prove')
+
+            prova = request.json
+            insert_stmt = insert(Prova).values(prova)
+            db.session.execute(insert_stmt)
+            db.session.commit()
+            return ApiResponse(None, message="Successfully added Prove")
 
 
 @api.route('/prove/<cod_prova>/appelli')
@@ -162,27 +169,25 @@ def appelli():
             return insert_eventi()
 
 
-@api.route('/appelli/<cod_appello>/iscrizioni')
+@api.route('/appelli/<cod_appello>/iscrizioni', methods=['GET', 'POST'])
 def iscrizioni(cod_appello):
-    query = select(IscrizioneAppello) \
-        .where(IscrizioneAppello.cod_appello == cod_appello)
-    res = db.session.scalars(query).all()
-    data = map_to_dict(res, ['studente'])
+    if request.method == 'GET':
+        query = select(IscrizioneAppello) \
+            .where(IscrizioneAppello.cod_appello == cod_appello)
+        res = db.session.scalars(query).all()
+        data = map_to_dict(res, ['studente'])
 
-    return ApiResponse(data).asdict()
+        return ApiResponse(data).asdict()
 
-
-@api.route('/appelli/<cod_appello>/iscrizione/', methods=['POST'])
-@api_role_manager.roles(Studente)
-def add_iscrizione(cod_appello):
-    query = insert(IscrizioneAppello).values({
-        'matricola': flask_login.current_user.matricola,
-        'cod_appello': cod_appello,
-        'data_iscrizione': datetime.now().isoformat()
-    })
-    db.session.execute(query)
-    db.session.commit()
-    return ApiResponse(message='Successfully added iscrizione').asdict()
+    elif request.method == 'POST':
+        query = insert(IscrizioneAppello).values({
+            'matricola': flask_login.current_user.matricola,
+            'cod_appello': cod_appello,
+            'data_iscrizione': datetime.now().isoformat()
+        })
+        db.session.execute(query)
+        db.session.commit()
+        return ApiResponse(message='Successfully added iscrizione').asdict()
 
 
 @api.route('/appelli/info')

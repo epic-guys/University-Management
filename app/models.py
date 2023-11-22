@@ -2,7 +2,7 @@ import json
 from datetime import date, datetime
 from .db import db
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import ForeignKey, ForeignKeyConstraint
+from sqlalchemy import ForeignKey, ForeignKeyConstraint, select
 from flask_login import UserMixin
 from flask_roles import RoleMixin
 
@@ -109,6 +109,13 @@ class AnnoAccademico(Model):
     inizio_anno: Mapped[date] = mapped_column()
     fine_anno: Mapped[date] = mapped_column()
 
+    @classmethod
+    def current_anno_accademico(cls):
+        today = date.today()
+        query = select(AnnoAccademico).where(AnnoAccademico.inizio_anno <= today,
+                                             AnnoAccademico.fine_anno >= today)
+        return db.session.scalar(query)
+
 
 class CorsoLaurea(Model):
     __tablename__ = 'corsi_laurea'
@@ -178,7 +185,6 @@ class Prova(Model):
         ),
     )
 
-
     def __init__(self, esame: Esame, cod_prova: str, scadenza: date):
         self.cod_prova = cod_prova
         self.cod_esame = esame.cod_esame
@@ -232,7 +238,6 @@ class VotoAppello(Model):
     iscrizioneAppello: Mapped[IscrizioneAppello] = relationship()
     studente: Mapped[Studente] = relationship()
 
-
     def __init__(self, voto: int):
         self.data = Appello.data
         self.cod_prova = Appello.cod_prova
@@ -265,11 +270,19 @@ class VotoEsame(Model):
 
     cod_esame: Mapped[str] = mapped_column(ForeignKey('esami.cod_esame'), primary_key=True)
     matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'), primary_key=True)
+    cod_anno_accademico: Mapped[int] = mapped_column(ForeignKey('anni_accademici.cod_anno_accademico'))
     voto: Mapped[int] = mapped_column()
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ['cod_esame', 'cod_anno_accademico'],
+            ['esami_anni_accademici.cod_esame', 'esami_anni_accademici.cod_anno_accademico']
+        ),
+    )
 
     # relazioni
     studente: Mapped[Studente] = relationship()
-    esame: Mapped[Esame] = relationship()
+    esameAnno: Mapped[EsameAnno] = relationship(foreign_keys=[cod_anno_accademico, cod_esame])
 
 
 class TipoProva(Model):

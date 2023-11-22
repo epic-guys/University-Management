@@ -10,7 +10,9 @@
 
     <h2>Prove</h2>
 
-     <button class="btn btn-primary" data-toggle="modal" data-target="#add-modal"><i class="fa-solid fa-plus"></i></button>
+    {% if current_user.cod_docente == esameanno.cod_presidente %}
+        <button class="btn btn-primary" data-toggle="modal" data-target="#add-modal"><i class="fa-solid fa-plus"></i></button>
+    {% endif %}
 
     <table class="table" id="prove-table">
     <thead>

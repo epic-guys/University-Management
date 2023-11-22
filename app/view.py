@@ -1,5 +1,3 @@
-from .db import db
-from sqlalchemy import select
 from flask import render_template, request, Blueprint, session, url_for, flash, redirect, abort
 from .models import *
 import flask_login
