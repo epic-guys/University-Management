@@ -1,11 +1,11 @@
 {% extends "docenti/docenti-base.html" %}
-{% block title %}{{ esame.nome_corso }}
+{% block title %}{{ esameanno.nome_corso }}
 {% endblock %}>
 
 {% block main %}
-    <h1>{{ esame.nome_corso }}</h1>
+    <h1>{{ esameanno.nome_corso }}</h1>
     <p>
-    Codice esame: <span id="cod-esame">{{ esame.cod_esame }}</span>
+    Codice esame: <span id="cod-esame">{{ esameanno.cod_esame }}</span>
     </p>
 
     <h2>Prove</h2>

@@ -49,10 +49,12 @@ def esami(cod_esame=None):
 
     q = select(Esame).where(Esame.cod_esame == cod_esame)
     esame = db.session.scalar(q)
+    q = select(EsameAnno).where(EsameAnno.cod_esame == cod_esame and EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
+    esame_anno = db.session.scalar(q)
     if esame is None:
         return abort(404)
 
-    return render_template('docenti/esame.html', esame=esame)
+    return render_template('docenti/esame.html', esameanno=esame_anno)
 
 
 @docenti.route('/prove/<cod_prova>')

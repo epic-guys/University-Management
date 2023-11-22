@@ -86,3 +86,14 @@ function initAddProva() {
         }
     });
 }
+
+fucntion createProva(){
+    $.ajax({
+        url: "/api/esami",
+        method: "POST",
+        data: $("#add-form").serialize(),
+        success: (res) => {
+            page.table.ajax.reload();
+        }
+    })
+}
