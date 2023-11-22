@@ -1,0 +1,21 @@
+{% extends 'docenti/docenti-base.html' %}
+{% block title %}
+Corsi di laurea
+{% endblock %}
+{% block main %}
+    <div class="container-fluid">
+    {% for corso in corsi %}
+        <div class="card" style="width: 20rem">
+            <div class="card-header">
+                <h5 class="card-title">{{ corso.cod_corso_laurea }} - {{ corso.nome_corso_laurea }}</h5>
+            </div>
+            <div class="card-body">
+                <a
+                        href="{{ url_for('view.docenti.corso_laurea', cod_corso_laurea=corso.cod_corso_laurea) }}"
+                        class="btn btn-primary"
+                >Vai al corso</a>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}

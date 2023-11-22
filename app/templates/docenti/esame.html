@@ -5,7 +5,8 @@
 {% block main %}
     <h1>{{ esameanno.nome_corso }}</h1>
     <p>
-    Codice esame: <span id="cod-esame">{{ esameanno.cod_esame }}</span>
+    Codice esame:
+    <input class="form-control-plaintext" id="cod-esame" type="text" readonly value="{{ esameanno.cod_esame }}">
     </p>
 
     <h2>Prove</h2>
@@ -68,7 +69,7 @@
                             </div>
                             <div class="col">
                                 <label for="anno">Anno accademico</label>
-                                <input type="number" name="anno" id="anno" class="form-control">
+                                <input type="number" name="cod_anno_accademico" id="cod_anno_accademico" class="form-control">
                             </div>
                         </div>
                         <div class="form-group">

@@ -1,5 +1,15 @@
 const page = {};
 
+function serializeForm(form) {
+    let data = {};
+    let array = form.serializeArray();
+    for (const field of array) {
+        data[field.name] = field.value;
+    }
+    return JSON.stringify(data);
+}
+
+
 $(() => {
     page.tableElement = $("#prove-table");
     initAddProva();
@@ -50,7 +60,6 @@ function initTable() {
                             $("<i>")
                                 .attr("class", "fa-solid fa-eye")
                         )
-                        // FIXME potenziale XSS
                         .attr("href", "/docenti/prove/" + row.cod_prova)
                         .prop("outerHTML");
                 },
@@ -58,7 +67,7 @@ function initTable() {
             }
         ],
         ajax: {
-            url: "/api/esami/" + $("#cod-esame").html() + "/prove"
+            url: "/api/esami/" + $("#cod-esame").val() + "/prove"
         }
     });
 }
@@ -78,19 +87,37 @@ function initAddProva() {
             $('#tipo_prova').html(options);
         },
         error: () => {
-            // TODO cambiare ovviamente, è solo per debug
-            alert("Richiesta a tipi-prove fallito");
+            new Noty({
+                type: "error",
+                text: "Errore nel caricamento dei tipi di prova",
+                timeout: 3000
+            }).show();
         }
     });
 }
 
 function createProva(){
+
     $.ajax({
         url: "/api/esami",
         method: "POST",
-        data: $("#add-form").serialize(),
+        dataType: "json",
+        contentType: "application/json",
+        data: serializeForm($("#add-form")),
         success: (res) => {
+            new Noty({
+                type: "success",
+                text: "Prova creata con successo",
+                timeout: 3000
+            }).show();
             page.table.ajax.reload();
+        },
+        error: (res) => {
+            new Noty({
+                type: "error",
+                text: "Errore nella creazione della prova",
+                timeout: 3000
+            }).show();
         }
     })
 }

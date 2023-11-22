@@ -41,6 +41,17 @@ def index():
     return render_template('docenti/dashboard.html')
 
 
+@docenti.route('/corsi-laurea')
+def corsi_laurea():
+    corsi = db.session.scalars(select(CorsoLaurea)).all()
+    return render_template('docenti/corsi-laurea.html', corsi=corsi)
+
+
+@docenti.route('/corsi-laurea/<cod_corso_laurea>')
+def corso_laurea(cod_corso_laurea):
+    corso = db.session.scalar(select(CorsoLaurea).where(CorsoLaurea.cod_corso_laurea == cod_corso_laurea))
+    return render_template('docenti/corso-laurea.html', corso=corso)
+
 @docenti.route('/esami/')
 @docenti.route('/esami/<cod_esame>')
 def esami(cod_esame=None):

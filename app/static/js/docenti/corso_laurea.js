@@ -57,10 +57,6 @@ function initTable() {
                 render: $.fn.dataTable.render.number()
             },
             {
-                data: "cod_corso_laurea",
-                render: $.fn.dataTable.render.text()
-            },
-            {
                 render: function (data, type, row) {
                     return $("<a>")
                         .attr("class", "btn btn-primary")
@@ -75,10 +71,7 @@ function initTable() {
             }
         ],
         ajax: {
-            url: "/api/esami"
-        },
-        rowGroup: {
-            dataSrc: "anno_accademico.cod_anno_accademico"
+            url: "/api/corso_laurea/" + $("#cod_corso_laurea").val() + "/esami",
         }
     });
 }

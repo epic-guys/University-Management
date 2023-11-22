@@ -40,7 +40,24 @@
         <link href="https://cdn.datatables.net/v/bs4/dt-1.13.8/b-2.4.2/r-2.5.0/rg-1.4.1/datatables.min.css" rel="stylesheet">
         <script src="https://cdn.datatables.net/v/bs4/dt-1.13.6/b-2.4.2/rg-1.4.0/datatables.min.js"></script>
 
+
+        <!-- NOTY -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.js" integrity="sha512-lOrm9FgT1LKOJRUXF3tp6QaMorJftUjowOWiDcG5GFZ/q7ukof19V0HKx/GWzXCdt9zYju3/KhBNdCLzK8b90Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.css" integrity="sha512-0p3K0H3S6Q4bEWZ/WmC94Tgit2ular2/n0ESdfEX8l172YyQj8re1Wu9s/HT9T/T2osUw5Gx/6pAZNk3UKbESw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+
         <script src="{{ url_for('static', filename='js/sb-admin-2.js') }}"></script>
+
+
+        <script>
+        $.fn.dataTable.ext.errMode = (e, settings, techNote, message) => {
+            console.error(techNote);
+            new Noty({
+                type: 'error',
+                text: 'An error occurred on the server. Please try again later.',
+                timeout: 10000
+            }).show();
+        }
+        </script>
 
         <title> {% block title %}{% endblock %} </title>
     {% endblock %}

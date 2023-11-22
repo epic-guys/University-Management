@@ -29,7 +29,7 @@ class ApiResponse:
     ERROR: ClassVar[str] = 'error'
 
     # Non mi fa mettere {} come default
-    data: any = dataclasses.field(default_factory=dict)
+    data: any = None
     status: str = SUCCESS
     message: str | None = None
 
@@ -44,7 +44,7 @@ class ApiResponse:
 @api.errorhandler(Exception)
 def not_found_handler(e):
     if isinstance(e, werkzeug.exceptions.HTTPException):
-        return ApiResponse(None, ApiResponse.FAIL).asdict(), 404
+        return ApiResponse(status=ApiResponse.FAIL, message=e.get_description()).asdict(), 404
 
     else:
         return ApiResponse(e.args, ApiResponse.FAIL, 'Error on server').asdict(), 500
@@ -71,8 +71,11 @@ def insert_eventi():
     req = request.form.to_dict()
     req['data_appello'] = req['data'] + 'T' + req['ora']
     req.pop('data', 'ora')
-    db.session.execute(insert(Appello), req)
-    db.session.commit()
+    try:
+        db.session.execute(insert(Appello), req)
+        db.session.commit()
+    except SQLAlchemyError:
+        return ApiResponse(status=ApiResponse.FAIL, message='Failed to add event').asdict(), 400
     return ApiResponse(message='Events inserted successfully').asdict()
 
 
@@ -93,7 +96,13 @@ def esami(cod_esame=None):
             return delete_esame(cod_esame)
 
 
-@api.route('/esami/corso_laurea/<cod_corso_laurea>')
+@api.route('/corsi_laurea')
+def corsi_laurea():
+    corsi = db.session.scalars(select(CorsoLaurea)).all()
+    return map_to_dict(corsi)
+
+
+@api.route('/corso_laurea/<cod_corso_laurea>/esami')
 def esami_corso_laurea(cod_corso_laurea):
     query = select(EsameAnno).where(Esame.cod_corso_laurea == cod_corso_laurea) \
         .where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
@@ -101,35 +110,39 @@ def esami_corso_laurea(cod_corso_laurea):
     return ApiResponse(map_to_dict(esami)).asdict()
 
 
-@api.route('/esami/<cod_esame>/prove', methods=['GET', 'POST'])
+@api.route('/esami/<cod_esame>/prove')
 @api.route('/prove/<cod_prova>')
 def prove(cod_esame=None, cod_prova=None):
-    match request.method:
-        case 'GET':
-            if cod_esame is not None:
-                query = select(Prova).where(Prova.cod_esame == cod_esame)
-            elif cod_prova is not None:
-                query = select(Prova).where(Prova.cod_prova == cod_prova)
-            else:
-                # Bad request
-                return abort(400)
-            prove = db.session.scalars(query).all()
-            prove = map_to_dict(prove, ['anno_accademico', 'docente'])
-            return ApiResponse(prove).asdict()
-        case 'POST':
-            esame_stmt = select(EsameAnno).where(EsameAnno.cod_esame == cod_esame) \
-                .where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
-            esame = db.session.scalar(esame_stmt)
-            if esame is None:
-                abort(404, 'Esame not found')
-            if esame.presidente.cod_docente != flask_login.current_user.cod_docente:
-                abort(403, 'Only presidente can add prove')
+    if cod_esame is not None:
+        query = select(Prova).where(Prova.cod_esame == cod_esame)
+    elif cod_prova is not None:
+        query = select(Prova).where(Prova.cod_prova == cod_prova)
+    else:
+        # Bad request
+        return abort(400)
+    prove = db.session.scalars(query).all()
+    prove = map_to_dict(prove, ['anno_accademico', 'docente'])
+    return ApiResponse(prove).asdict()
 
-            prova = request.json
-            insert_stmt = insert(Prova).values(prova)
-            db.session.execute(insert_stmt)
-            db.session.commit()
-            return ApiResponse(None, message="Successfully added Prove")
+
+@api.route('/esami/<cod_esame>/prove', methods=['POST'])
+# @api_role_manager.roles(Docente)
+def insert_prove(cod_esame):
+    esame_stmt = select(EsameAnno).where(EsameAnno.cod_esame == cod_esame) \
+        .where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
+    esame = db.session.scalar(esame_stmt)
+    if esame is None:
+        abort(404, 'Esame not found')
+    if esame.presidente.cod_docente != flask_login.current_user.cod_docente:
+        abort(403, 'Only presidente can add prove')
+
+    prova = request.json
+    prova['cod_esame'] = cod_esame
+    prova['cod_docente'] = flask_login.current_user.cod_docente
+    insert_stmt = insert(Prova).values(prova)
+    db.session.execute(insert_stmt)
+    db.session.commit()
+    return ApiResponse(message="Successfully added Prove").asdict()
 
 
 @api.route('/prove/<cod_prova>/appelli')
@@ -146,11 +159,6 @@ def prove_docenti(cod_docente):
     return map_to_dict(prove)
 
 
-@api.route('/corsi_laurea')
-def corsi_laurea():
-    corsi = db.session.scalars(select(CorsoLaurea).join(Esame).join(Prova).where(
-        Prova.cod_docente == flask_login.current_user.cod_docente)).all()
-    return map_to_dict(corsi)
 
 
 @api.route('/appelli/', methods=['GET', 'POST'])
