@@ -21,6 +21,18 @@ function initTable() {
     page.table = page.tableElement.DataTable({
         columns: [
             {
+                render: function (data, type, row) {
+                    return $("<span>")
+                        .attr("class", "expand-btn")
+                        .append(
+                            $("<i>")
+                                .attr("class", "fa-solid fa-square-plus")
+                        )
+                        .prop("outerHTML");
+                },
+                orderable: false
+            },
+            {
                 data: "cod_esame",
                 render: $.fn.dataTable.render.text()
             },
@@ -40,37 +52,39 @@ function initTable() {
                 data: "cfu",
                 render: $.fn.dataTable.render.number()
             },
-            {
-                render: function (data, type, row) {
-                    return $("<a>")
-                        .attr("class", "btn btn-primary")
-                        .html(
-                            $("<i>")
-                                .attr("class", "fa-solid fa-eye")
-                        )
-                        .attr("href", "/docenti/esami/" + row.cod_esame)
-                        .prop("outerHTML");
-                },
-                orderable: false
-            }
         ],
         ajax: {
             url: "/api/corso_laurea/" + $("#cod-corso-laurea").val() + "/esami",
         }
     });
-    page.tableElement.on("click", "tr", function (eventObject) {
-        let row = page.table.row(eventObject.target);
-        console.log(row);
+    page.tableElement.on("click", ".expand-btn", function (eventObject) {
+        let target = $(eventObject.target);
+        let rowElem = target.parents("tr");
+        let row = page.table.row(rowElem);
+
+        // Hide if shown
         if (row.child.isShown()) {
             row.child.hide();
-            $(eventObject.target).removeClass("shown");
-        } else {
+            target.removeClass("shown");
+            rowElem.removeClass("table-active");
+        }
+        // Show if hidden
+        else {
             let esame = row.data();
+            // Fetch data
             $.ajax({
                 url: "/api/esami/" + esame.cod_esame + "/anni",
                 success: (res) => {
                     row.child(formatEsami(res.data)).show();
-                    $(eventObject.target).addClass("shown");
+                    target.addClass("shown");
+                    rowElem.addClass("table-active");
+                },
+                error: (res) => {
+                    new Noty({
+                        text: "Errore nel caricamento degli esami",
+                        type: "error",
+                        timeout: 3000
+                    }).show();
                 }
             });
         }
@@ -80,7 +94,7 @@ function initTable() {
 
 function formatEsami(esami) {
     let newTable = $("<table>")
-        .attr("class", "table")
+        .attr("class", "table table-sm table table-bordered")
         .append(
             $("<thead>")
                 .append(
@@ -106,6 +120,19 @@ function formatEsami(esami) {
                 .append(
                     $("<td>")
                         .text(esame.cod_presidente)
+                )
+                .append(
+                    $("<td>")
+                        .attr("class", "col-1")
+                        .append(
+                        $("<a>")
+                            .attr("class", "btn btn-primary")
+                            .attr("href", "/docenti/esami/" + esame.cod_esame + "/anni/" + esame.anno_accademico.cod_anno_accademico)
+                            .append(
+                                $("<i>")
+                                    .attr("class", "fa-solid fa-eye")
+                            )
+                        )
                 )
         );
     }

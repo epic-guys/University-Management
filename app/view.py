@@ -52,13 +52,19 @@ def corso_laurea(cod_corso_laurea):
     corso = db.session.scalar(select(CorsoLaurea).where(CorsoLaurea.cod_corso_laurea == cod_corso_laurea))
     return render_template('docenti/corso-laurea.html', corso=corso)
 
+
 @docenti.route('/esami/')
 @docenti.route('/esami/<cod_esame>')
-def esami(cod_esame=None):
+@docenti.route('/esami/<cod_esame>/anni/<cod_anno_accademico>')
+def esami(cod_esame=None, cod_anno_accademico=None):
     if cod_esame is None:
         return render_template('docenti/esami.html')
 
-    q = select(EsameAnno).where(EsameAnno.cod_esame == cod_esame and EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
+    q = select(EsameAnno).where(EsameAnno.cod_esame == cod_esame)
+    if cod_anno_accademico is None:
+        q = q.where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
+    else:
+        q = q.where(EsameAnno.cod_anno_accademico == cod_anno_accademico)
     esame_anno = db.session.scalar(q)
     if esame_anno is None:
         return abort(404)

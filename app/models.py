@@ -145,7 +145,7 @@ class Esame(Model):
         self.cfu = cfu
 
 
-class EsameAnno(Esame):
+class EsameAnno(Model):
     __tablename__ = 'esami_anni_accademici'
 
     cod_anno_accademico: Mapped[str] = mapped_column(

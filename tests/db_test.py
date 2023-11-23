@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, insert
 from sqlalchemy.orm import Session, Bundle
 from dotenv import load_dotenv
 from app.models import *
@@ -23,3 +23,22 @@ def test_anni():
             .where(date.today() <= AnnoAccademico.fine_anno)
         anni = session.scalars(query).all()
         print(anni)
+
+
+def test_esameanno_insert():
+    with Session(engine) as session:
+        # test the insert using a dictionary as input. Use the insert method
+        stmt = insert(EsameAnno).values({'cod_esame': 'E1', 'cod_anno_accademico': 2022, 'cod_presidente': '3'})
+        session.execute(stmt)
+        session.commit()
+
+
+def test_select():
+    with Session(engine) as session:
+        query = select(EsameAnno).where(EsameAnno.cod_esame == 'E1')
+        print()
+        print(str(query))
+        esame = session.scalars(query).fetchall()
+        print(esame)
+        for e in esame:
+            print(e.cod_anno_accademico)
