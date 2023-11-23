@@ -1,15 +1,18 @@
 const page = {};
 
 $(() => {
+    page.appello_datetime = Date.parse($("#appello-datetime").val());
+    page.editsEnabled = page.appello_datetime < Date.now();
+    $("#insert-voti-btn").click(insertVoti);
     initTable();
 });
 
 
 function initTable() {
     let voti = {
-        "assente": 0,
-        "insufficiente": 1,
-        "ritirato": 2,
+        "0": "assente",
+        "1": "insufficiente",
+        "2": "ritirato",
 
         /*
         * Fa confusione ma ecco una spiegazione.
@@ -22,7 +25,8 @@ function initTable() {
         ...(() => {
             let dict = {};
             for (let i = 18; i <= 31; i++) {
-                dict[i.toString()] = i;
+                let iStr= i.toString();
+                dict[iStr] = iStr;
             }
             return dict;
         })()
@@ -40,8 +44,12 @@ function initTable() {
             {
                 data: "matricola",
                 render: (data, type, row) => {
+                    if (row.voto_appello != null) {
+                        return data;
+                    }
+
                     return $("<input>")
-                        .attr("name", "matricola[]")
+                        .attr("name", "matricola")
                         .attr("value", data)
                         .attr("readonly", "true")
                         .addClass("form-control-plaintext")
@@ -54,15 +62,15 @@ function initTable() {
             },
             {
                 render: (data, type, row) => {
+                    if (row.voto_appello != null) {
+                        return row.voto_appello.voto;
+                    }
+
                     let select = $('<select>')
-                        .addClass("form-control")
-                        // TODO aggiungere name per abilitare form
-                        // aggiungere anche value sulle opzioni
-                        .attr("name", "");
+                        .addClass("form-control voto-select");
 
                     // Se l'appello è in data futura, disattivo l'input
-                    let appello_datetime = Date.parse($("#appello-datetime").val());
-                    if (appello_datetime > Date.now()) {
+                    if (!page.editsEnabled) {
                         select.attr("disabled", "true");
                     }
 
@@ -71,19 +79,73 @@ function initTable() {
                     Object.entries(voti).forEach(
                         ([key, value]) => {
                         let opt = $("<option>")
-                            .html(key)
-                            .attr("name", value);
+                            .html(value)
+                            .val(key);
                         options.push(opt);
                     });
 
+                    // Voto non inserito
+                    options.push($("<option>")
+                        .html("-- Voto non inserito --")
+                        .attr("value", "-1")
+                        .attr("selected", "true")
+                        .attr("disabled", "true")
+                    );
+
                     // Aggiungo le opzioni
-                    select.html(options);
+                    select.append(options);
                     return select.prop("outerHTML");
                 }
             }
         ],
         ajax: {
             url: "/api/appelli/" + $("#cod_appello").val() + "/iscrizioni"
+        }
+    });
+}
+
+function insertVoti(eventObject) {
+    let voti = [];
+    page.studentiTable.rows().every((rowIdx, tableLoop, rowLoop) => {
+        let row = page.studentiTable.row(rowIdx);
+        let data = row.data();
+        let voto = row.nodes().to$().find(".voto-select").val();
+        if (voto != null && voto !== -1) {
+            voti.push({
+                "matricola": data.matricola,
+                "voto": voto
+            });
+        }
+    });
+
+    if (voti.length === 0) {
+        new Noty({
+            text: "Nessun voto inserito",
+            type: "warning",
+            timeout: 3000
+        }).show();
+        return;
+    }
+
+    $.ajax({
+        url: "/api/appelli/" + $("#cod_appello").val() + "/voti",
+        method: "POST",
+        data: JSON.stringify(voti),
+        contentType: "application/json",
+        success: () => {
+            new Noty({
+                text: "Voti inseriti con successo",
+                type: "success",
+                timeout: 3000
+            }).show();
+            location.reload();
+        },
+        error: (xhr, status, error) => {
+            new Noty({
+                text: "Errore: " + xhr.responseText,
+                type: "error",
+                timeout: 3000
+            }).show();
         }
     });
 }

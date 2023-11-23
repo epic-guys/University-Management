@@ -22,7 +22,9 @@ class Model(db.Model):
             for col in self.__mapper__.columns
         }
         for attr in includes:
-            d[attr] = getattr(self, attr).asdict()
+            d[attr] = getattr(self, attr)
+            if d[attr] is not None:
+                d[attr] = d[attr].asdict()
         return d
 
     @classmethod
@@ -220,6 +222,7 @@ class IscrizioneAppello(Model):
     # Relationships
     studente: Mapped[Studente] = relationship()
     appello: Mapped[Appello] = relationship()
+    voto_appello: Mapped['VotoAppello'] = relationship(back_populates='iscrizione_appello')
 
 
 class VotoAppello(Model):
@@ -237,7 +240,7 @@ class VotoAppello(Model):
     )
 
     # relazioni
-    iscrizioneAppello: Mapped[IscrizioneAppello] = relationship()
+    iscrizione_appello: Mapped[IscrizioneAppello] = relationship(back_populates='voto_appello')
     studente: Mapped[Studente] = relationship()
 
     def __init__(self, voto: int):

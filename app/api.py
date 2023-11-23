@@ -195,10 +195,9 @@ def appelli():
 @api.route('/appelli/<cod_appello>/iscrizioni', methods=['GET', 'POST'])
 def iscrizioni(cod_appello):
     if request.method == 'GET':
-        query = select(IscrizioneAppello) \
-            .where(IscrizioneAppello.cod_appello == cod_appello)
+        query = select(IscrizioneAppello).where(IscrizioneAppello.cod_appello == cod_appello)
         res = db.session.scalars(query).all()
-        data = map_to_dict(res, ['studente'])
+        data = map_to_dict(res, ['studente', 'voto_appello'])
 
         return ApiResponse(data).asdict()
 
@@ -229,22 +228,28 @@ def voti():
     return map_to_dict(voti)
 
 
-@api.route('/voti', methods=['POST'])
-def add_voti():
-    payload = request.json
-    for voto in payload:
+@api.route('/appelli/<cod_appello>/voti', methods=['GET', 'POST'])
+def add_voti(cod_appello):
+    if request.method == 'GET':
+        query = select(VotoAppello).where(VotoAppello.cod_appello == cod_appello)
+        voti = db.session.scalars(query).all()
+        return map_to_dict(voti)
+
+    if request.method == 'POST':
+        voti = request.json
+        for voto in voti:
+            voto['cod_appello'] = cod_appello
         try:
-            stmt = insert(VotoAppello) \
-                .values(voto)
+            stmt = insert(VotoAppello).values(voti)
             db.session.execute(stmt)
         except SQLAlchemyError as e:
-            return ApiResponse(e.params, ApiResponse.FAIL, 'Failed to add voto').asdict(), 400
+            return ApiResponse(e.args, ApiResponse.FAIL, 'Failed to add voto').asdict(), 400
 
-    db.session.commit()
-    return '', 204
+        db.session.commit()
+        return ApiResponse(message='Successfully added voti').asdict()
 
 
-@api.route('/voti/<cod_appello>/<matricola>/')
+@api.route('/appelli/<cod_appello>/voti/<matricola>/')
 def voto_info(cod_appello, matricola):
     voto = db.session.scalars(select(VotoAppello).where(VotoAppello.cod_appello == cod_appello and VotoAppello.matricola == matricola)).all()
     return map_to_dict(voto)
