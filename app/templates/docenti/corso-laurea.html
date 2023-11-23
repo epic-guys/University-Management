@@ -5,23 +5,24 @@
 {% endblock %}
 
 {% block main %}
-    <h1>Corso di laurea di {{ corso.nome_corso_laurea }}</h1>
+    <h1>Corso di laurea in {{ corso.nome_corso_laurea }}</h1>
 
-    <button class="btn btn-primary" data-toggle="modal" data-target="#add-modal"><i class="fa-solid fa-plus"></i></button>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#create-esame-modal">Crea un nuovo esame</button>
+    <button class="btn btn-secondary" data-toggle="modal" data-target="#add-esame-modal">Aggiungi un esame ad un anno</button>
 
-    <!-- Modale aggiunta esame -->
-    <div class="modal" tabindex="-1" role="dialog" id="add-modal">
+    <!-- Modale creazione esame -->
+    <div class="modal" tabindex="-1" role="dialog" id="create-esame-modal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Aggiungi esame</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Form aggiunta esame -->
-                    <form id="add-form">
+                <!-- Form aggiunta esame -->
+                <form id="create-esame-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Aggiungi esame</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
                         <div class="form-group">
                             <label for="cod_corso">Codice esame</label>
                             <input type="text" name="cod_esame" id="cod_esame" class="form-control">
@@ -40,16 +41,29 @@
                                 <input type="number" name="cfu" id="cfu" min="0" class="form-control">
                             </div>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="add-btn" onclick="createEsame();" data-dismiss="modal">
-                        <i class="fa-solid fa-check"></i> Aggiungi
-                    </button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">
-                        <i class="fa-solid fa-xmark"></i> Annulla
-                    </button>
-                </div>
+                        <div class="form-row">
+                            <div class="col">
+                                <label for="descrizione">Descrizione</label>
+                                <textarea name="descrizione_corso" id="descrizione_corso" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <input
+                                type="text"
+                                name="cod_corso_laurea"
+                                id="cod-corso-laurea"
+                                hidden="hidden"
+                                value="{{ corso.cod_corso_laurea }}"
+                        >
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success" id="create-esame-btn" data-dismiss="modal">
+                            <i class="fa-solid fa-check"></i> Aggiungi
+                        </button>
+                        <button type="reset" class="btn btn-danger" data-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> Annulla
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -61,11 +75,10 @@
             <th>Descrizione</th>
             <th>Anno</th>
             <th>CFU</th>
-            <th>Corso di Laurea</th>
             <th></th>
         </tr>
         </thead>
         <tbody></tbody>
     </table>
-    <script src="{{ url_for('static', filename='js/docenti/esami.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/docenti/corso_laurea.js') }}"></script>
 {% endblock %}

@@ -3,38 +3,22 @@ const page = {};
 
 $(() => {
     page.tableElement = $("#esami-table");
+    initCreateEsame();
     initAddEsame();
     initTable();
 });
 
 
-function initAddEsame() {
-    $.ajax({
-        url: "/api/corsi_laurea",
-        success: (corsi) => {
-            $('#cod_corso_laurea').empty();
-            let options = [];
-            for (const c of corsi) {
-                let option = $("<option>");
-                option.attr("value", c.cod_corso_laurea);
-                option.html(c.nome_corso_laurea);
-                options.push(option);
-            }
-            $('#cod_corso_laurea').append(options);
-        },
-        error: () => {
-            new Noty({
-                text: "Errore nel caricamento dei corsi di laurea",
-                type: "error",
-                timeout: 3000
-            }).show();
-        }
-    });
+function initCreateEsame() {
+    $("#create-esame-btn").on("click", createEsame);
 }
 
+function initAddEsame() {
+
+}
 
 function initTable() {
-    page.tableElement = page.tableElement.DataTable({
+    page.table = page.tableElement.DataTable({
         columns: [
             {
                 data: "cod_esame",
@@ -71,19 +55,27 @@ function initTable() {
             }
         ],
         ajax: {
-            url: "/api/corso_laurea/" + $("#cod_corso_laurea").val() + "/esami",
-        }
+            url: "/api/corso_laurea/" + $("#cod-corso-laurea").val() + "/esami",
+        },
+        rowGroup: {
+            dataSrc: "anno_accademico.cod_anno_accademico"
+        },
     });
 }
 
 
-function createEsame() {
+function createEsame(eventObject) {
+    eventObject.preventDefault();
+    let form = $("#create-esame-form");
     $.ajax({
         url: "/api/esami",
         method: "POST",
-        data: $("#add-form").serialize(),
+        data: serializeForm(form),
+        dataType: "json",
+        contentType: "application/json",
         success: (res) => {
             page.table.ajax.reload();
+            form.trigger("reset");
             new Noty({
                 text: "Esame creato con successo",
                 type: "success",
@@ -98,8 +90,4 @@ function createEsame() {
             }).show();
         }
     })
-}
-
-function resetEsame() {
-    $("#add-form").trigger("reset");
 }

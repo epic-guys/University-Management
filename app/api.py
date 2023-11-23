@@ -52,7 +52,7 @@ def not_found_handler(e):
 
 def insert_esame():
     # TODO opportuna sanificazione dell'input
-    db.session.execute(insert(Esame), request.form.to_dict())
+    db.session.execute(insert(Esame), request.json)
     db.session.commit()
     return ApiResponse(message='Esame inserted successfully').asdict()
 
@@ -67,7 +67,6 @@ def delete_esame(cod):
 
 
 def insert_eventi():
-    # TODO sanificare input
     req = request.form.to_dict()
     req['data_appello'] = req['data'] + 'T' + req['ora']
     req.pop('data', 'ora')
@@ -104,11 +103,23 @@ def corsi_laurea():
 
 @api.route('/corso_laurea/<cod_corso_laurea>/esami')
 def esami_corso_laurea(cod_corso_laurea):
-    query = select(EsameAnno).where(Esame.cod_corso_laurea == cod_corso_laurea) \
-        .where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
+    query = select(Esame).where(Esame.cod_corso_laurea == cod_corso_laurea)
     esami = db.session.scalars(query).all()
     return ApiResponse(map_to_dict(esami)).asdict()
 
+
+
+
+@api.route('/corso_laurea/<cod_corso_laurea>/esami_anni')
+def esami_anni_corso_laurea(cod_corso_laurea):
+    if 'anno_accademico' in request.args:
+        query = select(EsameAnno).where(EsameAnno.cod_corso_laurea == cod_corso_laurea) \
+            .where(EsameAnno.cod_anno_accademico == request.args['anno_accademico'])
+    else:
+        query = select(EsameAnno).where(EsameAnno.cod_corso_laurea == cod_corso_laurea)
+
+    esami = db.session.scalars(query).all()
+    return ApiResponse(map_to_dict(esami, includes=['anno_accademico'])).asdict()
 
 @api.route('/esami/<cod_esame>/prove')
 @api.route('/prove/<cod_prova>')
@@ -126,7 +137,7 @@ def prove(cod_esame=None, cod_prova=None):
 
 
 @api.route('/esami/<cod_esame>/prove', methods=['POST'])
-# @api_role_manager.roles(Docente)
+@api_role_manager.roles(Docente)
 def insert_prove(cod_esame):
     esame_stmt = select(EsameAnno).where(EsameAnno.cod_esame == cod_esame) \
         .where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
