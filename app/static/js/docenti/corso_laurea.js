@@ -56,13 +56,62 @@ function initTable() {
         ],
         ajax: {
             url: "/api/corso_laurea/" + $("#cod-corso-laurea").val() + "/esami",
-        },
-        rowGroup: {
-            dataSrc: "anno_accademico.cod_anno_accademico"
-        },
+        }
+    });
+    page.tableElement.on("click", "tr", function (eventObject) {
+        let row = page.table.row(eventObject.target);
+        console.log(row);
+        if (row.child.isShown()) {
+            row.child.hide();
+            $(eventObject.target).removeClass("shown");
+        } else {
+            let esame = row.data();
+            $.ajax({
+                url: "/api/esami/" + esame.cod_esame + "/anni",
+                success: (res) => {
+                    row.child(formatEsami(res.data)).show();
+                    $(eventObject.target).addClass("shown");
+                }
+            });
+        }
     });
 }
 
+
+function formatEsami(esami) {
+    let newTable = $("<table>")
+        .attr("class", "table")
+        .append(
+            $("<thead>")
+                .append(
+                    $("<tr>")
+                        .append(
+                            $("<th>")
+                                .text("Anno accademico")
+                        )
+                        .append(
+                            $("<th>")
+                                .text("Codice presidente")
+                        )
+                )
+        );
+    let tbody = $("<tbody>");
+    for (let esame of esami) {
+        tbody.append(
+            $("<tr>")
+                .append(
+                    $("<td>")
+                        .text(esame.anno_accademico.cod_anno_accademico)
+                )
+                .append(
+                    $("<td>")
+                        .text(esame.cod_presidente)
+                )
+        );
+    }
+    newTable.append(tbody);
+    return newTable.prop("outerHTML");
+}
 
 function createEsame(eventObject) {
     eventObject.preventDefault();

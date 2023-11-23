@@ -107,7 +107,11 @@ def esami_corso_laurea(cod_corso_laurea):
     esami = db.session.scalars(query).all()
     return ApiResponse(map_to_dict(esami)).asdict()
 
-
+@api.route('/esami/<cod_esame>/anni')
+def anni_esame(cod_esame):
+    query = select(EsameAnno).where(EsameAnno.cod_esame == cod_esame)
+    esami = db.session.scalars(query).all()
+    return ApiResponse(map_to_dict(esami, includes=['anno_accademico', 'presidente'])).asdict()
 
 
 @api.route('/corso_laurea/<cod_corso_laurea>/esami_anni')
