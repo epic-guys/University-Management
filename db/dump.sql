@@ -12,7 +12,8 @@ CREATE TABLE anni_accademici
     cod_anno_accademico INTEGER PRIMARY KEY,
     anno_accademico     CHAR(9),
     inizio_anno         DATE,
-    fine_anno           DATE
+    fine_anno           DATE,
+    CHECK ( inizio_anno < fine_anno )
 );
 
 
@@ -28,12 +29,12 @@ CREATE TABLE persone
 (
     ruolo         CHAR(1) NOT NULL,
     cod_persona   TEXT    NOT NULL PRIMARY KEY CHECK (cod_persona SIMILAR TO '[a-zA-Z0-9_]+'),
-    nome          TEXT    NOT NULL,
-    cognome       TEXT    NOT NULL,
+    nome          TEXT    NOT NULL CHECK ( nome <> ''),
+    cognome       TEXT    NOT NULL CHECK ( cognome <> ''),
     data_nascita  DATE    NOT NULL,
     sesso         CHAR(1) CHECK ( sesso IN ('M', 'F') ),
-    email         TEXT    NOT NULL,
-    password_hash TEXT    NOT NULL,
+    email         TEXT    NOT NULL CHECK ( email <> ''),
+    password_hash TEXT    NOT NULL CHECK ( password_hash <> '' ),
     FOREIGN KEY (ruolo) REFERENCES ruoli (ruolo)
 );
 
@@ -44,9 +45,7 @@ CREATE TABLE studenti
     matricola               TEXT NOT NULL PRIMARY KEY,
     cod_corso_laurea        TEXT NOT NULL,
     cod_anno_iscrizione     INT  NOT NULL,
-    FOREIGN KEY (matricola) REFERENCES persone (cod_persona)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
+    FOREIGN KEY (matricola) REFERENCES persone (cod_persona),
     FOREIGN KEY (cod_corso_laurea) REFERENCES corsi_laurea (cod_corso_laurea),
     FOREIGN KEY (cod_anno_iscrizione) REFERENCES anni_accademici (cod_anno_accademico)
 );
@@ -57,8 +56,6 @@ CREATE TABLE docenti
 (
     cod_docente TEXT NOT NULL PRIMARY KEY,
     FOREIGN KEY (cod_docente) REFERENCES persone (cod_persona)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
 );
 
 
@@ -66,7 +63,7 @@ DROP TABLE IF EXISTS esami CASCADE;
 CREATE TABLE esami
 (
     cod_esame         TEXT NOT NULL PRIMARY KEY CHECK ( cod_esame SIMILAR TO 'E\d+' ),
-    nome_corso        TEXT NOT NULL,
+    nome_corso        TEXT NOT NULL CHECK ( nome_corso SIMILAR TO '[a-zA-Z0-9_ ]+'),
     descrizione_corso TEXT,
     anno              INT  NOT NULL,
     cfu               INT  NOT NULL,
@@ -94,7 +91,11 @@ CREATE TABLE voti_esami
     cod_esame           TEXT        NOT NULL,
     cod_anno_accademico INTEGER     NOT NULL,
     matricola           TEXT        NOT NULL,
-    voto                INT         NOT NULL,
+    voto                INT         NOT NULL
+        CHECK (
+                (voto >= 0 AND voto <= 2)
+            OR  (voto >= 18 AND voto <= 31)
+        ),
     data_completamento  timestamptz NOT NULL,
 
     -- È più frequente cercare gli esami a partire dallo studente piuttosto che viceversa
@@ -118,8 +119,8 @@ CREATE TABLE prove
 (
     cod_prova           TEXT          NOT NULL PRIMARY KEY CHECK ( cod_prova SIMILAR TO 'P\d+' ),
     tipo_prova          TEXT          NOT NULL,
-    denominazione_prova TEXT          NOT NULL,
-    descrizione_prova   TEXT          NOT NULL,
+    denominazione_prova TEXT          NOT NULL CHECK ( denominazione_prova <> ''),
+    descrizione_prova   TEXT,
     peso                NUMERIC(2, 1) NOT NULL CHECK ( peso BETWEEN 0 AND 1),
     scadenza            DATE          NOT NULL,
     cod_esame           TEXT          NOT NULL,
@@ -127,9 +128,7 @@ CREATE TABLE prove
     cod_anno_accademico INT           NOT NULL,
 
     FOREIGN KEY (cod_anno_accademico, cod_esame) REFERENCES esami_anni_accademici (cod_anno_accademico, cod_esame),
-    FOREIGN KEY (cod_esame) REFERENCES esami (cod_esame)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
+    FOREIGN KEY (cod_esame) REFERENCES esami (cod_esame),
     FOREIGN KEY (cod_docente) REFERENCES docenti (cod_docente),
     FOREIGN KEY (tipo_prova) REFERENCES tipi_prove (tipo_prova),
     FOREIGN KEY (cod_anno_accademico) REFERENCES anni_accademici (cod_anno_accademico)
@@ -143,8 +142,6 @@ CREATE TABLE appelli
     cod_prova    TEXT        NOT NULL,
     aula         TEXT        NOT NULL,
     FOREIGN KEY (cod_prova) REFERENCES prove (cod_prova)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS iscrizioni_appelli CASCADE;
@@ -171,8 +168,6 @@ CREATE TABLE voti_appelli
 
     FOREIGN KEY (cod_appello) REFERENCES appelli (cod_appello),
     FOREIGN KEY (matricola) REFERENCES studenti (matricola)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
 );
 
 
