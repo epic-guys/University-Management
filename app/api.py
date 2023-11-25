@@ -183,7 +183,7 @@ def appelli():
             appelli = db.session.scalars(select(Appello)).all()
             if request.args['calendar'] == 'true':
                 list_appelli = [{'id': appello.cod_prova, 'start': appello.data_appello.isoformat(),
-                             'title': appello.prova.esame.nome_corso} for appello in appelli]
+                             'title': appello.prova.esame_anno.nome_corso} for appello in appelli]
                 return list_appelli
             else:
                 appelli = map_to_dict(appelli)

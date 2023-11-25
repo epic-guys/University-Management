@@ -158,7 +158,7 @@ class EsameAnno(Model):
     cod_presidente: Mapped[str] = mapped_column(ForeignKey('docenti.cod_docente'))
 
     # relazioni
-    prove: Mapped[list['Prova']] = relationship(back_populates='esame')
+    prove: Mapped[list['Prova']] = relationship(back_populates='esame_anno')
     anno_accademico: Mapped[AnnoAccademico] = relationship()
     presidente: Mapped[Docente] = relationship(back_populates='esami_anni')
 
@@ -177,7 +177,7 @@ class Prova(Model):
     cod_anno_accademico: Mapped[int] = mapped_column(ForeignKey('anni_accademici.cod_anno_accademico'))
 
     # relazioni
-    esame: Mapped[EsameAnno] = relationship(foreign_keys=[cod_anno_accademico, cod_esame], back_populates='prove')
+    esame_anno: Mapped[EsameAnno] = relationship(foreign_keys=[cod_anno_accademico, cod_esame], back_populates='prove')
     appelli: Mapped[list['Appello']] = relationship(back_populates='prova')
     docente: Mapped[Docente] = relationship(back_populates='prove')
     anno_accademico: Mapped[AnnoAccademico] = relationship()
@@ -189,12 +189,6 @@ class Prova(Model):
         ),
     )
 
-    def __init__(self, esame: Esame, cod_prova: str, scadenza: date):
-        self.cod_prova = cod_prova
-        self.cod_esame = esame.cod_esame
-        self.esame = esame
-        self.scadenza = scadenza
-
 
 class Appello(Model):
     __tablename__ = 'appelli'
@@ -203,6 +197,8 @@ class Appello(Model):
     data_appello: Mapped[datetime] = mapped_column()
     cod_prova: Mapped[str] = mapped_column(ForeignKey('prove.cod_prova'))
     aula: Mapped[str] = mapped_column()
+
+    # relazioni
     prova: Mapped[Prova] = relationship(back_populates='appelli')
 
     def __init__(self, prova: Prova, data_appello: datetime, aula: str):
