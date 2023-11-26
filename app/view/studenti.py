@@ -23,6 +23,12 @@ def libretto():
     return render_template('studenti/libretto.html')
 
 
+@studenti.route('/appelli')
+def appelli():
+    appelli = db.session.scalars(select(Appello)).all()
+    return render_template('studenti/appelli.html')
+
+
 @studenti.route('/appelli/<cod_appello>/iscrizione')
 def appello(cod_appello):
     appello = db.session.scalar(select(Appello).where(Appello.cod_appello == cod_appello))
