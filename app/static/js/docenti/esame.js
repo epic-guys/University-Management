@@ -89,7 +89,7 @@ function initAddProva() {
 function createProva(){
 
     $.ajax({
-        url: "/api/esami/" + $("#cod-esame").val() + "/prove",
+        url: "/api/esami/" + $("#cod-esame").val() + "/anni/" + $("#cod-anno-accademico").val() + "/prove",
         method: "POST",
         dataType: "json",
         contentType: "application/json",

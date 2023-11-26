@@ -51,6 +51,11 @@ class Persona(Model, UserMixin, RoleMixin):
         'polymorphic_on': 'ruolo'
     }
 
+    def asdict(self, includes=None):
+        d = super().asdict(includes)
+        del d['password_hash']
+        return d
+
     def __init__(self, cod_persona: str, nome: str, cognome: str, data_nascita: date, sesso: str, email: str,
                  password_hash: str, ruolo: str):
         self.cod_persona = cod_persona
@@ -140,11 +145,15 @@ class Esame(Model):
     cod_corso_laurea: Mapped[str] = mapped_column(ForeignKey('corsi_laurea.cod_corso_laurea'))
     corso_laurea: Mapped[CorsoLaurea] = relationship(back_populates='esami')
 
+    # relazioni
+    esami_anni: Mapped[list['EsameAnno']] = relationship(back_populates='esame')
+
     def __init__(self, cod_esame: str, nome_corso: str, anno: int, cfu: int):
         self.cod_esame = cod_esame
         self.nome_corso = nome_corso
         self.anno = anno
         self.cfu = cfu
+
 
 
 class EsameAnno(Model):
@@ -161,6 +170,7 @@ class EsameAnno(Model):
     prove: Mapped[list['Prova']] = relationship(back_populates='esame_anno')
     anno_accademico: Mapped[AnnoAccademico] = relationship()
     presidente: Mapped[Docente] = relationship(back_populates='esami_anni')
+    esame: Mapped[Esame] = relationship(back_populates='esami_anni')
 
 
 class Prova(Model):

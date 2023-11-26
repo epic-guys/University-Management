@@ -3,11 +3,76 @@
 {% endblock %}>
 
 {% block main %}
-    <h1>{{ esameanno.nome_corso }}</h1>
-    <p>
-    Codice esame:
-    <input class="form-control-plaintext" id="cod-esame" type="text" readonly value="{{ esameanno.cod_esame }}">
-    </p>
+    <h1>{{ esameanno.esame.nome_corso }}</h1>
+    <div class="container-fluid border rounded my-3">
+        <!-- Codice esame -->
+        <div class="row my-2">
+            <div class="col-lg-2"><label for="cod-esame">Codice esame</label></div>
+            <div class="col-lg-2">
+                <input
+                        class="form-control-plaintext"
+                        id="cod-esame"
+                        type="text"
+                        readonly
+                        value="{{ esameanno.cod_esame }}"
+                >
+            </div>
+        </div>
+        <!-- Anno accademico -->
+        <div class="row my-2">
+            <div class="col-lg-2"><label for="anno-accademico">Anno accademico</label></div>
+            <div class="col-lg-2">
+                <input
+                        class="form-control-plaintext"
+                        id="anno-accademico"
+                        readonly
+                        type="text"
+                        value="{{ esameanno.anno_accademico.anno_accademico }}"
+                >
+                <input type="hidden" id="cod-anno-accademico" value="{{ esameanno.anno_accademico.cod_anno_accademico }}">
+            </div>
+        </div>
+        <!-- Presidente -->
+        <div class="row my-2">
+            <div class="col-lg-2"><label for="presidente">Presidente</label></div>
+            <div class="col-lg-2">
+                <input
+                        class="form-control-plaintext"
+                        id="presidente"
+                        readonly
+                        type="text"
+                        value="{{ esameanno.presidente.nome }} {{ esameanno.presidente.cognome }}"
+                >
+            </div>
+        </div>
+        <!-- CFU -->
+        <div class="row my-2">
+            <div class="col-lg-2"><label for="cfu">CFU</label></div>
+            <div class="col-lg-2">
+                <input
+                        class="form-control-plaintext"
+                        id="cfu"
+                        readonly
+                        type="text"
+                        value="{{ esameanno.esame.cfu }}"
+                >
+            </div>
+        </div>
+        <!-- Anno -->
+        <div class="row my-2">
+            <div class="col-lg-2"><label for="anno">Anno</label></div>
+            <div class="col-lg-2">
+                <input
+                        class="form-control-plaintext"
+                        id="anno"
+                        readonly
+                        type="text"
+                        value="{{ esameanno.esame.anno }}"
+                >
+            </div>
+    </div>
+
+    </div>
 
     <h2>Prove</h2>
 
@@ -67,6 +132,7 @@
                                 <label for="peso">Peso</label>
                                 <input type="number" name="peso" id="peso" min="0" max="1" class="form-control">
                             </div>
+                            <!-- FIXME togliere -->
                             <div class="col">
                                 <label for="anno">Anno accademico</label>
                                 <input type="number" name="cod_anno_accademico" id="cod_anno_accademico" class="form-control">
