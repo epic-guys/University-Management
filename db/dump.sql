@@ -247,15 +247,14 @@ CREATE FUNCTION data_appello_check()
 AS
 $$
 DECLARE
-    prova prove;
+    appello appelli;
 BEGIN
     SELECT *
-    INTO prova
-    FROM prove p
-             NATURAL JOIN iscrizioni_appelli i
-    WHERE i.cod_appello = NEW.cod_appello;
+    INTO appello
+    FROM appelli
+    WHERE appello.cod_appello = NEW.cod_appello;
 
-    IF NEW.data_iscrizione > prova.scadenza THEN
+    IF NEW.data_iscrizione > appello.data_appello THEN
         RAISE EXCEPTION 'Iscrizione appello supera scadenza della prova';
     END IF;
 
@@ -461,36 +460,36 @@ INSERT INTO appelli (cod_appello, data_appello, cod_prova, aula)
 VALUES ('A1', '2023-11-15', 'P1', 'Aula 1'),
        ('A2', '2023-11-17', 'P2', 'Aula 2'),
        ('A3', '2023-11-20', 'P3', 'Aula 3'),
-       ('A4', '2023-11-15', 'P4', 'Aula 1'),
-       ('A5', '2023-11-17', 'P5', 'Aula 2'),
+       ('A4', '2023-11-30', 'P4', 'Aula 1'),
+       ('A5', '2023-11-28', 'P5', 'Aula 2'),
        ('A6', '2023-11-20', 'P6', 'Aula 3'),
-       ('A7', '2023-11-15', 'P7', 'Aula 1'),
-       ('A8', '2023-11-17', 'P8', 'Aula 2'),
-       ('A9', '2023-11-20', 'P9', 'Aula 3'),
-       ('A10', '2023-11-15', 'P10', 'Aula 1'),
-       ('A11', '2023-11-17', 'P11', 'Aula 2'),
-       ('A12', '2023-11-20', 'P12', 'Aula 3'),
-       ('A13', '2023-11-15', 'P13', 'Aula 1'),
-       ('A14', '2023-11-17', 'P14', 'Aula 2'),
-       ('A15', '2023-11-20', 'P15', 'Aula 3'),
-       ('A16', '2023-11-15', 'P16', 'Aula 1'),
-       ('A17', '2023-11-17', 'P17', 'Aula 2'),
-       ('A18', '2023-11-20', 'P18', 'Aula 3'),
-       ('A19', '2023-11-15', 'P19', 'Aula 1'),
-       ('A20', '2023-11-17', 'P20', 'Aula 2');
+       ('A7', '2023-11-29', 'P7', 'Aula 1'),
+       ('A8', '2023-11-12', 'P8', 'Aula 2'),
+       ('A9', '2023-12-01', 'P9', 'Aula 3'),
+       ('A10', '2023-12-15', 'P10', 'Aula 1'),
+       ('A11', '2023-12-17', 'P11', 'Aula 2'),
+       ('A12', '2023-12-20', 'P12', 'Aula 3'),
+       ('A13', '2023-12-15', 'P13', 'Aula 1'),
+       ('A14', '2023-12-17', 'P14', 'Aula 2'),
+       ('A15', '2023-12-20', 'P15', 'Aula 3'),
+       ('A16', '2023-12-15', 'P16', 'Aula 1'),
+       ('A17', '2023-12-17', 'P17', 'Aula 2'),
+       ('A18', '2023-12-20', 'P18', 'Aula 3'),
+       ('A19', '2023-12-15', 'P19', 'Aula 1'),
+       ('A20', '2023-12-17', 'P20', 'Aula 2');
 
 
 INSERT INTO iscrizioni_appelli (cod_appello, matricola, data_iscrizione)
-VALUES ('A1', '11', NOW() - INTERVAL '3 days'),
-       ('A1', '12', NOW() - INTERVAL '2 days'),
-       ('A2', '13', NOW() - INTERVAL '1 days'),
-       ('A2', '14', NOW() - INTERVAL '1 days'),
-       ('A3', '15', NOW() - INTERVAL '2 days'),
-       ('A3', '16', NOW() - INTERVAL '3 days'),
-       ('A4', '17', NOW() - INTERVAL '1 days'),
-       ('A4', '18', NOW() - INTERVAL '2 days'),
-       ('A5', '19', NOW() - INTERVAL '3 days'),
-       ('A5', '20', NOW() - INTERVAL '1 days');
+VALUES ('A1', '11', timestamptz '2023-10-29' - INTERVAL '3 days'),
+       ('A1', '12', timestamptz '2023-10-29' - INTERVAL '2 days'),
+       ('A2', '13', timestamptz '2023-10-29' - INTERVAL '1 days'),
+       ('A2', '14', timestamptz '2023-10-29' - INTERVAL '1 days'),
+       ('A3', '15', timestamptz '2023-10-29' - INTERVAL '2 days'),
+       ('A3', '16', timestamptz '2023-10-29' - INTERVAL '3 days'),
+       ('A4', '17', timestamptz '2023-10-29' - INTERVAL '1 days'),
+       ('A4', '18', timestamptz '2023-10-29' - INTERVAL '2 days'),
+       ('A5', '19', timestamptz '2023-10-29' - INTERVAL '3 days'),
+       ('A5', '20', timestamptz '2023-10-29' - INTERVAL '1 days');
 
 
 INSERT INTO voti_appelli (cod_appello, matricola, voto)

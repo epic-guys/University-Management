@@ -67,6 +67,9 @@ class Persona(Model, UserMixin, RoleMixin):
         self.password_hash = password_hash
         self.ruolo = ruolo
 
+    def full_name(self):
+        return self.nome + ' ' + self.cognome
+
     def get_id(self):
         """Necessario per Flask_Login"""
         return self.cod_persona
@@ -190,6 +193,7 @@ class Prova(Model):
     esame_anno: Mapped[EsameAnno] = relationship(foreign_keys=[cod_anno_accademico, cod_esame], back_populates='prove')
     appelli: Mapped[list['Appello']] = relationship(back_populates='prova')
     docente: Mapped[Docente] = relationship(back_populates='prove')
+    esame: Mapped[Esame] = relationship()
     anno_accademico: Mapped[AnnoAccademico] = relationship()
 
     __table_args__ = (
@@ -247,6 +251,7 @@ class VotoAppello(Model):
 
     # relazioni
     iscrizione_appello: Mapped[IscrizioneAppello] = relationship(back_populates='voto_appello')
+    appello: Mapped[Appello] = relationship()
     studente: Mapped[Studente] = relationship()
 
     def __init__(self, voto: int):

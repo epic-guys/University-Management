@@ -1,6 +1,6 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.html">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
@@ -26,15 +26,15 @@
     </div>
 
     <!-- Nav Item - Pages Collapse Menu -->
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('view.docenti.esami') }}"><i class="fa-solid fa-file-pen"></i> Esami</a>
-    </li>
      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('view.appelli') }}"><i class="fa-solid fa-graduation-cap"></i> Appelli</a>
+        <a class="nav-link" href="{{ url_for('view.studenti.appelli') }}"><i class="fa-solid fa-graduation-cap"></i> Appelli</a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('view.studenti.libretto') }}"><i class="fa-solid fa-graduation-cap"></i> Libretto</a>
+        <a class="nav-link" href="{{ url_for('view.studenti.libretto') }}"><i class="fa-solid fa-book-open"></i> Libretto</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('view.studenti.esiti') }}"><i class="fa-solid fa-check"></i> Esiti e prenotazioni</a>
     </li>
 
     <!-- Divider -->

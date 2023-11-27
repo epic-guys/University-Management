@@ -33,12 +33,24 @@ def test_esameanno_insert():
         session.commit()
 
 
-def test_select():
+def test_select_appelli():
+    print()
     with Session(engine) as session:
-        query = select(EsameAnno).where(EsameAnno.cod_esame == 'E1')
-        print()
-        print(str(query))
-        esame = session.scalars(query).fetchall()
-        print(esame)
-        for e in esame:
-            print(e.cod_anno_accademico)
+        query = select(Appello).join(Prova).join(Esame) \
+            .where(Prova.cod_anno_accademico == 2023) \
+            .where(Esame.cod_corso_laurea == 'CT3') \
+            .where(Appello.data_appello >= date.today())
+        print(query)
+        res = session.scalars(query).all()
+        for r in res:
+            print(r)
+
+
+def test_select_esiti():
+    with Session(engine) as session:
+        query = select(IscrizioneAppello, VotoAppello) \
+            .outerjoin(VotoAppello) \
+            .where(IscrizioneAppello.matricola == '11')
+        res = session.execute(query).tuples()
+        for r in res:
+            print(r)

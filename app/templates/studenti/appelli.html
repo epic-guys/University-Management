@@ -1,0 +1,53 @@
+{% extends "studenti/studenti-base.html" %}
+{% block title %}Prossimi appelli{% endblock %}
+
+{% block main %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Prossimi appelli</h1>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Prova</th>
+                            <th>Esame</th>
+                            <th>Codice appello</th>
+                            <th>Data e ora</th>
+                            <th>Aula</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for appello in appelli %}
+                            <tr>
+                                <td>{{ appello.prova.denominazione_prova }}</td>
+                                <td>{{ appello.prova.esame.nome_corso }}</td>
+                                <td>{{ appello.cod_appello}}</td>
+                                <td><input
+                                        class="form-control-plaintext"
+                                        readonly
+                                        type="datetime-local"
+                                        value="{{ appello.data_appello.strftime('%Y-%m-%dT%H:%M') }}"
+                                ></td>
+                                <td>{{ appello.aula }}</td>
+                                <td>
+                                    <a class="btn btn-primary"
+                                       href="{{ url_for('view.studenti.appello', cod_appello=appello.cod_appello) }}">
+                                        Prenota
+                                    </a>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if appelli|length == 0 %}
+                    <p class="text-center">Non ci sono appelli disponibili</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{{ url_for('static', filename='js/studenti/appelli.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'studenti/studenti-base.html' %}
+{% block title %}Esiti e prenotazioni{% endblock %}
+{% block main %}
+    <h2>Voti appelli</h2>
+    <table class="table">
+    <thead>
+    <tr>
+        <th>Codice appello</th>
+        <th>Data appello</th>
+        <th>Prova</th>
+        <th>Esame</th>
+        <th>Voto</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for iscrizione, voto in iscrizioni_voti %}
+        {% if voto is not none %}
+            <tr>
+                <td>{{ voto.appello.cod_appello }}</td>
+                <td><input
+                        type="datetime-local"
+                        readonly
+                        class="form-control-plaintext"
+                        value="{{ voto.appello.data_appello.strftime('%Y-%m-%dT%H:%M') }}"
+                ></td>
+                <td>{{ voto.appello.prova.denominazione_prova }}</td>
+                <td>{{ voto.appello.prova.esame.nome_corso }}</td>
+                <td>{{ voto.voto }}</td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+    </table>
+
+    <h2>Appelli prenotati</h2>
+    <table class="table">
+    <thead>
+    <tr>
+        <th>Codice appello</th>
+        <th>Data appello</th>
+        <th>Prova</th>
+        <th>Esame</th>
+        <th>Data iscrizione</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for iscrizione, voto in iscrizioni_voti %}
+        {% if voto is none %}
+            <tr>
+                <td>{{ iscrizione.appello.cod_appello }}</td>
+                <td><input
+                        type="datetime-local"
+                        readonly
+                        class="form-control-plaintext"
+                        value="{{ iscrizione.appello.data_appello.strftime('%Y-%m-%dT%H:%M') }}"
+                ></td>
+                <td>{{ iscrizione.appello.prova.denominazione_prova }}</td>
+                <td>{{ iscrizione.appello.prova.esame.nome_corso }}</td>
+                <td><input
+                        type="datetime-local"
+                        readonly
+                        class="form-control-plaintext"
+                        value="{{ iscrizione.data_iscrizione.strftime('%Y-%m-%dT%H:%M') }}"
+                ></td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+    </table>
+{% endblock %}
