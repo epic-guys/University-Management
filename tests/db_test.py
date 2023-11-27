@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, select, insert
+from sqlalchemy import create_engine, select, insert, distinct
 from sqlalchemy.orm import Session, Bundle
 from dotenv import load_dotenv
 from app.models import *
@@ -6,7 +6,7 @@ import os
 
 load_dotenv()
 
-engine = create_engine(os.environ['DB_URI'], echo=False)
+engine = create_engine(os.environ['DB_URI'], echo=True)
 
 
 def test_join():
@@ -54,3 +54,16 @@ def test_select_esiti():
         res = session.execute(query).tuples()
         for r in res:
             print(r)
+
+
+def test_select_studenti_con_prove():
+    with Session(engine) as session:
+        query_studenti = select(Studente).join_from(VotoProva, Appello) \
+            .join(Prova) \
+            .join(Studente) \
+            .where(Prova.cod_esame == 'E1') \
+            .distinct()
+        studenti = session.scalars(query_studenti).all()
+        for s in studenti:
+            print(s)
+

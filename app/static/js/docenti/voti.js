@@ -22,23 +22,11 @@ function initTable(){
                 render: $.fn.dataTable.render.number()
             },
             {
-                render: function (data, type, row) {
-                    return $("<a>")
-                        .attr("class", "btn btn-primary")
-                        .html(
-                            $("<i>")
-                                .attr("class", "fa-solid fa-eye")
-                        )
-                        // FIXME potenziale XSS
-                        .attr("href", "/docenti/voti/" + row.cod_appello + "/" + row.matricola)
-                        .prop("outerHTML");
-                },
-                orderable: false
+
             }
         ],
         ajax: {
-            url: "/api/voti",
-            dataSrc: ""
+            url: "/api/voti"
         }
     });
 }

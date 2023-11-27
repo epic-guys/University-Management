@@ -6,7 +6,7 @@ import werkzeug.exceptions
 from flask import Blueprint, request, abort
 from .models import *
 from .db import db
-from sqlalchemy import select, update, delete, insert
+from sqlalchemy import select, update, delete, insert, and_
 from .roles import api_role_manager
 from dataclasses import dataclass
 from typing import ClassVar
@@ -86,7 +86,8 @@ def esami(cod_esame=None):
             query = select(EsameAnno)
             if cod_esame is not None:
                 query = query.where(EsameAnno.cod_esame == cod_esame)
-            query = query.where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
+            query = query.where(
+                EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
             esami = db.session.scalars(query).all()
             return ApiResponse(map_to_dict(esami, includes=['anno_accademico'])).asdict()
         case 'POST':
@@ -107,6 +108,7 @@ def esami_corso_laurea(cod_corso_laurea):
     esami = db.session.scalars(query).all()
     return ApiResponse(map_to_dict(esami)).asdict()
 
+
 @api.route('/esami/<cod_esame>/anni')
 def anni_esame(cod_esame):
     query = select(EsameAnno).where(EsameAnno.cod_esame == cod_esame)
@@ -124,6 +126,7 @@ def esami_anni_corso_laurea(cod_corso_laurea):
 
     esami = db.session.scalars(query).all()
     return ApiResponse(map_to_dict(esami, includes=['anno_accademico'])).asdict()
+
 
 @api.route('/esami/<cod_esame>/prove')
 @api.route('/prove/<cod_prova>')
@@ -174,8 +177,6 @@ def prove_docenti(cod_docente):
     return map_to_dict(prove)
 
 
-
-
 @api.route('/appelli/', methods=['GET', 'POST'])
 def appelli():
     match request.method:
@@ -183,7 +184,7 @@ def appelli():
             appelli = db.session.scalars(select(Appello)).all()
             if request.args['calendar'] == 'true':
                 list_appelli = [{'id': appello.cod_prova, 'start': appello.data_appello.isoformat(),
-                             'title': appello.prova.esame_anno.nome_corso} for appello in appelli]
+                                 'title': appello.prova.esame_anno.nome_corso} for appello in appelli]
                 return list_appelli
             else:
                 appelli = map_to_dict(appelli)
@@ -249,9 +250,73 @@ def add_voti(cod_appello):
         return ApiResponse(message='Successfully added voti').asdict()
 
 
+@api.route('/esami/<cod_esame>/prove/voti/<matricola>')
+def voti_prove(cod_esame, matricola):
+    """
+    Restituisce tutte le prove associate a un esame e uno studente,
+    con il voto se presente.
+    """
+
+    esame = db.session.scalar(select(Esame).where(Esame.cod_esame == cod_esame))
+    if esame is None:
+        abort(404, 'Esame not found')
+    studente = db.session.scalar(select(Studente).where(Studente.matricola == matricola))
+    if studente is None:
+        abort(404, 'Studente not found')
+
+    """
+    -- Query corrispondente
+    SELECT v.*
+    FROM voti_prove v
+    JOIN appelli a ON v.cod_appello = a.cod_appello
+    RIGHT JOIN prove p ON a.cod_prova = p.cod_prova
+        AND v.matricola = $matricola
+    WHERE p.cod_esame = $cod_esame;
+    """
+    query = (
+        select(VotoProva, Prova)
+        .join(VotoProva.appello)
+        .outerjoin(Appello.prova.and_(VotoProva.matricola == matricola), full=True)
+        .where(Prova.cod_esame == cod_esame)
+    )
+    voti = db.session.execute(query).tuples()
+    """
+    Cosa fa? Molto divertente:
+    - per ogni tupla (voto, prova) crea un nuovo dizionario partendo da prova
+    - aggiunge al dizionario il voto, se presente, altrimenti None
+    - aggiunge il dizionario alla lista
+    Amo Python
+    """
+    voti_payload = [
+        dict(prova.asdict(), voto=(None if voto is None else voto.asdict()))
+        for voto, prova in voti
+    ]
+    return ApiResponse(voti_payload).asdict()
+
+
+def studenti_candidati(cod_esame):
+    """
+    Restituisce gli studenti che hanno sostenuto almeno una prova dell'esame
+    """
+    query = (
+        select(Studente)
+        .join(VotoProva)
+        .join(Appello)
+        .join(Prova)
+        .where(Prova.cod_esame == cod_esame)
+    )
+    return db.session.scalars(query).all()
+
+
+def idonei_voto(cod_esame):
+    # TODO
+    raise Exception()
+
+
 @api.route('/appelli/<cod_appello>/voti/<matricola>/')
 def voto_info(cod_appello, matricola):
-    voto = db.session.scalars(select(VotoAppello).where(VotoAppello.cod_appello == cod_appello and VotoAppello.matricola == matricola)).all()
+    voto = db.session.scalars(
+        select(VotoAppello).where(VotoAppello.cod_appello == cod_appello and VotoAppello.matricola == matricola)).all()
     return map_to_dict(voto)
 
 
@@ -260,8 +325,8 @@ def voto_info(cod_appello, matricola):
 def libretto():
     studente: Studente = flask_login.current_user
     query = select(Esame, VotoEsame) \
-        .outerjoin(VotoEsame)
-    # esami = studente.corso_laurea.esami
+        .outerjoin(VotoEsame, VotoEsame.cod_esame == Esame.cod_esame) \
+        # esami = studente.corso_laurea.esami
     # esami = map_to_dict(esami)
     esami = db.session.execute(query).all()
     serialized_list = []

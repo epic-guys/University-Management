@@ -1,7 +1,7 @@
-from flask import render_template, request, Blueprint, session, url_for, flash, redirect, abort
+from flask import render_template, request, Blueprint, abort
 from ..models import *
-import flask_login
 from ..roles import view_role_manager
+from sqlalchemy import select, insert, distinct
 
 
 docenti = Blueprint('docenti', __name__, url_prefix='/docenti')
@@ -60,15 +60,12 @@ def prove(cod_prova):
     return render_template('docenti/prova.html', prova=prova)
 
 
-@docenti.route('/voti/')
-def voti():
-    return render_template('docenti/voti.html')
-
-
-@docenti.route('/voti/<cod_appello>/<matricola>/')
-def voti_info(cod_appello, matricola):
-    voto = db.session.scalars(select(VotoAppello).where(VotoAppello.cod_appello == cod_appello and VotoAppello.matricola == matricola))
-    return render_template('docenti/voto-info.html', voto=voto)
+@docenti.route('/voti/<cod_esame>', methods=['GET', 'POST'])
+def voti(cod_esame):
+    esame = db.session.scalar(select(Esame).where(Esame.cod_esame == cod_esame))
+    if esame is None:
+        return abort(404)
+    return render_template('docenti/voti.html', esame=esame)
 
 
 @docenti.route('/appelli/<cod_appello>')
