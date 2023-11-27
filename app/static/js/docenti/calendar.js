@@ -22,10 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             headerToolbar: {
                 right: 'addEventButton today prev,next'
-            },
-            eventClick: function(event){
-                // TODO popover sugli eventi
-                alert('Hai premuto ' + event.title);
             }
         });
         page.calendar.render();
