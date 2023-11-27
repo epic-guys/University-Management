@@ -87,3 +87,9 @@ def appello(cod_appello):
     appello = db.session.scalar(select(Appello).where(Appello.cod_appello == cod_appello))
     iscrizioni = db.session.scalars(select(IscrizioneAppello).where(IscrizioneAppello.cod_appello == cod_appello))
     return render_template('docenti/appello.html', appello=appello, iscrizioni=iscrizioni)
+
+
+@docenti.route('/profilo')
+def profilo():
+    user = flask_login.current_user
+    return render_template('docenti/profilo.html',user=user)
