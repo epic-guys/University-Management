@@ -63,9 +63,3 @@ def logout():
     flask_login.logout_user()
     return redirect(url_for('view.index'))
 
-
-
-@view.route('/profilo')
-def profilo():
-    user = flask_login.current_user
-    return render_template('studenti/profilo.html',user=user)

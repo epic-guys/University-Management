@@ -68,8 +68,25 @@ def voti(cod_esame):
     return render_template('docenti/voti.html', esame=esame)
 
 
+@docenti.route('/appelli/')
+def appelli():
+    current_user: Docente = flask_login.current_user
+    anno = AnnoAccademico.current_anno_accademico()
+    query = select(Appello).join(Prova).join(Esame) \
+        .where(Prova.cod_anno_accademico == anno.cod_anno_accademico) \
+
+
+    appelli = db.session.scalars(query).all()
+    return render_template('docenti/appelli.html', appelli=appelli)
+
 @docenti.route('/appelli/<cod_appello>')
 def appello(cod_appello):
     appello = db.session.scalar(select(Appello).where(Appello.cod_appello == cod_appello))
     iscrizioni = db.session.scalars(select(IscrizioneAppello).where(IscrizioneAppello.cod_appello == cod_appello))
     return render_template('docenti/appello.html', appello=appello, iscrizioni=iscrizioni)
+
+
+@docenti.route('/profilo')
+def profilo():
+    user = flask_login.current_user
+    return render_template('docenti/profilo.html',user=user)

@@ -77,3 +77,8 @@ def esiti():
     for t in iscrizioni_voti:
         current_app.logger.info(t)
     return render_template('studenti/esiti.html', iscrizioni_voti=iscrizioni_voti)
+
+@studenti.route('/profilo')
+def profilo():
+    user = flask_login.current_user
+    return render_template('studenti/profilo.html',user=user)

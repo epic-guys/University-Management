@@ -1,0 +1,39 @@
+{% extends 'docenti/docenti-base.html' %}
+{% block title %} Profilo {% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block main %}
+    <h1>{{ current_user.nome }} {{ current_user.cognome }}</h1>
+
+    <table id="profilo-table" class="table table-hover">
+            <tr>
+                <th scope="row">Ruolo</th>
+                <td>{{ user.ruolo }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Codice Persona</th>
+                <td>{{ user.cod_persona }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Nome</th>
+                <td>{{ user.nome }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Cognome</th>
+                <td>{{ user.cognome }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Data di Nascita</th>
+                <td>{{ user.data_nascita }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Sesso</th>
+                <td>{{ user.sesso }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Email</th>
+                <td>{{ user.email }}</td>
+            </tr>
+    </table>
+{% endblock %}
