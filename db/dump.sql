@@ -192,6 +192,30 @@ WHERE v2.voto >= 18;
 --#endregion
 
 
+--#region Funzioni
+
+DROP FUNCTION IF EXISTS get_voti_prove_esame(TEXT);
+CREATE FUNCTION get_voti_prove_esame(cod_esame_ TEXT)
+RETURNS SETOF voti_prove
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT v.cod_appello, s.matricola, v.voto
+    FROM studenti s
+    CROSS JOIN prove p
+    LEFT JOIN esami e ON e.cod_esame = p.cod_esame
+    LEFT JOIN appelli a ON a.cod_prova = p.cod_prova
+    LEFT JOIN voti_prove v ON v.cod_appello = a.cod_appello AND v.matricola = s.matricola
+    WHERE p.cod_esame = cod_esame_
+    AND s.matricola IN (
+        SELECT DISTINCT v.matricola
+        FROM voti_prove v
+        JOIN appelli a ON a.cod_appello = v.cod_appello
+        JOIN prove p ON p.cod_prova = a.cod_prova
+        WHERE p.cod_esame = cod_esame_
+        );
+END; $$ LANGUAGE plpgsql;
+
 --#region Trigger
 
 DROP TRIGGER IF EXISTS role_check_t ON docenti;

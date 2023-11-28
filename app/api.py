@@ -6,7 +6,7 @@ import werkzeug.exceptions
 from flask import Blueprint, request, abort
 from .models import *
 from .db import db
-from sqlalchemy import select, update, delete, insert, and_
+from sqlalchemy import select, update, delete, insert, and_, distinct
 from .roles import api_role_manager
 from dataclasses import dataclass
 from typing import ClassVar
@@ -249,19 +249,39 @@ def add_voti(cod_appello):
         return ApiResponse(message='Successfully added voti').asdict()
 
 
-@api.route('/esami/<cod_esame>/prove/voti/<matricola>')
-def voti_prove(cod_esame, matricola):
+def get_voti_prove(cod_esame):
     """
-    Restituisce tutte le prove associate a un esame e uno studente,
-    con il voto se presente.
+    Per ogni studente che ha tentato almeno una prova dell'esame,
+    restituisce la situazione delle prove sostenute.
     """
+    """
+    SELECT v.*
+    FROM studenti s
+    CROSS JOIN prove p
+    LEFT JOIN esami e ON e.cod_esame = p.cod_esame
+    LEFT JOIN appelli a ON a.cod_prova = p.cod_prova
+    LEFT JOIN voti_prove v ON v.cod_appello = a.cod_appello AND v.matricola = s.matricola
+    WHERE p.cod_esame = $cod_esame
+    AND s.matricola IN (
+        SELECT DISTINCT v.matricola
+        FROM voti_prove v
+        JOIN appelli a ON a.cod_appello = v.cod_appello
+        JOIN prove p ON p.cod_prova = a.cod_prova
+        WHERE p.cod_esame = $cod_esame
+        );
+    """
+    # TODO
 
+
+
+
+def get_voti_prove_studente(cod_esame, matricola):
     esame = db.session.scalar(select(Esame).where(Esame.cod_esame == cod_esame))
     if esame is None:
-        abort(404, 'Esame not found')
+        raise Exception('Esame not found')
     studente = db.session.scalar(select(Studente).where(Studente.matricola == matricola))
     if studente is None:
-        abort(404, 'Studente not found')
+        raise Exception('Studente not found')
 
     """
     -- Query corrispondente
@@ -278,7 +298,21 @@ def voti_prove(cod_esame, matricola):
         .outerjoin(Appello.prova.and_(VotoProva.matricola == matricola), full=True)
         .where(Prova.cod_esame == cod_esame)
     )
-    voti = db.session.execute(query).tuples()
+    return db.session.execute(query).tuples()
+
+
+@api.route('/esami/<cod_esame>/prove/voti/<matricola>')
+def voti_prove(cod_esame, matricola):
+    """
+    Restituisce tutte le prove associate a un esame e uno studente,
+    con il voto se presente.
+    """
+
+    try:
+        voti = get_voti_prove_studente(cod_esame, matricola)
+    except:
+        return ApiResponse(status=ApiResponse.FAIL, message='Failed to get voti').asdict(), 400
+
     """
     Cosa fa? Molto divertente:
     - per ogni tupla (voto, prova) crea un nuovo dizionario partendo da prova
@@ -293,17 +327,21 @@ def voti_prove(cod_esame, matricola):
     return ApiResponse(voti_payload).asdict()
 
 
+@api.route('/esami/<cod_esame>/studenti')
 def studenti_candidati(cod_esame):
     """
     Restituisce gli studenti che hanno sostenuto almeno una prova dell'esame
     """
+
     query = (
-        select(Studente)
+        select(distinct(Studente))
         .join(VotoProva)
         .join(Appello)
         .join(Prova)
         .where(Prova.cod_esame == cod_esame)
     )
+
+
     return db.session.scalars(query).all()
 
 

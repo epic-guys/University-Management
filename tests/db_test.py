@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, select, insert, distinct
+from sqlalchemy import create_engine, select, insert, distinct, literal, func, JSON
 from sqlalchemy.orm import Session, Bundle
 from dotenv import load_dotenv
 from app.models import *
@@ -67,3 +67,10 @@ def test_select_studenti_con_prove():
         for s in studenti:
             print(s)
 
+
+def test_cross_join():
+    with Session(engine) as session:
+        query = select(func.get_voti_prove_esame('E1', type_=VotoProva))
+        res = session.scalars(query).all()
+        for voto in res:
+            print(voto)
