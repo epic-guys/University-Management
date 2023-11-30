@@ -1,3 +1,4 @@
+import flask_login
 from flask import render_template, request, Blueprint, abort
 from ..models import *
 from ..roles import view_role_manager
