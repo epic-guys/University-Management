@@ -6,7 +6,7 @@ import werkzeug.exceptions
 from flask import Blueprint, request, abort
 from .models import *
 from .db import db
-from sqlalchemy import select, update, delete, insert, and_, distinct
+from sqlalchemy import select, update, delete, insert, and_, distinct, func
 from .roles import api_role_manager
 from dataclasses import dataclass
 from typing import ClassVar
@@ -249,12 +249,14 @@ def add_voti(cod_appello):
         return ApiResponse(message='Successfully added voti').asdict()
 
 
+@api.route('/esami/<cod_esame>/prove/voti')
 def get_voti_prove(cod_esame):
     """
     Per ogni studente che ha tentato almeno una prova dell'esame,
     restituisce la situazione delle prove sostenute.
     """
     """
+    -- query corrispondente
     SELECT v.*
     FROM studenti s
     CROSS JOIN prove p
@@ -270,11 +272,20 @@ def get_voti_prove(cod_esame):
         WHERE p.cod_esame = $cod_esame
         );
     """
-    # TODO
+    fn = (
+        func.get_voti_prove_esame(cod_esame)
+        .table_valued('cod_appello', 'matricola', 'voto')
+    )
+    query = select(fn)
+    res = db.session.execute(query).mappings().all()
+    res = [
+        {key: value for key, value in row.items()}
+        for row in res
+    ]
+    return ApiResponse(res).asdict()
 
 
-
-
+@api.route('/esami/<cod_esame>/prove/voti/<matricola>')
 def get_voti_prove_studente(cod_esame, matricola):
     esame = db.session.scalar(select(Esame).where(Esame.cod_esame == cod_esame))
     if esame is None:
@@ -345,9 +356,26 @@ def studenti_candidati(cod_esame):
     return db.session.scalars(query).all()
 
 
-def idonei_voto(cod_esame):
-    # TODO
-    raise Exception()
+@api.route('/esami/<cod_esame>/anni/<cod_anno_accademico>/idonei')
+def idonei_voto(cod_esame, cod_anno_accademico):
+
+    fn = (
+        func.get_voti_prove_esame(cod_esame, cod_anno_accademico)
+        .table_valued('cod_appello', 'matricola', 'voto')
+    )
+
+    query = (
+        select(Studente)
+        .where(Studente.matricola.in_(
+            select(fn.c.matricola)
+            .select_from(fn)
+            .group_by('matricola')
+            .having(func.count('*') == func.count(fn.c.cod_appello))
+        ))
+    )
+    res = db.session.scalars(query).all()
+    res = map_to_dict(res)
+    return ApiResponse(res).asdict()
 
 
 @api.route('/appelli/<cod_appello>/voti/<matricola>/')

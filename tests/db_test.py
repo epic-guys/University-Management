@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, select, insert, distinct, literal, func, JSON
+from sqlalchemy import create_engine, select, insert, func, column
 from sqlalchemy.orm import Session, Bundle
 from dotenv import load_dotenv
 from app.models import *
@@ -70,7 +70,33 @@ def test_select_studenti_con_prove():
 
 def test_cross_join():
     with Session(engine) as session:
-        query = select(func.get_voti_prove_esame('E1', type_=VotoProva))
-        res = session.scalars(query).all()
+        fn = (
+            func.get_voti_prove_esame('E1', 2023)
+            .table_valued('cod_appello', 'matricola', 'voto')
+        )
+        query = select(fn)
+        print(query)
+        res = session.execute(query).mappings().all()
+        for voto in res:
+            print(voto)
+
+
+def test_group_by():
+    with Session(engine) as session:
+        fn = (
+            func.get_voti_prove_esame('E1', '2023')
+            .table_valued('cod_appello', 'matricola', 'voto')
+        )
+
+        query = (
+            select(
+                fn.c.matricola, func.count('*').label("count_all"), func.count(fn.c.cod_appello).label("count_cod_appello"))
+            .select_from(fn)
+            .group_by('matricola')
+            .having(func.count('*') == func.count('cod_appello'))
+        )
+
+        res = session.execute(query).mappings().all()
+
         for voto in res:
             print(voto)

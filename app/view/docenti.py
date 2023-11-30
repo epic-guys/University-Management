@@ -4,7 +4,6 @@ from ..models import *
 from ..roles import view_role_manager
 from sqlalchemy import select, insert, distinct
 
-
 docenti = Blueprint('docenti', __name__, url_prefix='/docenti')
 
 
@@ -66,7 +65,7 @@ def voti(cod_esame):
     esame = db.session.scalar(select(Esame).where(Esame.cod_esame == cod_esame))
     if esame is None:
         return abort(404)
-    return render_template('docenti/voti.html', esame=esame)
+    return render_template('docenti/voti.html', esameanno=esameanno)
 
 
 @docenti.route('/appelli/')
@@ -75,10 +74,10 @@ def appelli():
     anno = AnnoAccademico.current_anno_accademico()
     query = select(Appello).join(Prova).join(Esame) \
         .where(Prova.cod_anno_accademico == anno.cod_anno_accademico) \
-
-
+        .where(Prova.cod_docente == current_user.cod_docente)
     appelli = db.session.scalars(query).all()
     return render_template('docenti/appelli.html', appelli=appelli)
+
 
 @docenti.route('/appelli/<cod_appello>')
 def appello(cod_appello):
@@ -90,4 +89,4 @@ def appello(cod_appello):
 @docenti.route('/profilo')
 def profilo():
     user = flask_login.current_user
-    return render_template('docenti/profilo.html',user=user)
+    return render_template('docenti/profilo.html', user=user)

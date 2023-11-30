@@ -194,8 +194,8 @@ WHERE v2.voto >= 18;
 
 --#region Funzioni
 
-DROP FUNCTION IF EXISTS get_voti_prove_esame(TEXT);
-CREATE FUNCTION get_voti_prove_esame(cod_esame_ TEXT)
+DROP FUNCTION IF EXISTS get_voti_prove_esame(TEXT, INT);
+CREATE FUNCTION get_voti_prove_esame(cod_esame_ TEXT, anno_accademico_ INT)
 RETURNS SETOF voti_prove
 AS $$
 BEGIN
@@ -203,12 +203,15 @@ BEGIN
     SELECT v.cod_appello, s.matricola, v.voto
     FROM studenti s
     CROSS JOIN prove p
-    LEFT JOIN esami e ON e.cod_esame = p.cod_esame
     LEFT JOIN appelli a ON a.cod_prova = p.cod_prova
     LEFT JOIN voti_prove v ON v.cod_appello = a.cod_appello AND v.matricola = s.matricola
     WHERE p.cod_esame = cod_esame_
+    AND p.cod_anno_accademico = anno_accademico_
     AND s.matricola IN (
-        SELECT DISTINCT v.matricola
+        /* per una query corretta si dovrebbe usare DISTINCT, ma dato che
+        stiamo solo controllando che la matricola sia presente nella tabella, si
+        può fare senza, in modo da velocizzare la query */
+        SELECT v.matricola
         FROM voti_prove v
         JOIN appelli a ON a.cod_appello = v.cod_appello
         JOIN prove p ON p.cod_prova = a.cod_prova
