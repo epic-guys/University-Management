@@ -156,5 +156,11 @@
         </div>
     </div>
 
+    <h1>Voti: </h1>
+    <a
+            class="btn btn-primary"
+            href="{{ url_for("view.docenti.voti", cod_esame=esameanno.cod_esame, cod_anno_accademico=esameanno.cod_anno_accademico) }}"
+    >Voti</a>
+
     <script src="{{ url_for('static', filename='js/docenti/esame.js') }}"></script>
 {% endblock %}

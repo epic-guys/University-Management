@@ -60,10 +60,13 @@ def prove(cod_prova):
     return render_template('docenti/prova.html', prova=prova)
 
 
-@docenti.route('/voti/<cod_esame>', methods=['GET', 'POST'])
-def voti(cod_esame):
-    esame = db.session.scalar(select(Esame).where(Esame.cod_esame == cod_esame))
-    if esame is None:
+@docenti.route('/esami/<cod_esame>/anni/<cod_anno_accademico>/voti', methods=['GET', 'POST'])
+def voti(cod_esame, cod_anno_accademico):
+    esameanno = db.session.scalar(select(EsameAnno)
+                              .where(EsameAnno.cod_esame == cod_esame)
+                              .where(EsameAnno.cod_anno_accademico == cod_anno_accademico)
+                              )
+    if esameanno is None:
         return abort(404)
     return render_template('docenti/voti.html', esameanno=esameanno)
 

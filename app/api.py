@@ -83,10 +83,12 @@ def insert_eventi():
 def esami(cod_esame=None):
     match request.method:
         case 'GET':
-            query = select(Esame)
-            if cod_esame is not None:
+            query = select(Esame).join(EsameAnno)
+            if cod_esame is None:
+                query = query.where(EsameAnno.cod_presidente == flask_login.current_user.cod_docente) \
+                         .where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
+            else:
                 query = query.where(Esame.cod_esame == cod_esame)
-            #query = query.where(Esame.anno == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
             esami = db.session.scalars(query).all()
             return ApiResponse(map_to_dict(esami)).asdict()
         case 'POST':
@@ -220,12 +222,6 @@ def appelli_table():
     else:
         appelli = db.session.scalars(select(Appello)).all()
     return map_to_dict(appelli)
-
-
-@api.route('/voti')
-def voti():
-    voti = db.session.scalars((select(VotoAppello))).all()
-    return map_to_dict(voti)
 
 
 @api.route('/appelli/<cod_appello>/voti', methods=['GET', 'POST'])
