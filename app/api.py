@@ -402,3 +402,32 @@ def libretto():
 def tipi_prova():
     tipi_prova = db.session.scalars(select(TipoProva)).all()
     return map_to_dict(tipi_prova)
+
+
+@api.route('/esami/<cod_esame>/anni/<cod_anno_accademico>/voti', methods=['POST'])
+@api_role_manager.roles(Docente)
+def add_voti_esame(cod_esame, cod_anno_accademico):
+    esame = db.session.scalar(
+        select(EsameAnno).where(EsameAnno.cod_esame == cod_esame)
+        .where(EsameAnno.cod_anno_accademico == cod_anno_accademico)
+        )
+    if esame is None:
+        raise Exception('Esame not found')
+    if esame.cod_presidente != flask_login.current_user.cod_docente:
+        raise Exception('Only presidente can add voti')
+
+    data_completamento = datetime.now().isoformat()
+
+    voti = request.json
+    for voto in voti:
+        voto['cod_esame'] = cod_esame
+        voto['cod_anno_accademico'] = cod_anno_accademico
+        voto['data_completamento'] = data_completamento
+    try:
+        stmt = insert(VotoEsame).values(voti)
+        db.session.execute(stmt)
+    except SQLAlchemyError as e:
+        return ApiResponse(e.args, ApiResponse.FAIL, 'Failed to add voto').asdict(), 400
+
+    db.session.commit()
+    return ApiResponse(message='Successfully added voti').asdict()

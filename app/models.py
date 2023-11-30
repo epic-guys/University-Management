@@ -288,6 +288,7 @@ class VotoEsame(Model):
     matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'), primary_key=True)
     cod_anno_accademico: Mapped[int] = mapped_column(ForeignKey('anni_accademici.cod_anno_accademico'))
     voto: Mapped[int] = mapped_column()
+    data_completamento: Mapped[date] = mapped_column()
 
     __table_args__ = (
         ForeignKeyConstraint(
