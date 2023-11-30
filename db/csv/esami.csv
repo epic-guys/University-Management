@@ -1,0 +1,11 @@
+cod_esame,nome_corso,descrizione_corso,anno,cfu,cod_corso_laurea
+E1,Matematica 1,Fondamenti di matematica,1,6,CT3
+E2,Fisica 1,Principi della fisica classica,1,6,CT3
+E3,Informatica 1,"Introduzione all'informatica",1,9,CT3
+E4,Chimica,Introduzione alla chimica,1,6,CT3
+E5,Ingegneria del Software,"Principi dell'ingegneria del software",2,9,CT3
+E6,Sistemi Operativi,Fondamenti dei sistemi operativi,2,9,CT3
+E7,Elettrotecnica,Principi di elettrotecnica,2,6,CT3
+E8,Analisi dei Dati,Metodi di analisi dei dati,3,9,CT3
+E9,Reti di Calcolatori,Introduzione alle reti di calcolatori,3,6,CT3
+E10,Progettazione dei Circuiti,Progettazione di circuiti elettronici,3,9,CT3

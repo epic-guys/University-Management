@@ -96,7 +96,7 @@ class Docente(Persona):
 class Studente(Persona):
     __tablename__ = 'studenti'
     matricola: Mapped[str] = mapped_column(ForeignKey('persone.cod_persona'), primary_key=True)
-    cod_corso_laurea: Mapped[str] = mapped_column(ForeignKey('corsi_laurea.cod_corso_laurea'))
+    cod_corso_laurea: Mapped[str] = mapped_column(ForeignKey('corsi_laurea.csv.cod_corso_laurea'))
     cod_anno_iscrizione: Mapped[int] = mapped_column(ForeignKey('anni_accademici.cod_anno_accademico'))
 
     __mapper_args__ = {
@@ -130,7 +130,7 @@ class AnnoAccademico(Model):
 
 
 class CorsoLaurea(Model):
-    __tablename__ = 'corsi_laurea'
+    __tablename__ = 'corsi_laurea.csv'
 
     cod_corso_laurea: Mapped[str] = mapped_column(primary_key=True)
     nome_corso_laurea: Mapped[str] = mapped_column()
@@ -145,7 +145,7 @@ class Esame(Model):
     descrizione_corso: Mapped[str] = mapped_column()
     anno: Mapped[int] = mapped_column()
     cfu: Mapped[int] = mapped_column()
-    cod_corso_laurea: Mapped[str] = mapped_column(ForeignKey('corsi_laurea.cod_corso_laurea'))
+    cod_corso_laurea: Mapped[str] = mapped_column(ForeignKey('corsi_laurea.csv.cod_corso_laurea'))
     corso_laurea: Mapped[CorsoLaurea] = relationship(back_populates='esami')
 
     # relazioni
@@ -160,7 +160,7 @@ class Esame(Model):
 
 
 class EsameAnno(Model):
-    __tablename__ = 'esami_anni_accademici'
+    __tablename__ = 'esami_anni_accademici.csv'
 
     cod_anno_accademico: Mapped[str] = mapped_column(
         ForeignKey('anni_accademici.cod_anno_accademico'),
@@ -199,7 +199,7 @@ class Prova(Model):
     __table_args__ = (
         ForeignKeyConstraint(
             ['cod_anno_accademico', 'cod_esame'],
-            ['esami_anni_accademici.cod_anno_accademico', 'esami_anni_accademici.cod_esame']
+            ['esami_anni_accademici.csv.cod_anno_accademico', 'esami_anni_accademici.csv.cod_esame']
         ),
     )
 
@@ -223,7 +223,7 @@ class Appello(Model):
 
 
 class IscrizioneAppello(Model):
-    __tablename__ = 'iscrizioni_appelli'
+    __tablename__ = 'iscrizioni_appelli.csv'
 
     cod_appello: Mapped[str] = mapped_column(ForeignKey('appelli.cod_appello'), primary_key=True)
     matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'), primary_key=True)
@@ -236,7 +236,7 @@ class IscrizioneAppello(Model):
 
 
 class VotoAppello(Model):
-    __tablename__ = 'voti_appelli'
+    __tablename__ = 'voti_appelli.csv'
 
     cod_appello: Mapped[str] = mapped_column(ForeignKey('appelli.cod_appello'), primary_key=True)
     matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'), primary_key=True)
@@ -245,7 +245,7 @@ class VotoAppello(Model):
     __table_args__ = (
         ForeignKeyConstraint(
             ['cod_appello', 'matricola'],
-            ['iscrizioni_appelli.cod_appello', 'iscrizioni_appelli.matricola']
+            ['iscrizioni_appelli.csv.cod_appello', 'iscrizioni_appelli.csv.matricola']
         ),
     )
 
@@ -271,7 +271,7 @@ class VotoProva(Model):
     __table_args__ = (
         ForeignKeyConstraint(
             ['cod_appello', 'matricola'],
-            ['iscrizioni_appelli.cod_appello', 'iscrizioni_appelli.matricola']
+            ['iscrizioni_appelli.csv.cod_appello', 'iscrizioni_appelli.csv.matricola']
         ),
     )
 
@@ -292,7 +292,7 @@ class VotoEsame(Model):
     __table_args__ = (
         ForeignKeyConstraint(
             ['cod_esame', 'cod_anno_accademico'],
-            ['esami_anni_accademici.cod_esame', 'esami_anni_accademici.cod_anno_accademico']
+            ['esami_anni_accademici.csv.cod_esame', 'esami_anni_accademici.csv.cod_anno_accademico']
         ),
     )
 

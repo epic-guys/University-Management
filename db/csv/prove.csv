@@ -1,0 +1,21 @@
+cod_prova,tipo_prova,denominazione_prova,descrizione_prova,peso,scadenza,cod_esame,cod_docente,cod_anno_accademico
+P1,Scritto,Esame Matematico Avanzato,Un esame scritto impegnativo per testare le tue abilità matematiche.,0.5,2024-01-01,E1,1,2023
+P2,Orale,Discussione dei Principi della Fisica,Un esame orale coinvolgente per discutere i principi della fisica.,0.2,2024-02-01,E1,2,2023
+P3,Pratico,Applicazione delle Teorie Matematiche,Un esame pratico che richiede l'applicazione delle teorie matematiche.,0.3,2024-03-01,E1,3,2023
+P4,Scritto,Comprensione della Fisica Classica,Un esame scritto completo per valutare la comprensione della fisica classica.,0.7,2024-04-01,E2,4,2023
+P5,Orale,Discussione sui Principi della Fisica,Un esame orale coinvolgente per discutere i principi della fisica.,0.3,2024-05-01,E2,5,2023
+P6,Scritto,Valutazione delle Competenze Informatiche,Un esame scritto impegnativo per valutare le tue competenze informatiche.,0.5,2024-06-01,E3,6,2023
+P7,Orale,Discussione dei Concetti Informatici Fondamentali,Un esame orale coinvolgente per discutere i concetti informatici fondamentali.,0.5,2024-07-01,E3,7,2023
+P8,Scritto,Comprensione dei Concetti Chimici di Base,Un esame scritto completo per valutare la comprensione dei concetti chimici di base.,1,2024-08-01,E4,8,2023
+P9,Scritto,Conoscenza dell'Ingegneria del Software,Un esame scritto impegnativo per testare la tua conoscenza dell'ingegneria del software.,0.6,2024-09-01,E5,9,2023
+P10,Orale,Discussione dei Principi dell'Ingegneria del Software,Un esame orale coinvolgente per discutere i principi dell'ingegneria del software.,0.4,2024-10-01,E5,10,2023
+P11,Scritto,Comprensione dei Sistemi Operativi,Un esame scritto impegnativo per testare la tua comprensione dei sistemi operativi.,0.8,2024-11-01,E6,1,2023
+P12,Orale,Discussione dei Fondamenti dei Sistemi Operativi,Un esame orale coinvolgente per discutere i fondamenti dei sistemi operativi.,0.2,2024-12-01,E6,2,2023
+P13,Scritto,Comprensione dei Principi di Elettrotecnica,Un esame scritto completo per valutare la comprensione dei principi di elettrotecnica.,0.5,2024-01-01,E7,3,2023
+P14,Orale,Discussione dei Concetti di Base dell'Elettrotecnica,Un esame orale coinvolgente per discutere i concetti di base dell'elettrotecnica.,0.5,2024-02-01,E7,4,2023
+P15,Scritto,Analisi Avanzata dei Dati,Un esame scritto impegnativo per testare le tue abilità di analisi dei dati.,0.5,2024-03-01,E8,5,2023
+P16,Orale,Discussione sui Metodi di Analisi dei Dati,Un esame orale coinvolgente per discutere i metodi di analisi dei dati.,0.5,2024-04-01,E8,6,2023
+P17,Scritto,Comprensione delle Reti di Calcolatori,Un esame scritto completo per valutare la comprensione delle reti di calcolatori.,0.6,2024-05-01,E9,7,2023
+P18,Orale,Discussione dei Concetti Introduttivi sulle Reti di Calcolatori,Un esame orale coinvolgente per discutere i concetti introduttivi sulle reti di calcolatori.,0.4,2024-06-01,E9,8,2023
+P19,Scritto,Progettazione di Circuiti Elettronici,Un esame scritto impegnativo per testare la progettazione di circuiti elettronici.,0.5,2024-07-01,E10,9,2023
+P20,Orale,Discussione sulla Progettazione dei Circuiti Elettronici,Un esame orale coinvolgente per discutere la progettazione dei circuiti elettronici.,0.5,2024-08-01,E10,10,2023
