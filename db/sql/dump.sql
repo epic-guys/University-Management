@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS anni_accademici CASCADE;
 CREATE TABLE anni_accademici
 (
     cod_anno_accademico INTEGER PRIMARY KEY,
-    anno_accademico     CHAR(9),
+    anno_accademico     CHAR(9) CHECK ( anno_accademico SIMILAR TO '\d{4}-\d{4}' ),
     inizio_anno         DATE,
     fine_anno           DATE,
     CHECK ( inizio_anno < fine_anno )
@@ -92,10 +92,7 @@ CREATE TABLE voti_esami
     cod_anno_accademico INTEGER     NOT NULL,
     matricola           TEXT        NOT NULL,
     voto                INT         NOT NULL
-        CHECK (
-                (voto >= 0 AND voto <= 2)
-            OR  (voto >= 18 AND voto <= 31)
-        ),
+        CHECK (voto >= 18 AND voto <= 31),
     data_completamento  timestamptz NOT NULL,
 
     -- È più frequente cercare gli esami a partire dallo studente piuttosto che viceversa
@@ -161,7 +158,10 @@ CREATE TABLE voti_appelli
 (
     cod_appello TEXT NOT NULL,
     matricola   TEXT NOT NULL,
-    voto        INT  NOT NULL,
+    voto        INT  NOT NULL CHECK (
+            (voto >= 0 AND voto <= 2)
+        OR  (voto >= 18 AND voto <= 31)
+    ),
 
     PRIMARY KEY (cod_appello, matricola),
     FOREIGN KEY (cod_appello, matricola) REFERENCES iscrizioni_appelli (cod_appello, matricola),
@@ -179,9 +179,10 @@ WITH appelli_recenti AS (SELECT a.cod_prova, v.matricola, MAX(a.data_appello) AS
                          FROM voti_appelli v
                                   NATURAL JOIN appelli a
                          GROUP BY a.cod_prova, v.matricola)
-SELECT v2.*
+SELECT p.cod_prova, v2.*
 FROM voti_appelli v2
          NATURAL JOIN appelli a2
+         JOIN prove p ON a2.cod_prova = p.cod_prova
          JOIN appelli_recenti ar ON a2.cod_prova = ar.cod_prova
     AND v2.matricola = ar.matricola
     AND a2.data_appello = ar.appello_recente
@@ -200,11 +201,10 @@ RETURNS SETOF voti_prove
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT v.cod_appello, s.matricola, v.voto
+    SELECT p.cod_prova, v.cod_appello, s.matricola, v.voto
     FROM studenti s
     CROSS JOIN prove p
-    LEFT JOIN appelli a ON a.cod_prova = p.cod_prova
-    LEFT JOIN voti_prove v ON v.cod_appello = a.cod_appello AND v.matricola = s.matricola
+    LEFT JOIN voti_prove v ON v.cod_prova = p.cod_prova AND v.matricola = s.matricola
     WHERE p.cod_esame = cod_esame_
     AND p.cod_anno_accademico = anno_accademico_
     AND s.matricola IN (
@@ -213,14 +213,14 @@ BEGIN
         può fare senza, in modo da velocizzare la query */
         SELECT v.matricola
         FROM voti_prove v
-        JOIN appelli a ON a.cod_appello = v.cod_appello
-        JOIN prove p ON p.cod_prova = a.cod_prova
+        JOIN prove p ON p.cod_prova = v.cod_prova
         WHERE p.cod_esame = cod_esame_
         );
 END; $$ LANGUAGE plpgsql;
 
 --#region Trigger
 
+-- Controlla che, all'inserimento di uno studente o docente, le righe abbiano il ruolo corretto
 DROP TRIGGER IF EXISTS role_check_t ON docenti;
 DROP TRIGGER IF EXISTS role_check_t ON studenti;
 DROP FUNCTION IF EXISTS role_check();
@@ -267,6 +267,7 @@ CREATE TRIGGER role_check_t
     FOR EACH ROW
 EXECUTE FUNCTION role_check();
 
+-- Controlla che la data di iscrizione non superi la data dell'appello
 DROP TRIGGER IF EXISTS data_appello_check_t ON appelli;
 DROP FUNCTION IF EXISTS data_appello_check();
 CREATE FUNCTION data_appello_check()
@@ -295,6 +296,95 @@ CREATE TRIGGER data_appello_check_t
     ON iscrizioni_appelli
     FOR EACH ROW
 EXECUTE FUNCTION data_appello_check();
+
+
+DROP FUNCTION IF EXISTS check_voto_idoneo();
+CREATE FUNCTION check_voto_idoneo()
+    RETURNS TRIGGER
+AS $$
+DECLARE
+    num_prove INTEGER;
+    num_voti INTEGER;
+BEGIN
+    SELECT INTO num_prove, num_voti
+                COUNT(*) AS num_prove, COUNT(cod_appello) AS num_voti
+    FROM get_voti_prove_esame(NEW.cod_esame, NEW.cod_anno_accademico)
+    WHERE matricola = NEW.matricola
+    GROUP BY matricola;
+
+    IF num_prove <> num_voti THEN
+        RAISE EXCEPTION 'Inserimento voto non idoneo: lo studente non ha sostenuto tutte le prove';
+    END IF;
+
+    RETURN NEW;
+END; $$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_voto_idoneo_t ON voti_esami;
+CREATE TRIGGER check_voto_idoneo_t
+BEFORE INSERT OR UPDATE
+ON voti_esami
+FOR EACH ROW
+EXECUTE FUNCTION check_voto_idoneo();
+
+
+/*
+Se la funzione viene eseguita per la tabella iscrizioni_appelli:
+    Controlla che lo studente non si iscriva a un appello per una esame già superato.
+
+Se la funzione viene eseguita per la tabella voti_appelli:
+    Controlla che non si possa inserire, modificare o cancellare il voto di un appello
+    se l'esame è già stato superato.
+ */
+DROP FUNCTION IF EXISTS vincolo_voti_appelli_esami();
+CREATE FUNCTION vincolo_voti_appelli_esami()
+    RETURNS TRIGGER
+AS $$
+DECLARE voto INTEGER;
+DECLARE matricola_ TEXT;
+DECLARE cod_appello_ TEXT;
+BEGIN
+    IF tg_op = 'DELETE' THEN
+        SELECT INTO matricola_, cod_appello_
+            OLD.matricola, OLD.cod_appello;
+    ELSE
+        SELECT INTO matricola_, cod_appello_
+            NEW.matricola, NEW.cod_appello;
+    END IF;
+    SELECT INTO voto
+                v.voto
+    FROM voti_esami v
+    WHERE v.matricola = matricola_
+    AND v.cod_esame = (
+        SELECT p.cod_esame
+        FROM appelli a
+        NATURAL JOIN prove p
+        WHERE a.cod_appello = cod_appello_
+    );
+
+    IF voto IS NOT NULL THEN
+        RAISE EXCEPTION E'Operazione non consentita: lo studente ha già superato l\'esame';
+    END IF;
+
+    IF tg_op = 'DELETE' THEN
+        RETURN OLD;
+    END IF;
+
+    RETURN NEW;
+END; $$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_iscrizione_possibile_t ON iscrizioni_appelli;
+CREATE TRIGGER check_iscrizione_possibile_t
+    BEFORE INSERT
+    ON iscrizioni_appelli
+    FOR EACH ROW
+EXECUTE FUNCTION vincolo_voti_appelli_esami();
+
+DROP TRIGGER IF EXISTS check_iscrizione_possibile_t ON voti_appelli;
+CREATE TRIGGER check_iscrizione_possibile_t
+    BEFORE INSERT OR UPDATE OR DELETE
+    ON voti_appelli
+    FOR EACH ROW
+EXECUTE FUNCTION vincolo_voti_appelli_esami();
 
 --#endregion
 

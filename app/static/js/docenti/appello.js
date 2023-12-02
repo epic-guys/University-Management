@@ -41,7 +41,7 @@ function initTable() {
             {
                 render: (data, type, row) => {
                     if (row.voto_appello != null) {
-                        return row.voto_appello.voto;
+                        return votoString[row.voto_appello.voto];
                     }
 
                     let select = $('<select>')

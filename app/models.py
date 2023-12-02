@@ -264,6 +264,7 @@ class VotoAppello(Model):
 class VotoProva(Model):
     __tablename__ = 'voti_prove'
 
+    cod_prova: Mapped[str] = mapped_column(ForeignKey('prove.cod_prova'), primary_key=True)
     cod_appello: Mapped[str] = mapped_column(ForeignKey('appelli.cod_appello'), primary_key=True)
     matricola: Mapped[str] = mapped_column(ForeignKey('studenti.matricola'), primary_key=True)
     voto: Mapped[int] = mapped_column()
