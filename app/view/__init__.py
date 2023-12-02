@@ -1,10 +1,12 @@
 from flask import render_template, request, Blueprint, session, url_for, flash, redirect, abort
+import argon2
 from ..models import *
 import flask_login
 from ..roles import view_role_manager
 from .studenti import studenti
 from .docenti import docenti
 
+password_hasher = argon2.PasswordHasher()
 
 view = Blueprint('view', __name__)
 
@@ -46,14 +48,15 @@ def login():
 
         email = request.form['email']
         password = request.form['password']
-        # TODO CAMBIARE ASSOLUTAMENTE IN PASSWORD HASH, TEST
-        query = select(Persona).where(Persona.email == email and Persona.password_hash == password)
+        query = select(Persona).where(Persona.email == email)
         user = db.session.scalar(query)
-        if user is not None:
-            flask_login.login_user(user)
-        else:
-            flash("No user found")
-            return render_template('login.html')
+        try:
+            if password_hasher.verify(user.password_hash, password):
+                flask_login.login_user(user)
+        except (argon2.exceptions.VerifyMismatchError, AttributeError) as e:
+            flash("Credenziali errate")
+
+        return render_template('login.html')
 
     return redirect(url_for('view.index'))
 
