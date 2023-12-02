@@ -2,15 +2,6 @@
 {% block title %}Accedi{% endblock %}
 {% block main %}
     <div class="container">
-        <div>
-            {% with messages = get_flashed_messages() %}
-                <ul>
-                {% for m in messages %}
-                    <li>{{ m }}</li>
-                {% endfor %}
-                </ul>
-            {% endwith %}
-        </div>
         <form action="{{ url_for('view.login') }}" method="POST">
             <div class="form-group">
                 <label for="email">E-Mail</label>

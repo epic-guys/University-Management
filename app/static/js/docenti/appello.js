@@ -116,7 +116,7 @@ function insertVoti(eventObject) {
                 type: "success",
                 timeout: 3000
             }).show();
-            location.reload();
+            page.studentiTable.ajax.reload();
         },
         error: (xhr, status, error) => {
             new Noty({

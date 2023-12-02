@@ -27,7 +27,10 @@ function initTable(){
             },
             {
                 render: (data, type, row) => {
-                    // TODO controllare che studente non abbia già un voto
+
+                    if (row.voto != null) {
+                        return votoString[row.voto.voto];
+                    }
 
                     let select = $('<select>')
                         .addClass("form-control voto-select");
@@ -97,7 +100,8 @@ function insertVoti(eventObject) {
                 type: "success",
                 timeout: 3000
             }).show();
-            location.reload();
+
+            page.votiTable.ajax.reload();
         },
         error: (xhr, status, error) => {
             new Noty({

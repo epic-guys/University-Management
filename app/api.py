@@ -357,21 +357,27 @@ def idonei_voto(cod_esame, cod_anno_accademico):
 
     fn = (
         func.get_voti_prove_esame(cod_esame, cod_anno_accademico)
-        .table_valued('cod_appello', 'matricola', 'voto')
+        .table_valued('cod_prova', 'cod_appello', 'matricola', 'voto')
     )
 
     query = (
-        select(Studente)
+        select(Studente, VotoEsame)
         .where(Studente.matricola.in_(
             select(fn.c.matricola)
             .select_from(fn)
             .group_by('matricola')
             .having(func.count('*') == func.count(fn.c.cod_appello))
         ))
+        .outerjoin(VotoEsame)
     )
-    res = db.session.scalars(query).all()
-    res = map_to_dict(res)
-    return ApiResponse(res).asdict()
+
+    res = db.session.execute(query).all()
+    serialized_list = []
+    for studente, voto in res:
+        serialized = studente.asdict()
+        serialized['voto'] = voto.asdict() if voto is not None else None
+        serialized_list.append(serialized)
+    return ApiResponse(serialized_list).asdict()
 
 
 @api.route('/appelli/<cod_appello>/voti/<matricola>/')

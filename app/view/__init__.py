@@ -51,12 +51,11 @@ def login():
         query = select(Persona).where(Persona.email == email)
         user = db.session.scalar(query)
         try:
-            if password_hasher.verify(user.password_hash, password):
-                flask_login.login_user(user)
+            password_hasher.verify(user.password_hash, password)
+            flask_login.login_user(user)
         except (argon2.exceptions.VerifyMismatchError, AttributeError) as e:
-            flash("Credenziali errate")
-
-        return render_template('login.html')
+            flash("Credenziali errate", 'error')
+            return render_template('login.html')
 
     return redirect(url_for('view.index'))
 

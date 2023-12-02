@@ -23,10 +23,12 @@ const votoString = {
         */
         ...(() => {
             let dict = {};
-            for (let i = 18; i <= 31; i++) {
+            for (let i = 18; i <= 30; i++) {
                 let iStr= i.toString();
                 dict[iStr] = iStr;
             }
             return dict;
-        })()
+        })(),
+
+        "31": "30L",
     };

@@ -22,11 +22,11 @@ function initTable() {
         columns: [
             {
                 render: function (data, type, row) {
-                    return $("<span>")
-                        .attr("class", "expand-btn")
+                    return $("<button>")
+                        .attr("class", "btn btn-secondary expand-btn")
                         .append(
                             $("<i>")
-                                .attr("class", "fa-solid fa-square-plus")
+                                .attr("class", "fa-solid fa-caret-down")
                         )
                         .prop("outerHTML");
                 },
@@ -96,30 +96,23 @@ function formatEsami(esami) {
     let newTable = $("<table>")
         .attr("class", "table table-sm table table-bordered")
         .append(
-            $("<thead>")
-                .append(
-                    $("<tr>")
-                        .append(
-                            $("<th>")
-                                .text("Anno accademico")
+            $("<thead>").append(
+                    $("<tr>").append(
+                            $("<th>").text("Anno accademico")
                         )
                         .append(
-                            $("<th>")
-                                .text("Codice presidente")
+                            $("<th>").text("Codice presidente")
                         )
-                )
+            )
         );
     let tbody = $("<tbody>");
     for (let esame of esami) {
         tbody.append(
-            $("<tr>")
-                .append(
-                    $("<td>")
-                        .text(esame.anno_accademico.cod_anno_accademico)
+            $("<tr>").append(
+                    $("<td>").text(esame.anno_accademico.cod_anno_accademico)
                 )
                 .append(
-                    $("<td>")
-                        .text(esame.cod_presidente)
+                    $("<td>").text(esame.cod_presidente)
                 )
                 .append(
                     $("<td>")
@@ -129,8 +122,7 @@ function formatEsami(esami) {
                             .attr("class", "btn btn-primary")
                             .attr("href", "/docenti/esami/" + esame.cod_esame + "/anni/" + esame.anno_accademico.cod_anno_accademico)
                             .append(
-                                $("<i>")
-                                    .attr("class", "fa-solid fa-eye")
+                                $("<i>").attr("class", "fa-solid fa-eye")
                             )
                         )
                 )
