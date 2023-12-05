@@ -67,9 +67,17 @@ def delete_esame(cod):
 
 
 def insert_eventi():
-    req = request.form.to_dict()
-    req['data_appello'] = req['data'] + 'T' + req['ora']
-    req.pop('data', 'ora')
+    req = request.json
+
+    current_docente = flask_login.current_user
+    prova = db.session.scalar(select(Prova).where(Prova.cod_prova == req['cod_prova']))
+    if prova is None:
+        return abort(404, 'Prova not found')
+
+    if (prova.cod_docente != current_docente.cod_docente
+            and prova.esame_anno.cod_presidente != current_docente.cod_docente):
+        return abort(403, 'Only presidente or prova\'s docente can add appelli')
+
     try:
         db.session.execute(insert(Appello), req)
         db.session.commit()
@@ -86,7 +94,8 @@ def esami(cod_esame=None):
             query = select(Esame).join(EsameAnno)
             if cod_esame is None:
                 query = query.where(EsameAnno.cod_presidente == flask_login.current_user.cod_docente) \
-                         .where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
+                    .where(
+                    EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
             else:
                 query = query.where(Esame.cod_esame == cod_esame)
             esami = db.session.scalars(query).all()
@@ -109,6 +118,7 @@ def esami_corso_laurea(cod_corso_laurea):
     esami = db.session.scalars(query).all()
     return ApiResponse(map_to_dict(esami)).asdict()
 
+
 @api.route('/esami/<cod_esame>/anni')
 def anni_esame(cod_esame):
     query = select(EsameAnno).where(EsameAnno.cod_esame == cod_esame)
@@ -126,6 +136,7 @@ def esami_anni_corso_laurea(cod_corso_laurea):
 
     esami = db.session.scalars(query).all()
     return ApiResponse(map_to_dict(esami, includes=['anno_accademico'])).asdict()
+
 
 @api.route('/esami/<cod_esame>/prove')
 @api.route('/prove/<cod_prova>')
@@ -176,8 +187,6 @@ def prove_docenti(cod_docente):
     return map_to_dict(prove)
 
 
-
-
 @api.route('/appelli/', methods=['GET', 'POST'])
 def appelli():
     match request.method:
@@ -185,7 +194,7 @@ def appelli():
             appelli = db.session.scalars(select(Appello)).all()
             if request.args['calendar'] == 'true':
                 list_appelli = [{'id': appello.cod_prova, 'start': appello.data_appello.isoformat(),
-                             'title': appello.prova.esame_anno.esame.nome_corso} for appello in appelli]
+                                 'title': appello.prova.esame_anno.esame.nome_corso} for appello in appelli]
                 return list_appelli
             else:
                 appelli = map_to_dict(appelli)
@@ -348,13 +357,11 @@ def studenti_candidati(cod_esame):
         .where(Prova.cod_esame == cod_esame)
     )
 
-
     return db.session.scalars(query).all()
 
 
 @api.route('/esami/<cod_esame>/anni/<cod_anno_accademico>/idonei')
 def idonei_voto(cod_esame, cod_anno_accademico):
-
     fn = (
         func.get_voti_prove_esame(cod_esame, cod_anno_accademico)
         .table_valued('cod_prova', 'cod_appello', 'matricola', 'voto')
@@ -416,7 +423,7 @@ def add_voti_esame(cod_esame, cod_anno_accademico):
     esame = db.session.scalar(
         select(EsameAnno).where(EsameAnno.cod_esame == cod_esame)
         .where(EsameAnno.cod_anno_accademico == cod_anno_accademico)
-        )
+    )
     if esame is None:
         raise Exception('Esame not found')
     if esame.cod_presidente != flask_login.current_user.cod_docente:
