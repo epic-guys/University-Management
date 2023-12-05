@@ -45,63 +45,6 @@
     </div>
 
 
-    <!-- Modale aggiunta appello -->
-    <div class="modal" tabindex="-1" role="dialog" id="add-modal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Aggiungi appello</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Form aggiunta appello -->
-                    <form id="add-form">
-                        <div class="form-group">
-                            <label for="cod_esame">Esame</label>
-                            <select name="cod_esame" id="cod_esame" class="form-control"
-                                    onchange="fetchProve();">
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="cod_appello">Codice Appello</label>
-                            <input type="text" name="cod_appello" id="cod_appello"
-                                   class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="cod_prova">Tipo Prova</label>
-                            <select type="text" name="cod_prova" id="cod_prova"
-                                    class="form-control"></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="aula">Aula</label>
-                            <input type="text" name="aula" id="aula" class="form-control">
-                        </div>
-                        <div class="form-row">
-                            <div class="col">
-                                <label for="anno">Data</label>
-                                <input type="date" name="data" id="data" class="form-control">
-                            </div>
-                            <div class="col">
-                                <label for="cfu">Ora</label>
-                                <input type="time" name="ora" id="ora" class="form-control">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="add-btn"
-                            onclick="createAppello();" data-dismiss="modal">
-                        <i class="fa-solid fa-check"></i> Aggiungi
-                    </button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">
-                        <i class="fa-solid fa-xmark"></i> Annulla
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="{{ url_for('static', filename='js/docenti/calendar.js') }}"></script>
 {% endblock %}

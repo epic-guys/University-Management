@@ -15,14 +15,6 @@ view.register_blueprint(studenti)
 view.register_blueprint(docenti)
 
 
-@view.route('/appelli')
-def appelli():
-    if isinstance(flask_login.current_user,Docente):
-        return render_template('docenti/appelli_docenti.html')
-    else:
-        return render_template('studenti/appelli_studenti.html')
-
-
 @flask_login.login_required
 @view.route('/')
 def index():

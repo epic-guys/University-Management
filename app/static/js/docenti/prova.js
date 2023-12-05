@@ -3,6 +3,9 @@ const page = {};
 
 $(() => {
     page.tableElement = $("#appelli-table");
+    page.addForm = $("#add-form");
+    // page.addForm.on("submit", createAppello);
+    page.addForm.on("reset", onResetForm);
     initTable();
 });
 
@@ -30,7 +33,6 @@ function initTable() {
                             $("<i>")
                                 .attr("class", "fa-solid fa-eye")
                         )
-                        // FIXME potenziale XSS
                         .attr("href", "/docenti/appelli/" + row.cod_appello)
                         .prop("outerHTML");
                 },
@@ -42,4 +44,38 @@ function initTable() {
             url: "/api/prove/" + $("#cod-prova").val() + "/appelli"
         }
     });
+}
+
+function createAppello(eventObject){
+    console.log("Sesso");
+    // eventObject.preventDefault();
+    $.ajax({
+        url: "/api/appelli",
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: serializeForm(page.addForm),
+        success: (res) => {
+            new Noty({
+                text: "Appello creato con successo",
+                type: "success",
+                timeout: 3000
+            }).show();
+
+            page.addForm.trigger("reset");
+            page.table.ajax.reload();
+        },
+        error: (xhr, status, error) => {
+            new Noty({
+                text: "Creazione appello fallita",
+                type: "error",
+                timeout: 5000
+            }).show();
+        }
+    });
+}
+
+function onResetForm() {
+    console.log("reset");
+    page.addForm.find("#cod-prova").val($("#cod-prova").val());
 }

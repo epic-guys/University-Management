@@ -17,7 +17,24 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+            {% for appello in appelli %}
+                <tr>
+                    <td>{{ appello.cod_appello }}</td>
+                    <td>
+                        <input type="datetime-local"
+                            class="form-control-plaintext"
+                            value="{{ appello.data_appello.strftime("%Y-%m-%dT%H:%M") }}"
+                           readonly
+                        ></td>
+                    <td>{{ appello.cod_prova }}</td>
+                    <td>{{ appello.aula }}</td>
+                    <td>
+                        <a href="{{ url_for('view.docenti.appello', cod_appello=appello.cod_appello) }}" class="btn btn-primary">Dettagli</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
     {% block script %}{% endblock %}
 {% endblock %}

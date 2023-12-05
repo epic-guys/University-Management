@@ -1,5 +1,5 @@
 {% extends 'docenti/docenti-base.html' %}
-{% block title %} {% endblock %}
+{% block title %}Prova di {{ prova.esame.nome_corso }}{% endblock %}
 {% block main %}
 
     <h1>Prova di {{ prova.esame.nome_corso }}</h1>
@@ -33,6 +33,12 @@
         </div>
     </div>
     <h2>Appelli</h2>
+
+    {% if current_user.cod_docente == prova.cod_docented or current_user.cod_docente == prova.esame_anno.cod_presidente %}
+        <button class="btn btn-primary" data-toggle="modal" data-target="#add-modal">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    {% endif %}
     <table class="table" id="appelli-table">
         <thead>
         <tr>
@@ -43,5 +49,60 @@
         </tr>
         </thead>
     </table>
+
+
+
+    <!-- Modale aggiunta appello -->
+    <div class="modal" tabindex="-1" role="dialog" id="add-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Aggiungi appello</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Form aggiunta appello -->
+                <form id="add-form" action="#">
+                    <div class="modal-body">
+                        <input
+                                type="hidden"
+                                value="{{ prova.cod_prova }}"
+                                name="cod_prova"
+                                id="cod-prova"
+                        >
+                        <div class="form-group">
+                            <label for="cod_appello">Codice Appello</label>
+                            <input type="text" name="cod_appello" id="cod_appello"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="aula">Aula</label>
+                            <input type="text" name="aula" id="aula" class="form-control">
+                        </div>
+                        <div class="form-row">
+                            <div class="col">
+                                <label for="anno">Data e ora</label>
+                                <input type="datetime-local" name="data_appello" id="data-appello" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success" id="add-btn"
+                                data-dismiss="modal"
+                                onclick="createAppello(this)"
+                        >
+                            <i class="fa-solid fa-check"></i> Aggiungi
+                        </button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> Annulla
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
     <script src="{{ url_for('static', filename='js/docenti/prova.js') }}"></script>
 {% endblock %}
