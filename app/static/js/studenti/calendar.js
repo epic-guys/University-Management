@@ -8,7 +8,7 @@ function initCalendar() {
     let calendarEl = document.getElementById('calendar');
     page.calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
-        events: '/api/appelli/?calendar=true',
+        events: '/api/appelli/prossimi?calendar=true',
         themeSystem: 'bootstrap',
         displayEventTime: false,
         headerToolbar: {

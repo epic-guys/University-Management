@@ -4,7 +4,7 @@ import werkzeug.exceptions
 from flask import Blueprint, request, abort
 from .models import *
 from .db import db
-from sqlalchemy import select, insert, distinct, func
+from sqlalchemy import select, insert, distinct, func, exists
 from .roles import api_role_manager
 from dataclasses import dataclass
 from typing import ClassVar, TypeVar, Generic
@@ -19,6 +19,11 @@ def map_to_dict(model: Iterable[Model] | Model, includes=None):
     else:
         return model.asdict(includes)
 
+
+def format_calendar(appelli: list[Appello]) -> list[dict]:
+    list_appelli = [{'id': appello.cod_prova, 'start': appello.data_appello.isoformat(),
+                     'title': appello.prova.esame_anno.esame.nome_corso} for appello in appelli]
+    return list_appelli
 
 T = TypeVar('T')
 
@@ -87,8 +92,7 @@ def appelli():
     """
     appelli = db.session.scalars(select(Appello)).all()
     if request.args['calendar'] == 'true':
-        list_appelli = [{'id': appello.cod_prova, 'start': appello.data_appello.isoformat(),
-                         'title': appello.prova.esame_anno.esame.nome_corso} for appello in appelli]
+        list_appelli = format_calendar(appelli)
         return list_appelli
     else:
         appelli = map_to_dict(appelli)
@@ -717,3 +721,48 @@ def add_voti_esame(cod_esame, cod_anno_accademico):
 
     db.session.commit()
     return ApiResponse(message='Successfully added voti').asdict()
+
+
+@api.route('/appelli/prossimi')
+@api_role_manager.roles(Studente)
+def prossimi_appelli():
+    """
+    Restituisce tutti gli appelli di esami non ancora superati.
+
+    Questa funzione richiede che l'utente corrente sia uno Studente.
+
+    Returns:
+        ApiResponse[list[Appello]]: ApiResponse con la lista di appelli.
+    """
+
+    """
+    -- Query corrispondente
+    SELECT a.*
+    FROM appelli a
+    NATURAL JOIN prove p
+    WHERE NOT EXISTS (
+        SELECT *
+        FROM voti_esami v
+        WHERE v.cod_esame = p.cod_esame
+        AND v.matricola = $matricola
+    );
+    """
+
+    studente = flask_login.current_user
+    query = (
+        select(Appello)
+        .join(Prova)
+        .where(~exists(
+            select(VotoEsame)
+            .where(VotoEsame.cod_esame == Prova.cod_esame)
+            .where(VotoEsame.matricola == studente.matricola)
+        ))
+    )
+
+    appelli = db.session.scalars(query).all()
+
+    if request.args['calendar'] == 'true':
+        list_appelli = format_calendar(appelli)
+        return list_appelli
+
+    return ApiResponse(map_to_dict(appelli)).asdict()
