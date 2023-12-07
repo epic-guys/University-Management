@@ -386,6 +386,63 @@ CREATE TRIGGER check_iscrizione_possibile_t
     FOR EACH ROW
 EXECUTE FUNCTION vincolo_voti_appelli_esami();
 
+
+DROP FUNCTION IF EXISTS appello_in_scadenza() CASCADE;
+CREATE FUNCTION appello_in_scadenza()
+RETURNS TRIGGER
+AS $$
+DECLARE scadenza_ timestamptz;
+BEGIN
+    SELECT INTO scadenza_
+        p.scadenza
+    FROM appelli a
+    NATURAL JOIN prove p
+    WHERE a.cod_appello = NEW.cod_appello;
+
+    RAISE LOG 'scadenza: %', scadenza_;
+
+    IF NEW.data_appello > scadenza_ THEN
+        RAISE EXCEPTION 'Appello fuori la scadenza della prova';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS appello_in_scadenza_t ON appelli;
+CREATE TRIGGER appello_in_scadenza_t
+    BEFORE INSERT OR UPDATE
+    ON appelli
+    FOR EACH ROW
+EXECUTE FUNCTION appello_in_scadenza();
+
+
+DROP FUNCTION IF EXISTS on_update_scadenza_prova();
+CREATE FUNCTION on_update_scadenza_prova()
+    RETURNS TRIGGER
+AS $$
+BEGIN
+    IF OLD.scadenza = NEW.scadenza THEN
+        RETURN NEW;
+    END IF;
+
+    IF (
+        SELECT COUNT(*)
+        FROM appelli a
+        WHERE a.cod_prova = NEW.cod_prova
+        AND a.data_appello > NEW.scadenza) > 0 THEN
+        RAISE EXCEPTION 'Alcuni appelli sono fuori la scadenza nuova';
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS on_update_scadenza_prova_t ON prove;
+CREATE TRIGGER on_update_scadenza_prova_t
+    BEFORE UPDATE
+    ON prove
+    FOR EACH ROW
+EXECUTE FUNCTION on_update_scadenza_prova();
+
 --#endregion
 
 --#region Dati
