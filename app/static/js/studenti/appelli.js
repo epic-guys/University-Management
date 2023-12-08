@@ -10,14 +10,22 @@ function iscriviti(cod_appello, element) {
         url: "/api/appelli/" + cod_appello + "/iscrizioni",
         method: "POST",
         success: (res) => {
-            console.log("Iscrizione effettuata");
+            new Noty({
+                text: "Iscrizione avvenuta con successo con successo",
+                type: "success",
+                timeout: 3000
+            }).show();
             // Facendo così gli tolgo la classe btn-iscriviti che lo rende cliccabile
             element.attr("class", "btn btn-success");
             element.empty();
             element.append($("<i>").attr("class", "fa-solid fa-check"));
         },
         error: (res) => {
-            console.log("Errore iscrizione");
+            new Noty({
+                text: "Studente già iscritto all'appello",
+                type: "warning",
+                timeout: 3000
+            }).show();
             element.attr("class", "btn btn-danger");
             element.empty();
             element.append($("<i>").attr("class", "fa-solid fa-times"));
@@ -55,7 +63,6 @@ function initTable() {
                             $("<i>")
                                 .attr("class", "fa-solid fa-plus")
                         )
-                        // FIXME potenziale XSS
                         .on("click", function (e) {
                             e.preventDefault(); // Per evitare il comportamento predefinito del link
                             iscriviti(row.cod_appello);

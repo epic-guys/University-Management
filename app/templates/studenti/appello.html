@@ -36,8 +36,9 @@
             <div class="col-lg-2">Aula</div>
             <div class="col-lg-2">{{ appello.aula }}</div>
         </div>
-        <form action="{{ url_for(request.endpoint, **request.view_args) }}" method="post">
+        <form id="form-iscriviti" action="{{ url_for(request.endpoint, **request.view_args) }}" method="post">
             <button class="btn btn-primary" type="submit">Iscriviti</button>
         </form>
     </div>
+    <script src="{{ url_for('static', filename='js/studenti/appello.js') }}"></script>
 {% endblock %}
