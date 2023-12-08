@@ -18,6 +18,11 @@ view.register_blueprint(docenti)
 @flask_login.login_required
 @view.route('/')
 def index():
+    """
+    Questa funzione viene chiamata quando un utente tenta di accedere alla pagina principale.
+    Se l'utente è autenticato, viene reindirizzato alla pagina corretta.
+    Se l'utente non è autenticato, viene reindirizzato alla pagina di login.
+    """
     if not flask_login.current_user.is_authenticated:
         return redirect(url_for('view.login'))
     if isinstance(flask_login.current_user, Docente):
@@ -28,12 +33,23 @@ def index():
 
 @view.route('/users')
 def get_users():
+    """
+    Questa funzione viene chiamata quando un utente tenta di accedere alla pagina degli utenti.
+    Se l'utente è autenticato, viene reindirizzato alla pagina corretta.
+    Se l'utente non è autenticato, viene reindirizzato alla pagina di login.
+    """
     users = db.session.execute(db.select(Persona)).scalars()
     return render_template('users.html', users=users)
 
 
 @view.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Questa funzione viene chiamata quando un utente tenta di accedere alla pagina di login.
+    Se l'utente è autenticato, viene reindirizzato alla pagina corretta.
+    Se l'utente non è autenticato, viene reindirizzato alla pagina di login.
+    Inoltre controlla se l'utente ha inserito le credenziali corrette.
+    """
     if not flask_login.current_user.is_authenticated:
         if request.method == 'GET':
             return render_template('login.html')
@@ -54,6 +70,9 @@ def login():
 
 @view.route('/logout')
 def logout():
+    """
+    Questa funzione viene chiamata quando un utente tenta di effettuare il logout.
+    """
     flask_login.logout_user()
     return redirect(url_for('view.index'))
 

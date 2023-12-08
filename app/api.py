@@ -12,7 +12,6 @@ from collections.abc import Iterable
 
 api = Blueprint('api', __name__, url_prefix='/api')
 
-
 def map_to_dict(model: Iterable[Model] | Model, includes=None):
     if isinstance(model, Iterable):
         return [elem.asdict(includes) for elem in model]

@@ -6,7 +6,10 @@ from sqlalchemy import ForeignKey, ForeignKeyConstraint, select
 from flask_login import UserMixin
 from flask_roles import RoleMixin
 
-
+"""
+La classe Model è una classe astratta che serve per definire il metodo asdict che permette di convertire un oggetto
+in un dizionario. Questo è utile per convertire un oggetto in un JSON da restituire tramite API.
+"""
 class Model(db.Model):
     __abstract__ = True
 
@@ -34,6 +37,11 @@ class Model(db.Model):
         return cls(**obj)
 
 
+"""
+La classe Persona è una classe astratta che serve per definire il metodo full_name che restituisce il nome completo
+della persona e il metodo get_id che restituisce il codice persona. Questi metodi sono necessari per Flask_Login.
+Inoltre definisce l'entità della tabella persone e le relazioni con le altre tabelle.
+"""
 class Persona(Model, UserMixin, RoleMixin):
     __tablename__ = 'persone'
 
@@ -75,6 +83,10 @@ class Persona(Model, UserMixin, RoleMixin):
         return self.cod_persona
 
 
+"""
+La classe Docente è una classe che eredita da Persona e definisce l'entità della tabella docenti e le relazioni con
+le altre tabelle.
+"""
 class Docente(Persona):
     __tablename__ = 'docenti'
     cod_docente: Mapped[str] = mapped_column(ForeignKey('persone.cod_persona'), primary_key=True)
@@ -93,6 +105,10 @@ class Docente(Persona):
         self.cod_docente = cod_docente
 
 
+"""
+La classe Studente è una classe che eredita da Persona e definisce l'entità della tabella studenti e le relazioni con
+le altre tabelle.
+"""
 class Studente(Persona):
     __tablename__ = 'studenti'
     matricola: Mapped[str] = mapped_column(ForeignKey('persone.cod_persona'), primary_key=True)
@@ -113,6 +129,9 @@ class Studente(Persona):
         self.matricola = matricola
 
 
+"""
+La classe AnnoAccademico definisce l'entità della tabella anni_accademici e le relazioni con le altre tabelle.
+"""
 class AnnoAccademico(Model):
     __tablename__ = 'anni_accademici'
 
@@ -129,6 +148,9 @@ class AnnoAccademico(Model):
         return db.session.scalar(query)
 
 
+"""
+La classe CorsoLaurea definisce l'entità della tabella corsi_laurea e le relazioni con le altre tabelle.
+"""
 class CorsoLaurea(Model):
     __tablename__ = 'corsi_laurea'
 
@@ -138,6 +160,9 @@ class CorsoLaurea(Model):
     studenti: Mapped[list[Studente]] = relationship(back_populates='corso_laurea')
 
 
+"""
+La classe Esame definisce l'entità della tabella esami e le relazioni con le altre tabelle.
+"""
 class Esame(Model):
     __tablename__ = 'esami'
     cod_esame: Mapped[str] = mapped_column(primary_key=True)
@@ -158,7 +183,9 @@ class Esame(Model):
         self.cfu = cfu
 
 
-
+"""
+La classe EsameAnno definisce l'entità della tabella esami_anni_accademici e le relazioni con le altre tabelle.
+"""
 class EsameAnno(Model):
     __tablename__ = 'esami_anni_accademici'
 
@@ -176,6 +203,9 @@ class EsameAnno(Model):
     esame: Mapped[Esame] = relationship(back_populates='esami_anni')
 
 
+"""
+La classe Prova definisce l'entità della tabella prove e le relazioni con le altre tabelle.
+"""
 class Prova(Model):
     __tablename__ = 'prove'
 
@@ -204,6 +234,9 @@ class Prova(Model):
     )
 
 
+"""
+La classe Appello definisce l'entità della tabella appelli e le relazioni con le altre tabelle.
+"""
 class Appello(Model):
     __tablename__ = 'appelli'
 
@@ -222,6 +255,9 @@ class Appello(Model):
         self.aula = aula
 
 
+"""
+La classe IscrizioneAppello definisce l'entità della tabella iscrizioni_appelli e le relazioni con le altre tabelle.
+"""
 class IscrizioneAppello(Model):
     __tablename__ = 'iscrizioni_appelli'
 
@@ -235,6 +271,9 @@ class IscrizioneAppello(Model):
     voto_appello: Mapped['VotoAppello'] = relationship(back_populates='iscrizione_appello')
 
 
+"""
+La classe VotoAppello definisce l'entità della tabella voti_appelli e le relazioni con le altre tabelle.
+"""
 class VotoAppello(Model):
     __tablename__ = 'voti_appelli'
 
@@ -261,6 +300,9 @@ class VotoAppello(Model):
         self.voto = voto
 
 
+"""
+La classe VotoProva definisce l'entità della vista voti_prove e le relazioni con le altre tabelle.
+"""
 class VotoProva(Model):
     __tablename__ = 'voti_prove'
 
@@ -282,6 +324,9 @@ class VotoProva(Model):
     appello: Mapped[Appello] = relationship()
 
 
+"""
+La classe VotoEsame definisce l'entità della tabella voti_esami e le relazioni con le altre tabelle.
+"""
 class VotoEsame(Model):
     __tablename__ = 'voti_esami'
 
@@ -303,6 +348,9 @@ class VotoEsame(Model):
     esameAnno: Mapped[EsameAnno] = relationship(foreign_keys=[cod_anno_accademico, cod_esame])
 
 
+"""
+La classe TipoProva definisce l'entità della tabella tipi_prove e le relazioni con le altre tabelle.
+"""
 class TipoProva(Model):
     __tablename__ = 'tipi_prove'
 

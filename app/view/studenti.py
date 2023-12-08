@@ -17,16 +17,27 @@ def before_request():
 
 @studenti.route('/')
 def index():
+    """
+    Questa funzione viene chiamata quando un utente tenta di accedere alla pagina principale.
+    """
     return render_template('studenti/dashboard.html')
 
 
 @studenti.route('/libretto')
 def libretto():
+    """
+    Questa funzione viene chiamata quando un utente tenta di accedere alla pagina del libretto.
+    """
     return render_template('studenti/libretto.html')
 
 
 @studenti.route('/appelli/')
 def appelli():
+    """
+    Questa funzione viene chiamata quando un utente tenta di accedere alla pagina degli appelli.
+    Esegue una query per ottenere gli appelli che devono ancora essere svolti.
+    Invia gli appelli alla pagina HTML.
+    """
     current_user: Studente = flask_login.current_user
     anno = AnnoAccademico.current_anno_accademico()
     query = select(Appello).join(Prova).join(Esame) \
@@ -40,6 +51,12 @@ def appelli():
 
 @studenti.route('/appelli/<cod_appello>', methods=['GET', 'POST'])
 def appello(cod_appello):
+    """
+    Questa funzione viene chiamata quando un utente tenta di accedere alla pagina di un appello.
+    Esegue una query per ottenere un appello passato come parametro e un'altra per ottenere le varie iscrizioni agli appelli.
+    Invia l'appello e le iscrizioni alla pagina HTML.
+    Se l'utente tenta di iscriversi all'appello, viene eseguita una query per aggiungere l'iscrizione.
+    """
     if request.method == 'GET':
         appello = db.session.scalar(select(Appello).where(Appello.cod_appello == cod_appello))
         if appello is None:
@@ -67,6 +84,11 @@ def appello(cod_appello):
 
 @studenti.route('/esiti')
 def esiti():
+    """
+    Questa funzione viene chiamata quando un utente tenta di accedere alla pagina degli esiti.
+    Esegue una query per ottenere gli esiti di uno studente.
+    Invia gli esiti alla pagina HTML.
+    """
     studente: Studente = flask_login.current_user
     query = select(IscrizioneAppello, VotoAppello) \
         .outerjoin(VotoAppello) \
@@ -80,5 +102,9 @@ def esiti():
 
 @studenti.route('/profilo')
 def profilo():
+    """
+    Questa funzione viene chiamata quando un utente tenta di accedere alla pagina del profilo di uno studente.
+    Invia lo studente alla pagina HTML.
+    """
     user = flask_login.current_user
     return render_template('studenti/profilo.html',user=user)

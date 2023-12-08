@@ -1,6 +1,10 @@
 from flask import Flask, Config
 
-
+"""
+    Creazione dell'applicazione Flask
+    :param config: Configurazione dell'applicazione
+    :return: Applicazione Flask
+"""
 def create_app(config: Config = None) -> Flask:
     # Flask app
     app = Flask(__name__)
