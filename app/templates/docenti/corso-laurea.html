@@ -8,7 +8,6 @@
     <h1>Corso di laurea in {{ corso.nome_corso_laurea }}</h1>
 
     <button class="btn btn-primary" data-toggle="modal" data-target="#create-esame-modal">Crea un nuovo esame</button>
-    <button class="btn btn-secondary" data-toggle="modal" data-target="#add-esame-modal">Aggiungi un esame ad un anno</button>
 
     <!-- Modale creazione esame -->
     <div class="modal" tabindex="-1" role="dialog" id="create-esame-modal">
@@ -17,7 +16,7 @@
                 <!-- Form aggiunta esame -->
                 <form id="create-esame-form">
                     <div class="modal-header">
-                        <h5 class="modal-title">Aggiungi esame</h5>
+                        <h5 class="modal-title">Crea esame</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -67,6 +66,44 @@
             </div>
         </div>
     </div>
+
+    <!-- Modale aggiunta esame ad anno accademico -->
+    <div class="modal" tabindex="-1" role="dialog" id="add-esame-anno-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Form aggiunta esame -->
+                <form id="add-esame-anno-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Aggiungi esame ad anno accademico</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="cod-esame-add-anno">Codice esame</label>
+                            <input type="text" name="cod_esame" id="cod-esame-add-anno" class="form-control-plaintext" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="cod-anno-accademico-add-anno">Anno accademico</label>
+                            <select name="cod_anno_accademico" id="cod-anno-accademico-add-anno" class="form-control">
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success" id="add-esame-anno-btn" data-dismiss="modal">
+                            <i class="fa-solid fa-check"></i> Aggiungi
+                        </button>
+                        <button type="reset" class="btn btn-danger" data-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> Annulla
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <table id="esami-table" class="table">
         <thead>
         <tr>
@@ -76,6 +113,7 @@
             <th>Descrizione</th>
             <th>Anno</th>
             <th>CFU</th>
+            <th></th>
         </tr>
         </thead>
         <tbody></tbody>

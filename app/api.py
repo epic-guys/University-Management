@@ -229,6 +229,42 @@ def anni_esame(cod_esame):
     return ApiResponse(map_to_dict(esami, includes=['anno_accademico', 'presidente'])).asdict()
 
 
+@api.route('/esami/<cod_esame>/anni', methods=['POST'])
+@api_role_manager.roles(Docente)
+def insert_esami_anni(cod_esame):
+    """
+    Inserisce un nuovo esame per un anno accademico nel database.
+
+    Questa funzione richiede che l'utente corrente sia un Docente e che il docente sia il presidente dell'esame.
+
+    Args:
+        cod_esame (str): Il codice dell'esame per il quale inserire l'anno accademico.
+
+    Returns:
+        ApiResponse[None]: Se l'operazione ha successo, restituisce un messaggio di successo.
+                           In caso di errore, restituisce un messaggio di errore e un codice di stato HTTP appropriato.
+    """
+    esame_stmt = (select(EsameAnno).where(EsameAnno.cod_esame == cod_esame)
+                  .where(EsameAnno.cod_anno_accademico == AnnoAccademico.current_anno_accademico().cod_anno_accademico)
+                  )
+    esame = db.session.scalar(esame_stmt)
+    if esame is None:
+        abort(404, 'Esame not found')
+    if esame.presidente.cod_docente != flask_login.current_user.cod_docente:
+        abort(403, 'Only presidente can add anni')
+
+    esame_anno = {
+        'cod_esame': cod_esame,
+        'cod_anno_accademico': request.json['cod_anno_accademico'],
+        'cod_presidente': flask_login.current_user.cod_docente
+    }
+
+    insert_stmt = insert(EsameAnno).values(esame_anno)
+    db.session.execute(insert_stmt)
+    db.session.commit()
+    return ApiResponse(message="Successfully added EsameAnno").asdict()
+
+
 # TODO candidata da cancellare
 @api.route('/corso_laurea/<cod_corso_laurea>/esami_anni')
 def esami_anni_corso_laurea(cod_corso_laurea):
@@ -765,3 +801,15 @@ def prossimi_appelli():
         return list_appelli
 
     return ApiResponse(map_to_dict(appelli)).asdict()
+
+
+@api.route('/anni_accademici')
+def anni_accademici():
+    """
+    Restituisce tutti gli anni accademici.
+
+    Returns:
+        ApiResponse[list[AnnoAccademico]]: ApiResponse con lista di anni accademici.
+    """
+    anni_accademici = db.session.scalars(select(AnnoAccademico)).all()
+    return ApiResponse(map_to_dict(anni_accademici)).asdict()

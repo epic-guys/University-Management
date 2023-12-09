@@ -4,8 +4,8 @@ const page = {};
 $(() => {
     page.tableElement = $("#esami-table");
     initCreateEsame();
-    initAddEsame();
     initTable();
+    initAddEsame();
 });
 
 
@@ -14,7 +14,32 @@ function initCreateEsame() {
 }
 
 function initAddEsame() {
+    let modal = $("#add-esame-anno-modal");
+    modal.on("show.bs.modal", function (eventObject) {
+        $.ajax({
+            url: "/api/anni_accademici",
+            success: (res) => {
+                let select = modal.find("#cod-anno-accademico-add-anno");
+                select.empty();
+                for (let anno of res.data) {
+                    select.append(
+                        $("<option>")
+                            .attr("value", anno.cod_anno_accademico)
+                            .text(anno.cod_anno_accademico)
+                    );
+                }
+            },
+            error: (res) => {
+                new Noty({
+                    text: "Errore nel caricamento degli anni accademici",
+                    type: "error",
+                    timeout: 3000
+                }).show();
+            }
+        });
+    });
 
+    $("#add-esame-anno-btn").on("click", createEsameAnno);
 }
 
 function initTable() {
@@ -52,11 +77,33 @@ function initTable() {
                 data: "cfu",
                 render: $.fn.dataTable.render.number()
             },
+            {
+                render: function () {
+                    return $("<button>")
+                        .attr("class", "btn btn-primary")
+                        .attr("data-toggle", "modal")
+                        .attr("data-target", "#add-esame-anno-modal")
+                        .append(
+                            $("<i>").attr("class", "fa-solid fa-plus")
+                        )
+                        .prop("outerHTML");
+                }
+            }
         ],
         ajax: {
             url: "/api/corso_laurea/" + $("#cod-corso-laurea").val() + "/esami",
         }
     });
+
+    page.table.on("click", ".btn-add-esame-anno", function (eventObject) {
+        let target = $(eventObject.target);
+        let rowElem = target.parents("tr");
+        let row = page.table.row(rowElem);
+        let esame = row.data();
+        let modal = $("#add-esame-anno-modal");
+        modal.find("#cod-esame-add-anno").val(esame.cod_esame);
+    });
+
     page.tableElement.on("click", ".expand-btn", function (eventObject) {
         let target = $(eventObject.target);
         let rowElem = target.parents("tr");
@@ -157,5 +204,33 @@ function createEsame(eventObject) {
                 timeout: 3000
             }).show();
         }
-    })
+    });
+}
+
+function createEsameAnno(eventObject) {
+    eventObject.preventDefault();
+    let form = $("#add-esame-anno-form");
+    $.ajax({
+        url: "/api/esami/" + $("#cod-esame-add-anno").val() + "/anni",
+        method: "POST",
+        data: serializeForm(form),
+        dataType: "json",
+        contentType: "application/json",
+        success: (res) => {
+            page.table.ajax.reload();
+            form.trigger("reset");
+            new Noty({
+                text: "Esame aggiunto in anno accademico con successo",
+                type: "success",
+                timeout: 3000
+            }).show();
+        },
+        error: (res) => {
+            new Noty({
+                text: "Errore nell'aggiunta dell'esame",
+                type: "error",
+                timeout: 3000
+            }).show();
+        }
+    });
 }
