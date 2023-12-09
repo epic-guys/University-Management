@@ -1,6 +1,6 @@
 cod_prova,tipo_prova,denominazione_prova,descrizione_prova,peso,scadenza,cod_esame,cod_docente,cod_anno_accademico
-P1,Scritto,Esame Matematico Avanzato,Un esame scritto impegnativo per testare le tue abilità matematiche.,0.5,2024-01-01,E1,1,2023
-P2,Orale,Discussione dei Principi della Fisica,Un esame orale coinvolgente per discutere i principi della fisica.,0.2,2024-02-01,E1,2,2023
+P1,Scritto,Esame Matematico Avanzato,Un esame scritto impegnativo per testare le tue abilità matematiche.,0.5,2024-01-01,E1,3,2023
+P2,Orale,Discussione dei Principi della Fisica,Un esame orale coinvolgente per discutere i principi della fisica.,0.2,2024-02-01,E1,3,2023
 P3,Pratico,Applicazione delle Teorie Matematiche,Un esame pratico che richiede l'applicazione delle teorie matematiche.,0.3,2024-03-01,E1,3,2023
 P4,Scritto,Comprensione della Fisica Classica,Un esame scritto completo per valutare la comprensione della fisica classica.,0.7,2024-04-01,E2,4,2023
 P5,Orale,Discussione sui Principi della Fisica,Un esame orale coinvolgente per discutere i principi della fisica.,0.3,2024-05-01,E2,5,2023

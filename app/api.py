@@ -283,9 +283,9 @@ def prove(cod_esame=None, cod_prova=None):
     return ApiResponse(prove).asdict()
 
 
-@api.route('/esami/<cod_esame>/prove', methods=['POST'])
+@api.route('/esami/<cod_esame>/anni/<cod_anno_accademico>/prove', methods=['POST'])
 @api_role_manager.roles(Docente)
-def insert_prove(cod_esame):
+def insert_prove(cod_esame, cod_anno_accademico):
     """
     Inserisce una nuova prova per un esame nel database.
 
