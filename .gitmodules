@@ -1,0 +1,3 @@
+[submodule "flask_roles"]
+	path = flask_roles
+	url = git@github.com:alvi-se/flask-roles.git
